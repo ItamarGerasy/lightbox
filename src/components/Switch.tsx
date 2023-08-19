@@ -1,31 +1,35 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
+import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info'
 import { Switch as SwitchType, GlobalStateContextType } from './typeForComponents'
-import { ReactNode } from 'react'
 import { Draggable } from "react-beautiful-dnd";
 import { SwitchStyle } from './Switch.styles'
-import { InfoWindow, infoWindowDefaultStyle } from './Info';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { infoWindowDefaultStyle } from './Info';
 import { withGlobalState } from './MainAppState';
 
-type InfoDeleteWindowProps = {
-    handleDelete: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-    infoRef: React.RefObject<HTMLDivElement> | null;
-    infoStr: string
+type SwitchOptionsMenuWindowProps = {
 }
 
-export const InfoDeleteWindow: React.FC<InfoDeleteWindowProps> = (props) => {
+export const SwitchOptionsMenu: React.FC<SwitchOptionsMenuWindowProps> = (props) => {
     const style:React.CSSProperties = {
         ...infoWindowDefaultStyle, 
+        position: 'initial',
+        top: 0,
+        right: 0,
         display: 'flex',
         justifyContent: 'flex-start',
-        flexDirection: 'column',
+        flexDirection: 'column-reverse',
         flexWrap: 'wrap',
+        width: '15px',
+        height: '40px',
     } 
     return <div style={style}>
-        <div onClick={props.handleDelete}>
-            <DeleteIcon fontSize='small' />
+        <div>
+            <DeleteIcon sx={{fontSize: 15}} />
         </div>
-        <InfoWindow infoRef={props.infoRef} infoStr={props.infoStr} style={{}}/>
+        <div>
+            <InfoIcon sx={{fontSize: 15}}/>
+        </div>
     </div>
 }
 
@@ -34,40 +38,54 @@ type SwitchProps = {
     index: number
 }
 
-class Switch extends React.Component<GlobalStateContextType & SwitchProps>{
+interface SwitchState {
+    showMenu: boolean;
+}
+
+class Switch extends React.Component<GlobalStateContextType & SwitchProps, SwitchState>{
     infoRef: React.RefObject<HTMLDivElement> | null = null;
-    state: { showInfo: boolean }; // Define the state type
 
     constructor(props: GlobalStateContextType & SwitchProps){
         super(props);
-        this.state= {
-            showInfo: false,
-        }
-        this.handleInfoClick = this.handleInfoClick.bind(this);
+        this.state = {
+            showMenu: false,
+        };
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    setShowInfo = (show: boolean) => {
-        this.setState({
-            ...this.state,
-            showInfo: show
+    setShowMenu = (show: boolean) => {
+        this.setState(() => {
+            return { showMenu: show };
         });
     }
 
-    handleInfoClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        event.stopPropagation(); // Prevent click propagation to document
-        this.setShowInfo(!this.state.showInfo);
+    toggleShowMenu = () => {
+        this.setState((prevState) => {
+          const newShowMenu = !prevState.showMenu;
+          console.log(`Toggled showMenu to: ${newShowMenu}`);
+          return { showMenu: newShowMenu };
+        });
+      };
+
+    handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        this.toggleShowMenu()
     };
 
-    shouldComponentUpdate(nextProps: SwitchProps) {
-        if (nextProps === this.props) {
-            return false;
+    shouldComponentUpdate(nextProps: SwitchProps, nextState: SwitchState) {
+        if (
+            nextProps.switch !== this.props.switch || 
+            nextProps.index !== this.props.index || 
+            nextState.showMenu !== this.state.showMenu) {
+          return true;
         }
-        return true;
+        return false;
     }
+    
     
     render(): ReactNode {
         // const { globalState, setGlobalState } = this.props
-        const { showInfo } = this.state
+        const { showMenu } = this.state
+        console.log('showMenu:', showMenu)
         this.infoRef = React.createRef()
         const feedStr = this.props.switch.feed ? `feed: ${this.props.switch.feed}` : '';
         const dim = this.props.switch.dimensions
@@ -77,14 +95,15 @@ class Switch extends React.Component<GlobalStateContextType & SwitchProps>{
         return (
             <Draggable draggableId={this.props.switch.id} index={this.props.index}>
             {(provided, snapshot) => (
-                <SwitchStyle onClick={this.handleInfoClick}
+                <SwitchStyle onClick={this.handleClick}
+                onMouseLeave={() => this.setShowMenu(false)}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
                 ref={provided.innerRef}
                 isDragging={snapshot.isDragging}
                 switchSize={this.props.switch.size}
                 >
-                    {showInfo && <InfoDeleteWindow infoRef={this.infoRef} infoStr={infoStr} handleDelete={()=>undefined}/>}
+                    {showMenu && <SwitchOptionsMenu />}
                 </SwitchStyle>      
             )}
             </Draggable>
