@@ -36,7 +36,7 @@ export const SwitchStyle = styled.div((props: SwitchStyleProps) => ({
     backgroundSize: '100% 100%',
     backgroundColor: props.isDragging ? 'rgba(211, 211, 211, 0.5)' : '',
     margin: 0,
-    padding: 0,
+    padding: '8px',
     border: "1px solid black",
 }));
 
