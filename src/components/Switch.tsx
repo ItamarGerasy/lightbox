@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react'
-import ReactDOM from "react-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info'
 import { Switch as SwitchType, GlobalStateContextType } from './typeForComponents'
@@ -7,6 +6,8 @@ import { Draggable } from "react-beautiful-dnd";
 import { SwitchStyle } from './Switch.styles'
 import { infoWindowDefaultStyle } from './Info';
 import { withGlobalState } from './MainAppState';
+import Popper from '@mui/material/Popper';
+import { convertToObject } from 'typescript';
 
 type InfoWindowProps = {
     infoStr: string;
@@ -15,24 +16,18 @@ type InfoWindowProps = {
 
 const InfoWindow: React.FC<InfoWindowProps> = ({ infoStr, position }) => {
     return <div style={{
-        ...infoWindowDefaultStyle,
-        position: 'absolute',
-        top: position.top,
-        left: position.left,
+        ...infoWindowDefaultStyle
     }}>{infoStr}</div>
 }
 
 type SwitchOptionsMenuWindowProps = {
     onInfoClick: () => void;
-    position: {top: number; left: number;}
 }
 
-export const SwitchOptionsMenu: React.FC<SwitchOptionsMenuWindowProps> = ({ onInfoClick, position }) => {
+export const SwitchOptionsMenu: React.FC<SwitchOptionsMenuWindowProps> = ({ onInfoClick }) => {
     const style:React.CSSProperties = {
         ...infoWindowDefaultStyle, 
         position: 'absolute',
-        top: position.top,
-        left: position.left,
         display: 'flex',
         justifyContent: 'flex-start',
         flexDirection: 'column-reverse',
@@ -56,44 +51,27 @@ type SwitchProps = {
 }
 
 interface SwitchState {
-    showMenu: boolean;
     showInfo: boolean;
-    menuPosition: {top: number; left: number;}
-    infoPosition: {top: number; left: number;}
+    anchorEl: null | HTMLDivElement;
 }
 
 class Switch extends React.Component<GlobalStateContextType & SwitchProps, SwitchState>{
-    switchRef: React.RefObject<HTMLDivElement> = React.createRef();
 
     constructor(props: GlobalStateContextType & SwitchProps){
         super(props);
         this.state = {
-            showMenu: false,
             showInfo: false,
-            menuPosition: {
-                top: 0,
-                left: 0,
-            },
-            infoPosition: {
-                top: 0,
-                left: 0,
-            },
+            anchorEl: null,
         };
         this.handleClick = this.handleClick.bind(this);
+        this.setAnchorEl = this.setAnchorEl.bind(this);
     }
 
-    setShowMenu = (show: boolean) => {
+    setAnchorEl = (newElement: HTMLDivElement | null) => {
         this.setState(() => {
-            return { showMenu: show };
-        });
+            return { anchorEl: newElement };
+        })
     }
-
-    toggleShowMenu = () => {
-        this.setState((prevState) => {
-          const newShowMenu = !prevState.showMenu;
-          return { showMenu: newShowMenu };
-        });
-    };
 
     setShowInfo = (show: boolean) => {
         this.setState(() => {
@@ -108,88 +86,52 @@ class Switch extends React.Component<GlobalStateContextType & SwitchProps, Switc
         });
     };
 
-    handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, ref: any) => {
-        this.toggleShowMenu()
+    handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if(this.state.showInfo){
             this.setShowInfo(false)
         }
-        // Calculate positions based on the click event and the size of the Switch component
-        const switchRect = ref.current.getBoundingClientRect();
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
-
-        const menuPosition = {
-            top: switchRect.top, // Adjust as needed
-            left: switchRect.left, // Adjust as needed
-        };
-
-        const infoPosition = {
-            top: mouseY, // Adjust as needed
-            left: mouseX, // Adjust as needed
-        };
-        console.log(`swithcRect ${JSON.stringify(switchRect)}`)
-        console.log(`x: ${mouseX}, y: ${mouseY}`)
-        console.log(`menu position: ${JSON.stringify(menuPosition)}`)
-        console.log(`info position: ${JSON.stringify(infoPosition)}`)
-
-        this.setState((prevState) => {
-            return {
-                ...prevState,
-                menuPosition,
-                infoPosition,
-            }
-        });
+        this.setAnchorEl(this.state.anchorEl ? null : event.currentTarget);
     };
 
     shouldComponentUpdate(nextProps: SwitchProps, nextState: SwitchState) {
         if (
             nextProps.switch !== this.props.switch || 
-            nextProps.index !== this.props.index || 
-            nextState.showMenu !== this.state.showMenu) {
+            nextProps.index !== this.props.index  ||
+            nextState.showInfo !== this.state.showInfo ||
+            nextState.anchorEl !== this.state.anchorEl
+        ) {
           return true;
         }
         return false;
     }
-    
-    handleMouseLeave = () => {
-        this.setShowMenu(false);
-        this.setShowInfo(false);
-    }
 
     render(): ReactNode {
-        // const { globalState, setGlobalState } = this.props
-        const { showMenu, showInfo, menuPosition, infoPosition } = this.state
-        console.log('showMenu:', showMenu)
+        const { showInfo, anchorEl } = this.state
         const feedStr = this.props.switch.feed ? `feed: ${this.props.switch.feed}` : '';
         const dim = this.props.switch.dimensions
         const dimensionsStr =  dim ? `Dimensions: height ${dim.height} width ${dim.width} depth: ${dim.depth}`: '';
         const infoStr = `name: ${this.props.switch.name} description: ${this.props.switch.description} details: ${this.props.switch.prefix} ${feedStr} ${dimensionsStr}`;
+        const isMenuPopperOpen = Boolean(anchorEl);
+        const menuPopperId = isMenuPopperOpen ? `${this.props.switch.id}-menu-popper` : undefined;
         
         return (
             <Draggable draggableId={this.props.switch.id} index={this.props.index}>
             {(provided, snapshot) => (
-                <SwitchStyle onClick={(event) => this.handleClick(event, this.switchRef)}
-                onMouseLeave={this.handleMouseLeave}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                ref={provided.innerRef}
-                isDragging={snapshot.isDragging}
-                switchSize={this.props.switch.size}
-                >
-                    <div ref={this.switchRef}>
-                        {showMenu && (
-                            ReactDOM.createPortal(
-                                <SwitchOptionsMenu onInfoClick={this.toggleShowInfo} position={menuPosition}/>,
-                                document.body
-                        ))}
-                        {showInfo && (
-                            ReactDOM.createPortal(
-                                <InfoWindow infoStr={infoStr} position={infoPosition}/>,
-                                document.body
-                            )
-                        )}
-                    </div>
-                </SwitchStyle>      
+                <div>
+                    <SwitchStyle onClick={(event) => this.handleClick(event)}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                    isDragging={snapshot.isDragging}
+                    switchSize={this.props.switch.size}
+                    >  
+                    </SwitchStyle>
+                    <Popper id={menuPopperId} open={isMenuPopperOpen} anchorEl={anchorEl} placement='right' >
+                        <SwitchOptionsMenu onInfoClick={this.toggleShowInfo} />
+                    </Popper>
+
+
+                </div>
             )}
             </Draggable>
         );
