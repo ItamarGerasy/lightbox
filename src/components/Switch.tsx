@@ -73,9 +73,14 @@ export const Switch = (props: SwitchProps) => {
                     open={menuOpen}
                     anchorEl={menuAnchorRef.current}
                     role={undefined}
-                    placement="bottom-start"
+                    placement="left"
                     transition
                     disablePortal
+                    style={{
+                        zIndex: 9999, //  high z-index value
+                        width: 20,
+                        height: 20,
+                    }}
                     >
                     {({ TransitionProps, placement }) => (
                         <Grow
@@ -93,8 +98,8 @@ export const Switch = (props: SwitchProps) => {
                                 aria-labelledby="composition-button"
                                 onKeyDown={handleListKeyDown}
                             >
-                                <MenuItem><InfoIcon sx={{fontSize:12}}/></MenuItem>
-                                <MenuItem onClick={handleMenuClose} sx={{fontSize:12}}><DeleteIcon /></MenuItem>
+                                <MenuItem sx={{padding: 0, paddingBottom: 1, display: "flex", justifyContent:'center', flexDirection: 'row'}}><InfoIcon sx={{fontSize: 10, padding: 0}}/></MenuItem>
+                                <MenuItem sx={{padding: 0, display: "flex", justifyContent:'center', flexDirection: 'row'}} onClick={handleMenuClose} ><DeleteIcon sx={{fontSize: 10, padding: 0}}/></MenuItem>
                             </MenuList>
                             </ClickAwayListener>
                         </Paper>
