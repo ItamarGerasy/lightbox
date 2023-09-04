@@ -6,7 +6,6 @@ import { SwitchStyle } from './Switch.styles'
 import { withGlobalState } from './MainAppState';
 import { SwitchMenu } from './SwitchMenu'
 
-
 type SwitchProps = {
     switch: SwitchType,
     index: number
@@ -27,7 +26,6 @@ export const Switch = (props: SwitchProps) => {
             menuAnchorRef.current.contains(event.target as HTMLElement) &&
             menuElemetRef.current?.contains(event.target as HTMLElement)
         ) {
-            console.log("not gonna close")
             return;
         }
     
@@ -65,7 +63,7 @@ export const Switch = (props: SwitchProps) => {
                 switchSize={props.switch.size}
                 >  
                 </SwitchStyle>
-                <SwitchMenu menuOpen={menuOpen} menuAnchorRef={menuAnchorRef} handleMenuClose={handleMenuClose} handleListKeyDown={handleListKeyDown}/>
+                <SwitchMenu menuOpen={menuOpen} menuAnchorRef={menuAnchorRef} handleMenuClose={handleMenuClose} handleListKeyDown={handleListKeyDown} switch={props.switch}/>
             </div>
         )}
         </Draggable>
