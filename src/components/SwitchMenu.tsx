@@ -1,5 +1,5 @@
 // SwitchMenu.tsx
-import React from 'react'
+import React, { useContext } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info'
 import Popper from '@mui/material/Popper';
@@ -11,6 +11,7 @@ import MenuList from '@mui/material/MenuList';
 import { RefObject, LegacyRef } from 'react';
 import { Switch as SwitchType } from './typeForComponents'
 import { InfoWindowStyle } from './SwitchMenu.styles'
+import { useGlobalState } from './MainAppState';
 
 type SwitchMenuProps = {
     menuOpen: boolean;
@@ -22,6 +23,7 @@ type SwitchMenuProps = {
 }
 
 export const SwitchMenu = (props: SwitchMenuProps) => {
+    const {globalState, setGlobalState} = useGlobalState()
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);
     const id = open ? 'switch-info-popper' : undefined;
@@ -30,7 +32,40 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
         setInfoAnchorEl(null)
     }
 
+    const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
+        let parentModule
+        const switchId = props.switch.id
+        const newGlobalState = {...globalState}
+
+        console.log(`switch to remove: ${switchId}`)
+        // validating switch id exists
+        if ( !(switchId in newGlobalState.switches)){
+            throw new Error(`switch ID ${switchId} doesn't exist`);
+        }
+        // removing switch from the switches map
+        delete newGlobalState.switches[switchId]
+
+        // finding the parent module
+        // eslint-disable-next-line
+        for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
+            console.log(JSON.stringify(moduleObj))
+            if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
+                parentModule = moduleObj
+            }
+        }
+        if (!parentModule){
+            throw new Error(`no parent module found for switch: ${switchId}`);
+        }
+
+        // removing switch from the module switches list
+        const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
+            parentModule.switchesOrderedList.splice(switchIndex, 1)
+
+        setGlobalState(newGlobalState)
+    }
+
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        console.log(event.currentTarget.parentElement?.parentElement?.parentElement?.parentElement)
         props.handleMenuClose(event)
         setInfoAnchorEl(infoAnchorEl ? null : event.currentTarget);
     };
@@ -60,6 +95,7 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
                     width: 20,
                     height: 20,
                     padding: 0,
+                    margin: 0,
                 }}
                 >
                 {({ TransitionProps, placement }) => (
@@ -82,8 +118,14 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
                                 sx={{padding: 0, paddingBottom: 1, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
                                 onClick={handleClick}
                             >
-                                <div><InfoIcon sx={{fontSize: 10, padding: 0}} /></div></MenuItem>
-                            <MenuItem sx={{padding: 0, display: "flex", justifyContent:'center', flexDirection: 'row'}}  ><DeleteIcon sx={{fontSize: 10, padding: 0}}/></MenuItem>
+                                <InfoIcon sx={{fontSize: 10, padding: 0}} />
+                            </MenuItem>
+                            <MenuItem 
+                                sx={{padding: 0, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
+                                onClick={handleDelete}
+                            >
+                                <DeleteIcon sx={{fontSize: 10, padding: 0}}/>
+                            </MenuItem>
                         </MenuList>
                         </ClickAwayListener>
                     </Paper>

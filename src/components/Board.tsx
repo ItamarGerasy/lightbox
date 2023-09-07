@@ -6,6 +6,37 @@ import { StrictModeDroppable } from './StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 
+
+
+// const handleSwitchDelete: RemovingItemsType['handleSwitchDelete'] = 
+//   (event: React.MouseEvent<HTMLElement>, switchId: string) => {
+
+//     let parentModule
+//     console.log(`switch to remove: ${switchId}`)
+//     // validating switch id exists
+//     if ( !(switchId in globalState.switches)){
+//         throw new Error(`switch ID ${switchId} doesn't exist`);
+//     }
+//     // removing switch from the switches map
+//     delete globalState.switches[switchId]
+
+//     // finding the parent module
+//     // eslint-disable-next-line
+//     for (const [moduleId, moduleObj] of Object.entries(globalState.modules)) {
+//         if(moduleObj.switchesOrderedList.indexOf(switchId) >= 0 ){
+//             parentModule = moduleObj
+//         }
+//     }
+//     if (!parentModule){
+//         throw new Error(`no parent module found for switch: ${switchId}`);
+//     }
+
+//     // removing switch from the module switches list
+//     const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
+//     parentModule.switchesOrderedList.splice(switchIndex, 1)
+//   };
+
+
 const Board: React.FC = () => {
   const { globalState, setGlobalState } = useGlobalState()
 
@@ -170,13 +201,13 @@ const Board: React.FC = () => {
     <DragDropContext onDragEnd={onDragEnd}>
       <StrictModeDroppable droppableId="board" type='compartment' direction="horizontal">
         {(provided) => (
-          <BoardStyle 
-          ref={provided.innerRef} 
-          {...provided.droppableProps}
-          >
-            {generateCompartmentsFromIndexList()}
-            {provided.placeholder}
-          </BoardStyle>
+            <BoardStyle 
+            ref={provided.innerRef} 
+            {...provided.droppableProps}
+            >
+              {generateCompartmentsFromIndexList()}
+              {provided.placeholder}
+            </BoardStyle>
         )}
       </StrictModeDroppable>
     </DragDropContext>

@@ -54,7 +54,7 @@ export const Switch = (props: SwitchProps) => {
     return  (
         <Draggable draggableId={props.switch.id} index={props.index}>
         {(provided, snapshot) => (
-            <div onClick={handleToggleMenu} ref={menuAnchorRef}>
+            <div onClick={handleToggleMenu} ref={menuAnchorRef} style={{margin: 0}}>
                 <SwitchStyle
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
