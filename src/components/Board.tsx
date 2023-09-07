@@ -191,7 +191,6 @@ const Board: React.FC = () => {
         };
 
         setGlobalState(newState);
-        return;
       }
     }
     // end of drop logic for type 'switch'
