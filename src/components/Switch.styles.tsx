@@ -27,7 +27,6 @@ export const SwitchStyle = styled.div((props: SwitchStyleProps) => ({
     position: 'relative',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    height: "100%",
     width: `${15*props.switchSize}px`, // Assuming each SwitchSpot has a width of 50px
     backgroundImage: `url('${getSwitchImg(props.switchSize)}')`, // Set the background image
     backgroundRepeat: "no-repeat",

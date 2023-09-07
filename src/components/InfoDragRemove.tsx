@@ -4,6 +4,7 @@ import { DraggableProvided } from 'react-beautiful-dnd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { Info } from './Info'
+import InfoIcon from '@mui/icons-material/Info'
 
 type InfoDragRemoveProps = {
     provided: DraggableProvided;
@@ -18,11 +19,11 @@ export const InfoDragRemove: React.FC<InfoDragRemoveProps> = ({ provided, infoSt
     // };
 
     return (
-        <div style={{backgroundColor: 'lightblue'}}>
-            <div {...provided.dragHandleProps}>
+        <div style={{backgroundColor: 'lightblue', display: 'flex', flexDirection: 'column', height: '100%'}}>
+            <div {...provided.dragHandleProps} style={{display: 'flex'}}>
                 <DragHandleIcon sx={{ fontSize: '15px' }} />
             </div>
-            <Info infoStr={infoStr} />
+            <InfoIcon sx={{ fontSize: '15px' }}/>
             <DeleteIcon sx={{ fontSize: '15px' }} />
         </div>
     );
