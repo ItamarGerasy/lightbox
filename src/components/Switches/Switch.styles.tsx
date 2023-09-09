@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
-import switch1Img from "../pictures/1switch-frontview.png"
-import switch2Img from "../pictures/2switch-fronview.png"
-import switch3Img from "../pictures/3switch-frontview.png"
-import switch4Img from "../pictures/4switch-frontview.png"
+import switch1Img from "../../pictures/1switch-frontview.png"
+import switch2Img from "../../pictures/2switch-fronview.png"
+import switch3Img from "../../pictures/3switch-frontview.png"
+import switch4Img from "../../pictures/4switch-frontview.png"
 
 function getSwitchImg(size: number){
     switch(size){

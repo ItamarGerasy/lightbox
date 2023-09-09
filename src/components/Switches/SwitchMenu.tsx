@@ -1,5 +1,5 @@
 // SwitchMenu.tsx
-import React, { useContext } from 'react'
+import React from 'react'
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info'
 import Popper from '@mui/material/Popper';

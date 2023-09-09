@@ -1,7 +1,7 @@
 // InputForm.tsx
 import { InputAccordion } from "./InputAccordion";
 import { useState } from "react";
-import { SwitchDetails, SwitchDetailsArrays } from "./typeForComponents";
+import { SwitchDetails, SwitchDetailsArrays } from "../general/typeForComponents";
 import { FeedInput } from "./FeedInput";
 
 export const InputForm = () => {

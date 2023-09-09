@@ -4,36 +4,24 @@ import { Compartment } from './Compartment';
 import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
-import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult, OnDragEndResponder } from 'react-beautiful-dnd';
 
 const Board: React.FC = () => {
   const { globalState, setGlobalState } = useGlobalState()
 
-  function generateCompartmentsFromIndexList(): React.ReactNode{
+  const generateCompartmentsFromIndexList = (): React.ReactNode => {
     const compartments = globalState.compartments
     return globalState.compartmentsOrder.map((compartmentId, index) => (
       <Compartment key={compartmentId} compartment={compartments[compartmentId]} index={index} />
     ));
   }
 
-  const onDragEnd:OnDragEndResponder = (result) => {
-    const { destination, source, draggableId, type } = result;
+  const droppedCompartment = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
 
-    if (!destination) {
-      return;
-    }
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
-
-    // drop logic for type 'compartment'
-    if (type === 'compartment'){
-      const newCompartmentsOrder = Array.from(globalState.compartmentsOrder);
+    const newCompartmentsOrder = Array.from(globalState.compartmentsOrder);
       newCompartmentsOrder.splice(source.index, 1);
+      // @ts-ignore destination might be null, we verified it before
       newCompartmentsOrder.splice(destination.index, 0, draggableId);
 
       // Update the global state with the new order
@@ -41,13 +29,16 @@ const Board: React.FC = () => {
         ...prevState,
         compartmentsOrder: newCompartmentsOrder,
       }));  
+  }
+
+  const droppedModule = (result: DropResult) => {
+    const { destination, source, draggableId} = result;
+
+    if(!destination){
       return;
     }
-    // end of drop logic for type 'compartment'
 
-    // drop logic for type 'module'
-    if (type === 'module'){
-      const homeCompartment = globalState.compartments[source.droppableId];
+    const homeCompartment = globalState.compartments[source.droppableId];
       const homeModulesList = homeCompartment.modulesOrderedList
 
       const foreignCompartment = globalState.compartments[destination.droppableId];
@@ -102,12 +93,16 @@ const Board: React.FC = () => {
         setGlobalState(newState);
         return;
       }
-    }
-    // end of drop logic for type 'module'
+  }
 
-    // drop logic for type 'switch'
-    if (type === 'switch'){
-      const homeModule = globalState.modules[source.droppableId]
+  const droppedSwitch = (result: DropResult) => {
+    const { destination, source, draggableId} = result;
+
+    if(!destination){
+      return;
+    }
+
+    const homeModule = globalState.modules[source.droppableId]
       const homeSwitchesList = homeModule.switchesOrderedList;
 
       const foreignModule = globalState.modules[destination.droppableId];
@@ -161,8 +156,38 @@ const Board: React.FC = () => {
 
         setGlobalState(newState);
       }
+  }
+
+  const onDragEnd:OnDragEndResponder = (result) => {
+    const { destination, source, draggableId, type } = result;
+
+    if (!destination) {
+      return;
     }
-    // end of drop logic for type 'switch'
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    // drop logic for type 'compartment'
+    if (type === 'compartment'){
+      droppedCompartment(result);
+      return;
+    }
+
+    // drop logic for type 'module'
+    if (type === 'module'){
+      droppedModule(result);
+      return;
+    }
+
+    // drop logic for type 'switch'
+    if (type === 'switch'){
+      droppedSwitch(result)
+    }
   }
 
   return (
