@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import BoltIcon from "@mui/icons-material/Bolt";
 import Button from "@mui/material/Button";
-import { SwitchDetails, SwitchDetailsArrays } from "./typeForComponents";
+import { SwitchDetails, SwitchDetailsArrays } from "../general/typeForComponents";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { InputTextFields } from "./InputTextFields";
 import { SelectWrapper } from "./SelectWrapper";

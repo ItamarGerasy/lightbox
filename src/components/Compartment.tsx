@@ -3,9 +3,9 @@ import { CompartmentStyle, ModulesList } from './Compartmen.styles'
 import Module from './Module';
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { StrictModeDroppable } from './StrictModeDroppable'
+import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
-import { Compartment as CompartmentType, Modules } from './typeForComponents';
+import { Compartment as CompartmentType, Modules } from './general/typeForComponents';
 import { Title } from './GeneralStyles.styles'
 
 type InnerModulesListProps = {

@@ -1,11 +1,11 @@
 // Module.tsx
 import { ModuleStyle } from "./Module.styles";
-import { Module as ModuleType, Switches, GlobalStateContextType } from "./typeForComponents";
+import { Module as ModuleType, Switches, GlobalStateContextType } from "./general/typeForComponents";
 import { withGlobalState } from "./MainAppState";
 import Switch from "./Switch";
 import React from 'react'
 import { Draggable } from 'react-beautiful-dnd';
-import { StrictModeDroppable } from "./StrictModeDroppable";
+import { StrictModeDroppable } from "./general/StrictModeDroppable";
 import { SwitchesList } from "./Module.styles";
 import { InfoDragRemove } from './InfoDragRemove'
 

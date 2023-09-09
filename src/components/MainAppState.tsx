@@ -1,6 +1,6 @@
 // MainAppState.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Compartments, Modules, Switches, GlobalState, GlobalStateContextType } from './typeForComponents';
+import { Compartments, Modules, Switches, GlobalState, GlobalStateContextType } from './general/typeForComponents';
 
 export const initialAppGlobalState:GlobalState = {
   boardWidth: 200,
