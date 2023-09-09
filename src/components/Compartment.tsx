@@ -6,7 +6,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
 import { Compartment as CompartmentType, Modules } from './general/typeForComponents';
-import { Title } from './GeneralStyles.styles'
+import { Title } from './general/GeneralStyles.styles'
 
 type InnerModulesListProps = {
   modulesOrderedList: Array<string>;

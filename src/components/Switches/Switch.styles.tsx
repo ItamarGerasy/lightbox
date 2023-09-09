@@ -39,4 +39,9 @@ export const SwitchStyle = styled.div((props: SwitchStyleProps) => ({
     border: "1px solid black",
 }));
 
+export const SwitchWrapper = styled.div({
+    margin: 0, 
+    display:'flex',
+})
+
 

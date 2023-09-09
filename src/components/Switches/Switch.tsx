@@ -1,9 +1,9 @@
 // Switch.tsx
 import React from 'react'
-import { Switch as SwitchType } from './typeForComponents'
+import { Switch as SwitchType } from '../general/typeForComponents'
 import { Draggable } from "react-beautiful-dnd";
-import { SwitchStyle } from './Switch.styles'
-import { withGlobalState } from './MainAppState';
+import { SwitchStyle, SwitchWrapper } from './Switch.styles'
+import { withGlobalState } from '../MainAppState';
 import { SwitchMenu } from './SwitchMenu'
 
 type SwitchProps = {
@@ -54,7 +54,7 @@ export const Switch = (props: SwitchProps) => {
     return  (
         <Draggable draggableId={props.switch.id} index={props.index}>
         {(provided, snapshot) => (
-            <div onClick={handleToggleMenu} ref={menuAnchorRef} style={{margin: 0, display:'flex'}}>
+            <SwitchWrapper onClick={handleToggleMenu} ref={menuAnchorRef}>
                 <SwitchStyle
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
@@ -64,7 +64,7 @@ export const Switch = (props: SwitchProps) => {
                 >  
                 </SwitchStyle>
                 <SwitchMenu menuOpen={menuOpen} menuAnchorRef={menuAnchorRef} handleMenuClose={handleMenuClose} handleListKeyDown={handleListKeyDown} switch={props.switch}/>
-            </div>
+            </SwitchWrapper>
         )}
         </Draggable>
     )
