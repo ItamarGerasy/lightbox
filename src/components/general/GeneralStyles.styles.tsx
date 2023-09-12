@@ -9,12 +9,16 @@ export const Title = styled.h6(() => ({
 export const FlexBox = styled.div({
     display: 'flex',
     flex: 1,
+    height: '100%',
+    width: '100%'
 })
 
 export const ColumnFlexBox = styled.div({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
+    height: '100%',
+    width: '100%'
 })
 
 export const InfoWindowStyle = styled.div({
