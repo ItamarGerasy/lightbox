@@ -6,7 +6,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
 import { Compartment as CompartmentType, Modules } from './general/typeForComponents';
-import { FlexBox, Title } from './general/GeneralStyles.styles'
+import { ColumnFlexBox, Title } from './general/GeneralStyles.styles'
 
 type InnerModulesListProps = {
   modulesOrderedList: Array<string>;
@@ -15,11 +15,11 @@ type InnerModulesListProps = {
 
 const InnerModulesList: React.FC<InnerModulesListProps> = ( { modules, modulesOrderedList } ) => {
     return (
-      <FlexBox>
+      <ColumnFlexBox>
         {modulesOrderedList.map((moduleId: string, index: number) => (
           <Module key={moduleId} module={modules[moduleId]} index={index} />)
         )}
-      </FlexBox>
+      </ColumnFlexBox>
     )
 }
 
