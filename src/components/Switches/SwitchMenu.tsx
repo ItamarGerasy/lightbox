@@ -10,8 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import { RefObject, LegacyRef } from 'react';
 import { Switch as SwitchType } from '../general/typeForComponents'
-import { InfoWindowStyle } from './SwitchMenu.styles'
 import { useGlobalState } from '../MainAppState';
+import { FlexBox, InfoWindowStyle, smallIcon } from '../general/GeneralStyles.styles';
 
 type SwitchMenuProps = {
     menuOpen: boolean;
@@ -65,7 +65,6 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
     }
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(event.currentTarget.parentElement?.parentElement?.parentElement?.parentElement)
         props.handleMenuClose(event)
         setInfoAnchorEl(infoAnchorEl ? null : event.currentTarget);
     };
@@ -82,7 +81,7 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
     }
 
     return (
-        <div ref={infoAnchorEl as LegacyRef<HTMLDivElement> | undefined }>
+        <FlexBox ref={infoAnchorEl as LegacyRef<HTMLDivElement> | undefined }>
             <Popper
                 open={props.menuOpen}
                 anchorEl={props.menuAnchorRef.current}
@@ -118,13 +117,13 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
                                 sx={{padding: 0, paddingBottom: 1, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
                                 onClick={handleClick}
                             >
-                                <InfoIcon sx={{fontSize: 10, padding: 0}} />
+                                <InfoIcon sx={smallIcon} />
                             </MenuItem>
                             <MenuItem 
                                 sx={{padding: 0, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
                                 onClick={handleDelete}
                             >
-                                <DeleteIcon sx={{fontSize: 10, padding: 0}}/>
+                                <DeleteIcon sx={smallIcon}/>
                             </MenuItem>
                         </MenuList>
                         </ClickAwayListener>
@@ -139,6 +138,6 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
                     </InfoWindowStyle>               
                 </ClickAwayListener>
             </Popper>
-        </div>
+        </FlexBox>
     )
 }

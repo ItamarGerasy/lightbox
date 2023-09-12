@@ -48,10 +48,6 @@ class Module extends React.Component<GlobalStateContextType & ModuleProps>{
   render(): React.ReactNode {
     const { globalState } = this.props;
     const module = this.props.module
-    const dimensions = module.dimensions
-    const moduleDimensionsString = dimensions ? `width:${dimensions.width} height: ${dimensions.height} depth:${dimensions.depth}` : '';
-    const modleInfoString = `Name: ${module.name} \n Feed: ${module.feed} \n Switches: ${module.switchesOrderedList.length} \n ${moduleDimensionsString}`;
-    
     
     return (
       <Draggable draggableId={module.id} index={this.props.index}>
@@ -62,7 +58,7 @@ class Module extends React.Component<GlobalStateContextType & ModuleProps>{
             ref={provided.innerRef}
             isDragging={snapshot.isDragging}
           >
-            <InfoDragRemove provided={provided} infoStr={modleInfoString} />
+            <InfoDragRemove provided={provided} module={this.props.module} />
             {/* dnd droppable component for modules */}
             <StrictModeDroppable droppableId={module.id} type='switch' direction="horizontal">
               {(provided, snapshot) => {
