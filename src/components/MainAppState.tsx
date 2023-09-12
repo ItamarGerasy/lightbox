@@ -120,35 +120,35 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
 
   const actions = {
     deleteSwitch: (switchId: string) => {
-    let parentModule
-    const newGlobalState = {...globalState}
-  
-    console.log(`switch to remove: ${switchId}`)
-    // validating switch id exists
-    if ( !(switchId in newGlobalState.switches)){
-        throw new Error(`switch ID ${switchId} doesn't exist`);
+      let parentModule
+      const newGlobalState = {...globalState}
+    
+      console.log(`switch to remove: ${switchId}`)
+      // validating switch id exists
+      if ( !(switchId in newGlobalState.switches)){
+          throw new Error(`switch ID ${switchId} doesn't exist`);
+      }
+      // removing switch from the switches map
+      delete newGlobalState.switches[switchId]
+    
+      // finding the parent module
+      // eslint-disable-next-line
+      for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
+          console.log(JSON.stringify(moduleObj))
+          if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
+              parentModule = moduleObj
+          }
+      }
+      if (!parentModule){
+          throw new Error(`no parent module found for switch: ${switchId}`);
+      }
+    
+      // removing switch from the module switches list
+      const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
+          parentModule.switchesOrderedList.splice(switchIndex, 1)
+    
+      setGlobalState(newGlobalState)
     }
-    // removing switch from the switches map
-    delete newGlobalState.switches[switchId]
-  
-    // finding the parent module
-    // eslint-disable-next-line
-    for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
-        console.log(JSON.stringify(moduleObj))
-        if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
-            parentModule = moduleObj
-        }
-    }
-    if (!parentModule){
-        throw new Error(`no parent module found for switch: ${switchId}`);
-    }
-  
-    // removing switch from the module switches list
-    const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
-        parentModule.switchesOrderedList.splice(switchIndex, 1)
-  
-    setGlobalState(newGlobalState)
-  }
 }
   
   return (
