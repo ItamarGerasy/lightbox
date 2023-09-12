@@ -6,28 +6,21 @@ import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
 import { Compartment as CompartmentType, Modules } from './general/typeForComponents';
-import { Title } from './general/GeneralStyles.styles'
+import { FlexBox, Title } from './general/GeneralStyles.styles'
 
 type InnerModulesListProps = {
   modulesOrderedList: Array<string>;
   modules: Modules;
 }
 
-class InnerModulesList extends React.Component<InnerModulesListProps> {
-  
-  shouldComponentUpdate(nextProps: InnerModulesListProps) {
-    if (nextProps === this.props) {
-      return false;
-    }
-    return true;
-  }
-
-  render(): React.ReactNode{
-    const { modules, modulesOrderedList } = this.props;
-
-    return modulesOrderedList.map((moduleId, index) => (
-      <Module key={moduleId} module={modules[moduleId]} index={index} />))
-  }
+const InnerModulesList: React.FC<InnerModulesListProps> = ( { modules, modulesOrderedList } ) => {
+    return (
+      <FlexBox>
+        {modulesOrderedList.map((moduleId: string, index: number) => (
+          <Module key={moduleId} module={modules[moduleId]} index={index} />)
+        )}
+      </FlexBox>
+    )
 }
 
 interface CompartmentProps {
