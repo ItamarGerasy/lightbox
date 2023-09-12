@@ -60,7 +60,6 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
                 transition
                 disablePortal
                 style={{
-                    zIndex: 9999, //  high z-index value
                     width: 20,
                     height: 20,
                     padding: 0,
@@ -82,15 +81,16 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
                             id="composition-menu"
                             aria-labelledby="composition-button"
                             onKeyDown={props.handleListKeyDown}
+                            style={{padding: 0}}
                         >
                             <MenuItem 
-                                sx={{padding: 0, paddingBottom: 1, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
+                                sx={{padding: 0, paddingTop: "4px", paddingBottom: 1, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
                                 onClick={handleClick}
                             >
                                 <InfoIcon sx={smallIcon} />
                             </MenuItem>
                             <MenuItem 
-                                sx={{padding: 0, display: "flex", justifyContent:'center', flexDirection: 'row'}} 
+                                sx={{padding: 0, paddingBottom: "4px", display: "flex", justifyContent:'center', flexDirection: 'row'}} 
                                 onClick={handleDelete}
                             >
                                 <DeleteIcon sx={smallIcon}/>
