@@ -71,5 +71,6 @@ export type Module = {
     setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
     actions: {
       deleteSwitch: (switchId: string) => void;
+      deleteModuleWithSwitches: (moduleId: string) => void;
     }
   }

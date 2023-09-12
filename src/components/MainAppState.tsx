@@ -123,7 +123,6 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       let parentModule
       const newGlobalState = {...globalState}
     
-      console.log(`switch to remove: ${switchId}`)
       // validating switch id exists
       if ( !(switchId in newGlobalState.switches)){
           throw new Error(`switch ID ${switchId} doesn't exist`);
@@ -134,7 +133,6 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       // finding the parent module
       // eslint-disable-next-line
       for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
-          console.log(JSON.stringify(moduleObj))
           if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
               parentModule = moduleObj
           }
@@ -148,8 +146,43 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
           parentModule.switchesOrderedList.splice(switchIndex, 1)
     
       setGlobalState(newGlobalState)
-    }
-}
+    },
+    deleteModuleWithSwitches: (moduleId: string) => {
+      let parentCompartment
+      const module = globalState.modules[moduleId]
+      const newGlobalState = {...globalState}
+      const switchesToDelete = module.switchesOrderedList
+
+      // validating module id exists
+      if ( !(moduleId in newGlobalState.modules)){
+          throw new Error(`module ID ${moduleId} doesn't exist`);
+      }
+      // removing module from the modules map
+      delete newGlobalState.modules[moduleId]
+
+      // finding the parent compartment
+      // eslint-disable-next-line
+      for (const [compartmentId, compartmentObj] of Object.entries(newGlobalState.compartments)) {
+          if(compartmentObj.modulesOrderedList.indexOf(moduleId) !== -1){
+              parentCompartment = compartmentObj
+          }
+      }
+      if (!parentCompartment){
+          throw new Error(`no parent compartment found for module: ${moduleId}`);
+      }
+
+      // removing module ID from the compratment modules list
+      const moduleIndex = parentCompartment.modulesOrderedList.indexOf(moduleId)
+          parentCompartment.modulesOrderedList.splice(moduleIndex, 1)
+
+      // removing switches from global state
+      for( const switchId in switchesToDelete ){
+          delete newGlobalState.switches[switchId]
+      }
+
+      setGlobalState(newGlobalState)
+    },
+  }
   
   return (
     <GlobalStateContext.Provider value={{ globalState, setGlobalState, actions }}>

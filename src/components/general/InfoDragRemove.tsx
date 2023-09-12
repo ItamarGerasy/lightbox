@@ -16,7 +16,8 @@ type InfoDragRemoveProps = {
 };
   
 export const InfoDragRemove: React.FC<InfoDragRemoveProps> = ({module, provided}) => {
-    const {globalState, setGlobalState} = useGlobalState();
+    const {globalState, actions} = useGlobalState();
+    const InfoAnchorRef = React.useRef<HTMLDivElement>(null);
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);
     const id = open ? 'switch-info-popper' : undefined;
@@ -36,46 +37,10 @@ export const InfoDragRemove: React.FC<InfoDragRemoveProps> = ({module, provided}
         return modleInfoString
     };
 
-    const handleModuleAndSwitchesDelete = (event: React.MouseEvent<HTMLElement>) => {
-        let parentCompartment
-        const moduleId = module.id
-        const newGlobalState = {...globalState}
-        const switchesToDelete = module.switchesOrderedList
-
-        console.log(`switch to remove: ${moduleId}`)
-        // validating module id exists
-        if ( !(moduleId in newGlobalState.modules)){
-            throw new Error(`module ID ${moduleId} doesn't exist`);
-        }
-        // removing switch from the switches map
-        delete newGlobalState.modules[moduleId]
-
-        // finding the parent module
-        // eslint-disable-next-line
-        for (const [compartmentId, compartmentObj] of Object.entries(newGlobalState.compartments)) {
-            console.log(JSON.stringify(compartmentObj))
-            if(compartmentObj.modulesOrderedList.indexOf(moduleId) !== -1){
-                parentCompartment = compartmentObj
-            }
-        }
-        if (!parentCompartment){
-            throw new Error(`no parent module found for switch: ${moduleId}`);
-        }
-
-        // removing switch from the module switches list
-        const switchIndex = parentCompartment.modulesOrderedList.indexOf(moduleId)
-            parentCompartment.modulesOrderedList.splice(switchIndex, 1)
-
-        // removing switches from global state
-        for( const switchId in switchesToDelete ){
-            delete newGlobalState.switches[switchId]
-        }
-
-        setGlobalState(newGlobalState)
-    };
+    const handleModuleAndSwitchesDelete = () =>  actions.deleteModuleWithSwitches(module.id)
 
     return (
-        <ColumnFlexBox style={{backgroundColor: 'lightblue'}} ref={infoAnchorEl as LegacyRef<HTMLDivElement> | undefined }>
+        <ColumnFlexBox style={{backgroundColor: 'lightblue'}} ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
             <FlexBox {...provided.dragHandleProps}>
                 <DragHandleIcon sx={mediumIcon} />
             </FlexBox>
