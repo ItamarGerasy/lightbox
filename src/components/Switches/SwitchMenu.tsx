@@ -23,7 +23,7 @@ type SwitchMenuProps = {
 }
 
 export const SwitchMenu = (props: SwitchMenuProps) => {
-    const {globalState, setGlobalState} = useGlobalState()
+    const {actions} = useGlobalState()
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);
     const id = open ? 'switch-info-popper' : undefined;
@@ -32,37 +32,7 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
         setInfoAnchorEl(null)
     }
 
-    const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
-        let parentModule
-        const switchId = props.switch.id
-        const newGlobalState = {...globalState}
-
-        console.log(`switch to remove: ${switchId}`)
-        // validating switch id exists
-        if ( !(switchId in newGlobalState.switches)){
-            throw new Error(`switch ID ${switchId} doesn't exist`);
-        }
-        // removing switch from the switches map
-        delete newGlobalState.switches[switchId]
-
-        // finding the parent module
-        // eslint-disable-next-line
-        for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
-            console.log(JSON.stringify(moduleObj))
-            if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
-                parentModule = moduleObj
-            }
-        }
-        if (!parentModule){
-            throw new Error(`no parent module found for switch: ${switchId}`);
-        }
-
-        // removing switch from the module switches list
-        const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
-            parentModule.switchesOrderedList.splice(switchIndex, 1)
-
-        setGlobalState(newGlobalState)
-    }
+    const handleDelete = () => actions.deleteSwitch(props.switch.id)
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         props.handleMenuClose(event)

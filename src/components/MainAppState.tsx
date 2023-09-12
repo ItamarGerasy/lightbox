@@ -1,4 +1,3 @@
-// MainAppState.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Compartments, Modules, Switches, GlobalState, GlobalStateContextType } from './general/typeForComponents';
 
@@ -119,8 +118,41 @@ interface GlobalStateProviderProps {
 export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ children }) => {
   const [globalState, setGlobalState] = useState<GlobalState>(initialAppGlobalState);
 
+  const actions = {
+    deleteSwitch: (switchId: string) => {
+    let parentModule
+    const newGlobalState = {...globalState}
+  
+    console.log(`switch to remove: ${switchId}`)
+    // validating switch id exists
+    if ( !(switchId in newGlobalState.switches)){
+        throw new Error(`switch ID ${switchId} doesn't exist`);
+    }
+    // removing switch from the switches map
+    delete newGlobalState.switches[switchId]
+  
+    // finding the parent module
+    // eslint-disable-next-line
+    for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
+        console.log(JSON.stringify(moduleObj))
+        if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
+            parentModule = moduleObj
+        }
+    }
+    if (!parentModule){
+        throw new Error(`no parent module found for switch: ${switchId}`);
+    }
+  
+    // removing switch from the module switches list
+    const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
+        parentModule.switchesOrderedList.splice(switchIndex, 1)
+  
+    setGlobalState(newGlobalState)
+  }
+}
+  
   return (
-    <GlobalStateContext.Provider value={{ globalState, setGlobalState }}>
+    <GlobalStateContext.Provider value={{ globalState, setGlobalState, actions }}>
       {children}
     </GlobalStateContext.Provider>
   );
@@ -138,8 +170,8 @@ export const withGlobalState = <P extends object>(
   WrappedComponent: React.ComponentType<P & GlobalStateContextType>
 ) => {
   return (props: P) => {
-    const { globalState , setGlobalState } = useGlobalState();
+    const { globalState , setGlobalState, actions} = useGlobalState();
 
-    return <WrappedComponent globalState={globalState} setGlobalState={setGlobalState} {...props} />;
+    return <WrappedComponent globalState={globalState} setGlobalState={setGlobalState} actions={actions} {...props} />;
   };
 };

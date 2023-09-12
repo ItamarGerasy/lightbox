@@ -69,4 +69,7 @@ export type Module = {
   export type GlobalStateContextType = {
     globalState: GlobalState;
     setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
+    actions: {
+      deleteSwitch: (switchId: string) => void;
+    }
   }
