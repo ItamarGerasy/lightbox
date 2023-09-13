@@ -59,6 +59,9 @@ const Module: React.FC<ModuleProps> = ({module, index}) => {
           {/* dnd droppable component for modules */}
           <StrictModeDroppable droppableId={module.id} type='switch' direction="horizontal">
             {(provided, snapshot) => {
+              // the next code line is used to cancel isHover in case the hover is for DND purpose 
+              // eslint-disable-next-line no-lone-blocks 
+              {if(snapshot.isDraggingOver){setIsHovered(false)}}
               return(
                 <SwitchesList ref={provided.innerRef} {...provided.droppableProps} isDraggingOver={snapshot.isDraggingOver}>
                   <InnerSwitchesList switches={globalState.switches} switchesOrderedList={module.switchesOrderedList} />
