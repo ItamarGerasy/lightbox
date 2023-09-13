@@ -44,7 +44,7 @@ export const Compartment: React.FC<CompartmentProps> = ({ compartment, index }) 
         >
           {/* dragged component handle, which is the title of the compratment   */}
           <Title {...provided.dragHandleProps}>
-            {compartment.id}
+            {compartment.name}
           </Title>
 
           {/* dnd droppable component for modules */}

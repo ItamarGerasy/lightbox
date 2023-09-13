@@ -1,4 +1,4 @@
-// InfoDragRemove.tsx
+// ModuleMenu.tsx
 import React, { LegacyRef } from 'react'
 import { DraggableProvided } from 'react-beautiful-dnd';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -6,17 +6,17 @@ import Popper from '@mui/material/Popper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import InfoIcon from '@mui/icons-material/Info'
-import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from '../general/GeneralStyles.styles'
+import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './GeneralStyles.styles'
 import { Module as ModuleType } from './typeForComponents';
 import { useGlobalState } from '../MainAppState';
 
-type InfoDragRemoveProps = {
+type ModuleMenuProps = {
     provided: DraggableProvided;
     module: ModuleType;
 };
   
-export const InfoDragRemove: React.FC<InfoDragRemoveProps> = ({module, provided}) => {
-    const {globalState, actions} = useGlobalState();
+export const ModuleMenu: React.FC<ModuleMenuProps> = ({module, provided}) => {
+    const {actions} = useGlobalState();
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null);
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);

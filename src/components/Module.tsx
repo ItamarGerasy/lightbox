@@ -3,12 +3,13 @@ import { ModuleStyle } from "./Module.styles";
 import { Module as ModuleType, Switches } from "./general/typeForComponents";
 import { useGlobalState, withGlobalState } from "./MainAppState";
 import Switch from "./Switches/Switch";
-import React from 'react'
+import React, { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from "./general/StrictModeDroppable";
 import { SwitchesList } from "./Module.styles";
-import { InfoDragRemove } from './general/InfoDragRemove'
+import { ModuleMenu } from './general/ModuleMenu'
 import { FlexBox } from "./general/GeneralStyles.styles";
+import Collapse from '@mui/material/Collapse';
 
 type InnerSwitchesListProps = {
   switchesOrderedList: Array<string>;
@@ -30,18 +31,31 @@ type ModuleProps = {
 }
 
 const Module: React.FC<ModuleProps> = ({module, index}) => {
+  const [isHovered, setIsHovered] = useState(false);
   const { globalState } = useGlobalState()
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
   
   return (
-    <Draggable draggableId={module.id} index={index}>
+    <Draggable draggableId={module.id} index={index} >
       {(provided, snapshot) => (
         // dnd droppable component for switches
         <ModuleStyle  
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           {...provided.draggableProps}
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          <InfoDragRemove provided={provided} module={module} />
+          <Collapse orientation="horizontal" in={isHovered}>
+            <ModuleMenu provided={provided} module={module} />
+          </Collapse>
           {/* dnd droppable component for modules */}
           <StrictModeDroppable droppableId={module.id} type='switch' direction="horizontal">
             {(provided, snapshot) => {
