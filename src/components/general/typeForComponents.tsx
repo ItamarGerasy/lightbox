@@ -1,3 +1,5 @@
+import { DropResult } from "react-beautiful-dnd";
+
 //typeForComponents.tsx
 export type SwitchDetails = { switchSpecs: string; switchDescription: string; switchFeed: string};
 export type SwitchDetailsArrays = Array<SwitchDetails>;
@@ -72,5 +74,8 @@ export type Module = {
     actions: {
       deleteSwitch: (switchId: string) => void;
       deleteModuleWithSwitches: (moduleId: string) => void;
+      droppedCompratment: (result: DropResult) => void;
+      droppedModule: (result: DropResult) => void;
+      droppedSwitch: (result: DropResult) => void;
     }
   }

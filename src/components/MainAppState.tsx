@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Compartments, Modules, Switches, GlobalState, GlobalStateContextType } from './general/typeForComponents';
+import { DropResult } from 'react-beautiful-dnd';
 
 export const initialAppGlobalState:GlobalState = {
   boardWidth: 200,
@@ -181,6 +182,145 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       }
 
       setGlobalState(newGlobalState)
+    },
+    droppedCompratment: (result: DropResult) => {
+      const { destination, source, draggableId } = result;
+
+      const newCompartmentsOrder = Array.from(globalState.compartmentsOrder);
+      newCompartmentsOrder.splice(source.index, 1);
+      // @ts-ignore destination might be null, we verified it before
+      newCompartmentsOrder.splice(destination.index, 0, draggableId);
+
+      // Update the global state with the new order
+      setGlobalState((prevState) => ({
+        ...prevState,
+        compartmentsOrder: newCompartmentsOrder,
+      }));  
+    },
+    droppedModule: (result: DropResult) => {
+      const { destination, source, draggableId} = result;
+  
+      if(!destination){
+        return;
+      }
+  
+      const homeCompartment = globalState.compartments[source.droppableId];
+        const homeModulesList = homeCompartment.modulesOrderedList
+  
+        const foreignCompartment = globalState.compartments[destination.droppableId];
+  
+        if (homeCompartment === foreignCompartment) {
+          const newModulesList = Array.from(homeModulesList);
+          newModulesList.splice(source.index, 1);
+          newModulesList.splice(destination.index, 0, draggableId);
+  
+          const newHome = {
+            ...homeCompartment,
+            modulesOrderedList: newModulesList,
+          };
+  
+          const newState = {
+            ...globalState,
+            compartments: {
+              ...globalState.compartments,
+              [newHome.id]: newHome,
+            },
+          };
+  
+          setGlobalState(newState);
+          return;
+        } else {
+          const foreignModulesList = [...foreignCompartment.modulesOrderedList]
+          // removing module id from the source list
+          const newHomeModulesList = Array.from(homeModulesList)
+          newHomeModulesList.splice(source.index, 1);
+  
+          const newHome = {
+            ...homeCompartment,
+            modulesOrderedList: newHomeModulesList
+          };
+          // adding the module id to the destination list                       
+          foreignModulesList.splice(destination.index, 0, draggableId);
+  
+          const newForeign = {
+            ...foreignCompartment,
+            modulesOrderedList: foreignModulesList
+          };
+          
+          const newState = {
+            ...globalState,
+            compartments: {
+              ...globalState.compartments,
+              [newHome.id]: newHome,
+              [newForeign.id]: newForeign
+            }
+          };
+  
+          setGlobalState(newState);
+          return;
+        }
+    },
+    droppedSwitch: (result: DropResult) => {
+      const { destination, source, draggableId} = result;
+  
+      if(!destination){
+        return;
+      }
+  
+      const homeModule = globalState.modules[source.droppableId]
+        const homeSwitchesList = homeModule.switchesOrderedList;
+  
+        const foreignModule = globalState.modules[destination.droppableId];
+  
+        if (homeModule === foreignModule) {
+          const newSwitchesList = Array.from(homeSwitchesList);
+          newSwitchesList.splice(source.index, 1);
+          newSwitchesList.splice(destination.index, 0, draggableId);
+  
+          const newHome = {
+            ...homeModule,
+            switchesOrderedList: newSwitchesList,
+          };
+  
+          const newState = {
+            ...globalState,
+            modules: {
+              ...globalState.modules,
+              [newHome.id]: newHome,
+            },
+          };
+  
+          setGlobalState(newState);
+          return;
+        } else {
+          const foreignModulesList = [...foreignModule.switchesOrderedList]
+          // removing module id from the source list
+          const newHomeModulesList = Array.from(homeSwitchesList)
+          newHomeModulesList.splice(source.index, 1);
+  
+          const newHome = {
+            ...homeModule,
+            switchesOrderedList: newHomeModulesList
+          };
+          // adding the module id to the destination list                       
+          foreignModulesList.splice(destination.index, 0, draggableId);
+  
+          const newForeign = {
+            ...foreignModule,
+            switchesOrderedList: foreignModulesList
+          };
+          
+          const newState = {
+            ...globalState,
+            modules: {
+              ...globalState.modules,
+              [newHome.id]: newHome,
+              [newForeign.id]: newForeign
+            }
+          };
+  
+          setGlobalState(newState);
+        }
     },
   }
   
