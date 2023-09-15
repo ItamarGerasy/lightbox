@@ -72,10 +72,14 @@ export type Module = {
     globalState: GlobalState;
     setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
     actions: {
-      deleteSwitch: (switchId: string) => void;
-      deleteModuleWithSwitches: (moduleId: string) => void;
-      droppedCompratment: (result: DropResult) => void;
-      droppedModule: (result: DropResult) => void;
-      droppedSwitch: (result: DropResult) => void;
+      crud: {
+        deleteSwitch: (switchId: string) => void;
+        deleteModuleWithSwitches: (moduleId: string) => void;
+      },
+      dndActions: {
+        droppedCompratment: (result: DropResult) => void;
+        droppedModule: (result: DropResult) => void;
+        droppedSwitch: (result: DropResult) => void;
+      }
     }
   }

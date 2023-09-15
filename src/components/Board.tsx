@@ -32,19 +32,19 @@ const Board: React.FC = () => {
 
     // drop logic for type 'compartment'
     if (type === 'compartment'){
-      actions.droppedCompratment(result)
+      actions.dndActions.droppedCompratment(result)
       return;
     }
 
     // drop logic for type 'module'
     if (type === 'module'){
-      actions.droppedModule(result);
+      actions.dndActions.droppedModule(result);
       return;
     }
 
     // drop logic for type 'switch'
     if (type === 'switch'){
-      actions.droppedSwitch(result)
+      actions.dndActions.droppedSwitch(result)
     }
   }
 

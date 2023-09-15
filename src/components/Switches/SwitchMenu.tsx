@@ -32,7 +32,7 @@ export const SwitchMenu = (props: SwitchMenuProps) => {
         setInfoAnchorEl(null)
     }
 
-    const handleDelete = () => actions.deleteSwitch(props.switch.id)
+    const handleDelete = () => actions.crud.deleteSwitch(props.switch.id)
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         props.handleMenuClose(event)

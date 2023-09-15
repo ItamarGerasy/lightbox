@@ -37,7 +37,7 @@ export const ModuleMenu: React.FC<ModuleMenuProps> = ({module, provided}) => {
         return modleInfoString
     };
 
-    const handleModuleAndSwitchesDelete = () =>  actions.deleteModuleWithSwitches(module.id)
+    const handleModuleAndSwitchesDelete = () =>  actions.crud.deleteModuleWithSwitches(module.id)
 
     return (
         <ColumnFlexBox style={{backgroundColor: 'lightblue'}} ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
