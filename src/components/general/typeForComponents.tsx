@@ -36,50 +36,51 @@ export type Module = {
     depth: number
   },
 }
-  
-  // type Modules represent an object, key is a module id, and value is the module object
-  export type Modules = Record<string, Module>;
-  
-  // type Switch represent a single switch
-  export type Switch = {
-    id: string,
-    name: string,
-    description?: string,
-    prefix: string,
-    size: number,
-    feed?: string,
-    dimensions?: {
-      width: number,
-      height: number,
-      depth: number
-    }
-  }
-  
-  // type Switches represent an object, key is a switch id, and value is the switch object
-  export type Switches = Record<string, Switch>;
-  
-  export type GlobalState = {
-    boardWidth: number,
-    boardHeight: number,
-    boardDepth: number,
-    compartmentsOrder: Array<string>,
-    compartments: Compartments,
-    modules: Modules,
-    switches: Switches,
-  }
 
-  export type GlobalStateContextType = {
-    globalState: GlobalState;
-    setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
-    actions: {
-      crud: {
-        deleteSwitch: (switchId: string) => void;
-        deleteModuleWithSwitches: (moduleId: string) => void;
-      },
-      dndActions: {
-        droppedCompratment: (result: DropResult) => void;
-        droppedModule: (result: DropResult) => void;
-        droppedSwitch: (result: DropResult) => void;
-      }
+// type Modules represent an object, key is a module id, and value is the module object
+export type Modules = Record<string, Module>;
+
+// type Switch represent a single switch
+export type Switch = {
+  id: string,
+  name: string,
+  description?: string,
+  prefix: string,
+  size: number,
+  feed?: string,
+  dimensions?: {
+    width: number,
+    height: number,
+    depth: number
+  }
+}
+
+// type Switches represent an object, key is a switch id, and value is the switch object
+export type Switches = Record<string, Switch>;
+
+export type GlobalState = {
+  boardWidth: number,
+  boardHeight: number,
+  boardDepth: number,
+  compartmentsOrder: Array<string>,
+  compartments: Compartments,
+  modules: Modules,
+  switches: Switches,
+}
+
+export type GlobalStateContextType = {
+  globalState: GlobalState;
+  setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
+  actions: {
+    crud: {
+      deleteSwitch: (switchId: string) => void;
+      deleteModuleWithSwitches: (moduleId: string) => void;
+      deleteCompartmentAndModules: (comratmentId: string) => void;
+    },
+    dndActions: {
+      droppedCompratment: (result: DropResult) => void;
+      droppedModule: (result: DropResult) => void;
+      droppedSwitch: (result: DropResult) => void;
     }
   }
+}

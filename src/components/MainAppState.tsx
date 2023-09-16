@@ -175,15 +175,45 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
   
         // removing module ID from the compratment modules list
         const moduleIndex = parentCompartment.modulesOrderedList.indexOf(moduleId)
-            parentCompartment.modulesOrderedList.splice(moduleIndex, 1)
+        parentCompartment.modulesOrderedList.splice(moduleIndex, 1)
   
         // removing switches from global state
-        for( const switchId in switchesToDelete ){
-            delete newGlobalState.switches[switchId]
+        for( const switchId of switchesToDelete ){
+          delete newGlobalState.switches[switchId]
         }
-  
+        console.log(`deleted module: ${JSON.stringify(module.id)}`)
         setGlobalState(newGlobalState)
       },
+      deleteCompartmentAndModules: (compartmentId: string) => {
+        const newGlobalState = {...globalState}
+        const compartment = newGlobalState.compartments[compartmentId]
+        const modulesToDelete = compartment.modulesOrderedList // array of module IDs
+        let switchesToDelete: Array<string> = [] // array of switched IDs
+
+        // validating module id exists
+        if ( !(compartmentId in globalState.compartments)){
+          throw new Error(`module ID ${compartmentId} doesn't exist`);
+        }
+        
+        for(const moduleId of modulesToDelete){
+          const module = newGlobalState.modules[moduleId]
+          switchesToDelete = switchesToDelete.concat(module.switchesOrderedList)
+          delete newGlobalState.modules[moduleId]
+        }
+
+        for(const switchId of switchesToDelete){
+          delete newGlobalState.switches[switchId]
+        }
+        
+        delete newGlobalState.compartments[compartmentId]
+
+        // removing module ID from the compratment modules list
+        const compartmentIndex = newGlobalState.compartmentsOrder.indexOf(compartmentId)
+        newGlobalState.compartmentsOrder.splice(compartmentIndex, 1)
+        
+        console.log(`new global state: ${JSON.stringify(newGlobalState)}`)
+        setGlobalState(newGlobalState)
+      }
     },
     dndActions: {
       droppedCompratment: (result: DropResult) => {

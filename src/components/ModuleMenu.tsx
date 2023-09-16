@@ -6,9 +6,9 @@ import Popper from '@mui/material/Popper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import InfoIcon from '@mui/icons-material/Info'
-import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './GeneralStyles.styles'
-import { Module as ModuleType } from './typeForComponents';
-import { useGlobalState } from '../MainAppState';
+import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles'
+import { Module as ModuleType } from './general/typeForComponents';
+import { useGlobalState } from './MainAppState';
 
 type ModuleMenuProps = {
     provided: DraggableProvided;
