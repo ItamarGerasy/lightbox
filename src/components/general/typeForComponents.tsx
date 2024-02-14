@@ -1,4 +1,5 @@
-import { DropResult } from "react-beautiful-dnd";
+import { DropResult } from "react-beautiful-dnd"
+import { SwitchesMap, Switch as SwitchType } from "../../framework/Switch"
 
 //typeForComponents.tsx
 export type SwitchDetails = { switchSpecs: string; switchDescription: string; switchFeed: string};
@@ -35,6 +36,7 @@ export type Module = {
     height: number,
     depth: number
   },
+  removeSwitch: (switchId: string) => void;
 }
 
 // type Modules represent an object, key is a module id, and value is the module object
@@ -65,7 +67,7 @@ export type GlobalState = {
   compartmentsOrder: Array<string>,
   compartments: Compartments,
   modules: Modules,
-  switches: Switches,
+  switches: SwitchesMap<SwitchType>,
 }
 
 export type GlobalStateContextType = {

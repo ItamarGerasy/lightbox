@@ -1,6 +1,20 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Compartments, Modules, Switches, GlobalState, GlobalStateContextType } from './general/typeForComponents';
+import { Compartments, Modules, GlobalState, GlobalStateContextType } from './general/typeForComponents';
 import { DropResult } from 'react-beautiful-dnd';
+import { SwitchesMap, Switch as SwitchObj } from '../framework/Switch';
+import { defaultSwitchDimensions } from './general/generalTypes';
+
+const removeSwitch = (switchId: string) => console.log(`removed switch with id ${switchId}`)
+const s1 = new SwitchObj(
+  {id:'s1', name:'switch1', description:'lighting', prefix:'1X16A', feed:"PC",  dimensions:defaultSwitchDimensions})
+const s2 = new SwitchObj(
+  {id:'s2', name:'switch2', description:'aircon', prefix:'2X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
+const s3 = new SwitchObj(
+  {id:'s3', name:'switch3', description:'aircon', prefix:'3X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
+const s4 = new SwitchObj(
+  {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: defaultSwitchDimensions})
+const switchesArr = [s1, s2, s3, s4]  
+
 
 export const initialAppGlobalState:GlobalState = {
   boardWidth: 200,
@@ -35,80 +49,29 @@ modules: {
   'm-1': {
     id: 'm-1',
     name: 'module1',
-      feed: 'PC',
-      switchesOrderedList: ['s-1', 's-2'],
-      dimensions: {
-        width: 10000,
-        height: 85,
-        depth: 69
-      },
+    feed: 'PC',
+    switchesOrderedList: ['s1', 's2'],
+    dimensions: {
+      width: 10000,
+      height: 85,
+      depth: 69
     },
+    removeSwitch: removeSwitch,
+  },
     'm-2': {
       id: 'm-2',
       name: 'module2',
       feed: 'PC',
-      switchesOrderedList: ['s-3', 's-4'],
+      switchesOrderedList: ['s3', 's4'],
       dimensions: {
         width: 10000,
         height: 85,
         depth: 69
       },
+      removeSwitch: removeSwitch,
     }
   } as Modules,
-  switches: {
-    's-1': {
-      id: 's-1',
-      name: 'switch1',
-      description: 'lighting',
-      prefix: '1X16A',
-      size: 1,
-      feed: "PC",
-      dimensions: {
-        width: 17.5,
-        height: 85,
-        depth: 69
-      } 
-    },
-    's-2': {
-      id: 's-2',
-      name: 'switch2',
-      description: 'aircon',
-      prefix: '2X16A',
-      size: 2,
-      feed: "PC",
-      dimensions: {
-        width: 17.5,
-        height: 85,
-        depth: 69
-      } 
-    },
-    's-3': {
-      id: 's-3',
-      name: 'switch3',
-      description: 'aircon',
-      prefix: '3X16A',
-      size: 3,
-      feed: "PC",
-      dimensions: {
-        width: 17.5,
-        height: 85,
-        depth: 69
-      } 
-    },
-    's-4': {
-      id: 's-4',
-      name: 'switch4',
-      description: 'aircon',
-      prefix: '4X16A',
-      size: 4,
-      feed: "PC",
-      dimensions: {
-        width: 17.5,
-        height: 85,
-        depth: 69
-      } 
-    },
-  } as Switches
+  switches: new SwitchesMap(switchesArr)
 }
 
 const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
@@ -130,7 +93,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
             throw new Error(`switch ID ${switchId} doesn't exist`);
         }
         // removing switch from the switches map
-        delete newGlobalState.switches[switchId]
+        newGlobalState.switches.removeSwitch(switchId)
       
         // finding the parent module
         // eslint-disable-next-line
@@ -179,7 +142,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
   
         // removing switches from global state
         for( const switchId of switchesToDelete ){
-          delete newGlobalState.switches[switchId]
+          newGlobalState.switches.removeSwitch(switchId)
         }
         console.log(`deleted module: ${JSON.stringify(module.id)}`)
         setGlobalState(newGlobalState)
@@ -202,7 +165,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         }
 
         for(const switchId of switchesToDelete){
-          delete newGlobalState.switches[switchId]
+          newGlobalState.switches.removeSwitch(switchId)
         }
         
         delete newGlobalState.compartments[compartmentId]

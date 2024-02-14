@@ -1,6 +1,6 @@
 // Module.tsx
 import { ModuleStyle } from "./Module.styles";
-import { Module as ModuleType, Switches } from "./general/typeForComponents";
+import { Module as ModuleType } from "./general/typeForComponents";
 import { useGlobalState, withGlobalState } from "./MainAppState";
 import Switch from "./Switches/Switch";
 import React, { useState } from 'react'
@@ -10,18 +10,23 @@ import { SwitchesList } from "./Module.styles";
 import { ModuleMenu } from './ModuleMenu'
 import { FlexBox } from "./general/GeneralStyles.styles";
 import Collapse from '@mui/material/Collapse';
+import { SwitchesMap, Switch as SwitchType } from '../framework/Switch';
 
 type InnerSwitchesListProps = {
   switchesOrderedList: Array<string>;
-  switches: Switches;
+  switches: SwitchesMap<SwitchType>;
 }
 
 const InnerSwitchesList: React.FC<InnerSwitchesListProps> = ({switchesOrderedList, switches}) => {
     return (
     <FlexBox>
-      {switchesOrderedList.map((moduleId: string, index: number) => (
-        <Switch key={moduleId} switch={switches[moduleId]} index={index} />
-      ))}
+      {switchesOrderedList.map((switchId: string, index: number) => {
+        const switchObj = switches.get(switchId)
+        if(!switchObj){
+          return null
+        }
+        return <Switch key={switchId} switch={switchObj} index={index} />
+      })}
     </FlexBox>)
 }
 
