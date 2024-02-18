@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import { RefObject, LegacyRef } from 'react';
-import { Switch as SwitchType } from '../general/typeForComponents'
+import { Switch as SwitchType } from '../../framework/Switch'
 import { useGlobalState } from '../MainAppState';
 import { FlexBox, InfoWindowStyle, smallIcon } from '../general/GeneralStyles.styles';
 

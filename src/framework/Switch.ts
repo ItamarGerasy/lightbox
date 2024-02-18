@@ -1,5 +1,5 @@
 import { Dimensions } from "../components/general/generalTypes";
-import { Module as ModuleType } from "../components/general/typeForComponents"
+import { Module as ModuleType } from "./Module"
 
 export class Switch {
     id: string
@@ -8,8 +8,8 @@ export class Switch {
     prefix: string   // prefix of the switch, of specific format. example: 3X16 first number is the size, second number is the Voltage of the switch
     readonly size: number
     feed?: string
-    _dimensions: Dimensions
-    _myModule!: ModuleType // Module object which conatins this Switch
+    private _dimensions: Dimensions
+    private _myModule!: ModuleType | undefined // Module object which conatins this Switch
 
     constructor({id, name, description, prefix, dimensions, feed}:{
         id: string, 
@@ -32,12 +32,12 @@ export class Switch {
     // for removeSwitch to do it job well (removing the switch from the module)
     // important notice: this function doesn't add the switch itself to the module property
     // make sure to use module properties for that
-    set myModule(module: ModuleType){
+    set myModule(module: ModuleType | undefined){
         this._myModule = module
     }
 
     // returns a pointer to the module object which contains this switch
-    get myModule(): ModuleType{
+    get myModule(): ModuleType | undefined{
         return this._myModule
     }
 
@@ -62,7 +62,9 @@ export class Switch {
     removeSwitch(): void {
         console.log(`[${this.name}] id: ${this.id} is going to be deleted`)
         this.id = "-1"
-        this.myModule.removeSwitch(this.id)
+        if(this._myModule){
+            this._myModule.removeSwitch(this.id)
+        }
     }
 }
 
@@ -96,7 +98,7 @@ export class SwitchesMap<SwitchType  extends Switch> {
             return
         }
         const switchToDelete = this.switchesMap[id]
-        if (switchToDelete.id == this.lastId){
+        if (switchToDelete.id === this.lastId){
             // if the switch we want to remove has the latest index
             // we set the latest index as the largest index before that
             const ids = Object.keys(this.switchesMap);
@@ -117,18 +119,13 @@ export class SwitchesMap<SwitchType  extends Switch> {
         return this._amount
     }
 
-    // Indexer implementation for getting and setting values
-    get(id: string): Switch | undefined {
-        // used to get a values from SwitchesMap like you would from a normal map
+    // getter and setter for switches by id
+    get(id: string): Switch | null {
+        if(!this.hasSwitch(id)) return null
         return this.switchesMap[id]
     }
 
     set(id: string, newSwitch: SwitchType): void {
-        // used to add to set a switchs in the switches map as you would a normal map
-        // example:
-        // const switches = new SwitchesMap<SwitchType>();
-        // Switches[switch1.id] = switch1;
-        // Switches[switch2.id] = switch2;
         this._amount++
         this.lastId = id
         this.switchesMap[id] = newSwitch;
@@ -139,7 +136,8 @@ export class SwitchesMap<SwitchType  extends Switch> {
             console.log(`Switches map already have switch with id: ${newSwitch.id}`)
             return
         }
-        this.set(newSwitch.id, newSwitch) 
+        this.set(newSwitch.id, newSwitch)
+        this._amount++ 
     }
 
     // function to generate new index based on all exsisting indexes for example

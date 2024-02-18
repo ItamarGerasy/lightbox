@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Compartments, Modules, GlobalState, GlobalStateContextType } from './general/typeForComponents';
+import { Compartments, GlobalState, GlobalStateContextType } from './general/typeForComponents';
 import { DropResult } from 'react-beautiful-dnd';
 import { SwitchesMap, Switch as SwitchObj } from '../framework/Switch';
+import { Module, ModulesMap } from '../framework/Module';
 import { defaultSwitchDimensions } from './general/generalTypes';
 
-const removeSwitch = (switchId: string) => console.log(`removed switch with id ${switchId}`)
 const s1 = new SwitchObj(
   {id:'s1', name:'switch1', description:'lighting', prefix:'1X16A', feed:"PC",  dimensions:defaultSwitchDimensions})
 const s2 = new SwitchObj(
@@ -14,6 +14,11 @@ const s3 = new SwitchObj(
 const s4 = new SwitchObj(
   {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: defaultSwitchDimensions})
 const switchesArr = [s1, s2, s3, s4]  
+const m1 = new Module(
+  { id: 'm1', name: 'module1', feed: 'PC', switchesObjList: [s1, s2]})
+const m2 = new Module(
+  {id: 'm2', name: 'module2', feed: 'PC', switchesObjList: [s3, s4]})
+const modulesArr = [m1, m2]  
 
 
 export const initialAppGlobalState:GlobalState = {
@@ -26,7 +31,7 @@ export const initialAppGlobalState:GlobalState = {
     { id: 'c-1',
       name: 'compartment1',
       feed: 'PC',
-      modulesOrderedList: ['m-1', 'm-2'],
+      modulesOrderedList: ['m1', 'm2'],
       dimensions: {
         width: 200,
         height: 200,
@@ -44,33 +49,8 @@ export const initialAppGlobalState:GlobalState = {
         depth: 50
       }, 
     },
-} as Compartments,
-modules: {
-  'm-1': {
-    id: 'm-1',
-    name: 'module1',
-    feed: 'PC',
-    switchesOrderedList: ['s1', 's2'],
-    dimensions: {
-      width: 10000,
-      height: 85,
-      depth: 69
-    },
-    removeSwitch: removeSwitch,
-  },
-    'm-2': {
-      id: 'm-2',
-      name: 'module2',
-      feed: 'PC',
-      switchesOrderedList: ['s3', 's4'],
-      dimensions: {
-        width: 10000,
-        height: 85,
-        depth: 69
-      },
-      removeSwitch: removeSwitch,
-    }
-  } as Modules,
+  } as Compartments,
+  modules: new ModulesMap(modulesArr),
   switches: new SwitchesMap(switchesArr)
 }
 
@@ -85,45 +65,46 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
   const actions = {
     crud: {
       deleteSwitch: (switchId: string) => {
-        let parentModule
         const newGlobalState = {...globalState}
       
         // validating switch id exists
-        if ( !(switchId in newGlobalState.switches)){
+        if ( !(newGlobalState.switches.hasSwitch(switchId))){
             throw new Error(`switch ID ${switchId} doesn't exist`);
         }
         // removing switch from the switches map
-        newGlobalState.switches.removeSwitch(switchId)
-      
-        // finding the parent module
-        // eslint-disable-next-line
-        for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
-            if(moduleObj.switchesOrderedList.indexOf(switchId) !== -1){
-                parentModule = moduleObj
-            }
+        const switchToRemove = newGlobalState.switches.get(switchId)
+        let parentModule = switchToRemove!.myModule
+
+        if(!parentModule){
+          for (const [moduleId, moduleObj] of Object.entries(newGlobalState.modules)) {
+              if(moduleObj.getSwitchIndexById(switchId) !== -1){
+                  parentModule = moduleObj
+              }
+          }
         }
+
         if (!parentModule){
             throw new Error(`no parent module found for switch: ${switchId}`);
         }
       
-        // removing switch from the module switches list
-        const switchIndex = parentModule.switchesOrderedList.indexOf(switchId)
-            parentModule.switchesOrderedList.splice(switchIndex, 1)
+        // removing switch from the module and switches map
+        parentModule.removeSwitch(switchId)
+        newGlobalState.switches.removeSwitch(switchId)
       
         setGlobalState(newGlobalState)
       },
       deleteModuleWithSwitches: (moduleId: string) => {
         let parentCompartment
-        const module = globalState.modules[moduleId]
+        const module = globalState.modules.get(moduleId)
         const newGlobalState = {...globalState}
-        const switchesToDelete = module.switchesOrderedList
+        const switchesToDelete = module!.switchesObjList
   
         // validating module id exists
         if ( !(moduleId in newGlobalState.modules)){
             throw new Error(`module ID ${moduleId} doesn't exist`);
         }
-        // removing module from the modules map
-        delete newGlobalState.modules[moduleId]
+        // // removing module from the modules map
+        // delete newGlobalState.modules.get(moduleId)
   
         // finding the parent compartment
         // eslint-disable-next-line
@@ -141,10 +122,10 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         parentCompartment.modulesOrderedList.splice(moduleIndex, 1)
   
         // removing switches from global state
-        for( const switchId of switchesToDelete ){
-          newGlobalState.switches.removeSwitch(switchId)
+        for( const sw of switchesToDelete ){
+          newGlobalState.switches.removeSwitch(sw.id)
         }
-        console.log(`deleted module: ${JSON.stringify(module.id)}`)
+        console.log(`deleted module: ${JSON.stringify(module!.id)}`)
         setGlobalState(newGlobalState)
       },
       deleteCompartmentAndModules: (compartmentId: string) => {
@@ -158,11 +139,11 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
           throw new Error(`module ID ${compartmentId} doesn't exist`);
         }
         
-        for(const moduleId of modulesToDelete){
-          const module = newGlobalState.modules[moduleId]
-          switchesToDelete = switchesToDelete.concat(module.switchesOrderedList)
-          delete newGlobalState.modules[moduleId]
-        }
+        // for(const moduleId of modulesToDelete){
+        //   const module = newGlobalState.modules[moduleId]
+        //   switchesToDelete = switchesToDelete.concat(module.switchesObjList)
+        //   delete newGlobalState.modules[moduleId]
+        // }
 
         for(const switchId of switchesToDelete){
           newGlobalState.switches.removeSwitch(switchId)
@@ -257,66 +238,29 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
           }
       },
       droppedSwitch: (result: DropResult) => {
-        const { destination, source, draggableId} = result;
+        const { destination, source } = result;
     
         if(!destination){
           return;
         }
-    
-        const homeModule = globalState.modules[source.droppableId]
-          const homeSwitchesList = homeModule.switchesOrderedList;
-    
-          const foreignModule = globalState.modules[destination.droppableId];
-    
-          if (homeModule === foreignModule) {
-            const newSwitchesList = Array.from(homeSwitchesList);
-            newSwitchesList.splice(source.index, 1);
-            newSwitchesList.splice(destination.index, 0, draggableId);
-    
-            const newHome = {
-              ...homeModule,
-              switchesOrderedList: newSwitchesList,
-            };
-    
-            const newState = {
-              ...globalState,
-              modules: {
-                ...globalState.modules,
-                [newHome.id]: newHome,
-              },
-            };
-    
-            setGlobalState(newState);
-            return;
-          } else {
-            const foreignModulesList = [...foreignModule.switchesOrderedList]
-            // removing module id from the source list
-            const newHomeModulesList = Array.from(homeSwitchesList)
-            newHomeModulesList.splice(source.index, 1);
-    
-            const newHome = {
-              ...homeModule,
-              switchesOrderedList: newHomeModulesList
-            };
-            // adding the module id to the destination list                       
-            foreignModulesList.splice(destination.index, 0, draggableId);
-    
-            const newForeign = {
-              ...foreignModule,
-              switchesOrderedList: foreignModulesList
-            };
-            
-            const newState = {
-              ...globalState,
-              modules: {
-                ...globalState.modules,
-                [newHome.id]: newHome,
-                [newForeign.id]: newForeign
-              }
-            };
-    
-            setGlobalState(newState);
-          }
+
+        const newGlobalState = {...globalState}
+        const homeModule = newGlobalState.modules.get(source.droppableId)
+        const foreignModule = newGlobalState.modules.get(destination.droppableId)
+  
+        if (homeModule === foreignModule) {
+          const sw = homeModule!.removeSwitchAtIndex(source.index)
+          homeModule!.addSwitch(sw, destination.index)
+  
+          setGlobalState(newGlobalState);
+          return;
+        } else {
+          // removing module id from the home module list
+          const sw = homeModule!.removeSwitchAtIndex(source.index)
+          foreignModule!.addSwitch(sw, destination.index)
+  
+          setGlobalState(newGlobalState);
+        }
       },
     }
   }

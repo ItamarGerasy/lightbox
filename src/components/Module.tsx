@@ -1,7 +1,7 @@
 // Module.tsx
 import { ModuleStyle } from "./Module.styles";
-import { Module as ModuleType } from "./general/typeForComponents";
-import { useGlobalState, withGlobalState } from "./MainAppState";
+import { Module as ModuleType } from "../framework/Module";
+import { withGlobalState } from "./MainAppState";
 import Switch from "./Switches/Switch";
 import React, { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd';
@@ -10,22 +10,17 @@ import { SwitchesList } from "./Module.styles";
 import { ModuleMenu } from './ModuleMenu'
 import { FlexBox } from "./general/GeneralStyles.styles";
 import Collapse from '@mui/material/Collapse';
-import { SwitchesMap, Switch as SwitchType } from '../framework/Switch';
+import { Switch as SwitchType } from '../framework/Switch';
 
 type InnerSwitchesListProps = {
-  switchesOrderedList: Array<string>;
-  switches: SwitchesMap<SwitchType>;
+  switchesOrderedList: Array<SwitchType>;
 }
 
-const InnerSwitchesList: React.FC<InnerSwitchesListProps> = ({switchesOrderedList, switches}) => {
+const InnerSwitchesList: React.FC<InnerSwitchesListProps> = ({switchesOrderedList}) => {
     return (
     <FlexBox>
-      {switchesOrderedList.map((switchId: string, index: number) => {
-        const switchObj = switches.get(switchId)
-        if(!switchObj){
-          return null
-        }
-        return <Switch key={switchId} switch={switchObj} index={index} />
+      {switchesOrderedList.map((switchObj: SwitchType, index: number) => {
+        return <Switch key={switchObj.id} switch={switchObj} index={index} />
       })}
     </FlexBox>)
 }
@@ -37,7 +32,6 @@ type ModuleProps = {
 
 const Module: React.FC<ModuleProps> = ({module, index}) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { globalState } = useGlobalState()
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -69,7 +63,7 @@ const Module: React.FC<ModuleProps> = ({module, index}) => {
               {if(snapshot.isDraggingOver){setIsHovered(false)}}
               return(
                 <SwitchesList ref={provided.innerRef} {...provided.droppableProps} isDraggingOver={snapshot.isDraggingOver}>
-                  <InnerSwitchesList switches={globalState.switches} switchesOrderedList={module.switchesOrderedList} />
+                  <InnerSwitchesList switchesOrderedList={module.switchesObjList} />
                   {provided.placeholder}
                 </SwitchesList>
               )

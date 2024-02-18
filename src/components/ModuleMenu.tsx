@@ -7,7 +7,7 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import InfoIcon from '@mui/icons-material/Info'
 import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles'
-import { Module as ModuleType } from './general/typeForComponents';
+import { Module as ModuleType } from '../framework/Module';
 import { useGlobalState } from './MainAppState';
 
 type ModuleMenuProps = {
@@ -33,7 +33,7 @@ export const ModuleMenu: React.FC<ModuleMenuProps> = ({module, provided}) => {
     const generateModuleInfoString = () => {
         const dimensions = module.dimensions
         const moduleDimensionsString = dimensions ? `width:${dimensions.width} height: ${dimensions.height} depth:${dimensions.depth}` : '';
-        const modleInfoString = `Name: ${module.name} \n Feed: ${module.feed} \n Switches: ${module.switchesOrderedList.length} \n ${moduleDimensionsString}`;
+        const modleInfoString = `Name: ${module.name} \n Feed: ${module.feed} \n Switches: ${module.switchesAmount} \n ${moduleDimensionsString}`;
         return modleInfoString
     };
 

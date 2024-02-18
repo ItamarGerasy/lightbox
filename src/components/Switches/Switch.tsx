@@ -1,6 +1,6 @@
 // Switch.tsx
 import React from 'react'
-import { Switch as SwitchType } from '../general/typeForComponents'
+import { Switch as SwitchType } from '../../framework/Switch'
 import { Draggable } from "react-beautiful-dnd";
 import { SwitchStyle, SwitchWrapper } from './Switch.styles'
 import { withGlobalState } from '../MainAppState';

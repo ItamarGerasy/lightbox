@@ -5,7 +5,8 @@ import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
-import { Compartment as CompartmentType, Modules } from './general/typeForComponents';
+import { Compartment as CompartmentType } from './general/typeForComponents';
+import { Module as ModuleType, ModulesMap } from '../framework/Module';
 import { ColumnFlexBox, FlexBox, Title } from './general/GeneralStyles.styles'
 import Collapse from '@mui/material/Collapse';
 import { CompartmentMenu } from './CompartmentMenu';
@@ -14,15 +15,15 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 type InnerModulesListProps = {
-  modulesOrderedList: Array<string>;
-  modules: Modules;
+  modulesOrderedList: Array<string>
+  modules: ModulesMap<ModuleType>
 }
 
 const InnerModulesList: React.FC<InnerModulesListProps> = ( { modules, modulesOrderedList } ) => {
     return (
       <ColumnFlexBox>
         {modulesOrderedList.map((moduleId: string, index: number) => (
-          <Module key={moduleId} module={modules[moduleId]} index={index} />)
+          <Module key={moduleId} module={modules.get(moduleId)!} index={index} />)
         )}
       </ColumnFlexBox>
     )
