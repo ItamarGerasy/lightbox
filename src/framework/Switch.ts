@@ -92,21 +92,32 @@ export class SwitchesMap<SwitchType  extends Switch> {
         });
     }
 
-    // Method to remove a switch associated with an id
-    removeSwitch(id: string): void {
+    // removes a switch from the switches map and returns the switch object
+    // you can pass a switch object or switch id
+    // if the switch doesn't exist on the map an error will be thrown
+    removeSwitch(sw: SwitchType | string): SwitchType {
+        let id = typeof sw === 'string' ? sw : sw.id
         if (!this.hasSwitch(id)) {
-            return
+            throw new Error(`[SwitchesMap] switch with id ${id} doesn't exsits in the map`)
         }
-        const switchToDelete = this.switchesMap[id]
-        if (switchToDelete.id === this.lastId){
+        if (id === this.lastId){
             // if the switch we want to remove has the latest index
             // we set the latest index as the largest index before that
             const ids = Object.keys(this.switchesMap);
             ids.sort().pop();
             this.lastId = ids.pop()
         }
-        delete this.switchesMap[id]
         this._amount--
+        const deletedSwitch = this.switchesMap[id]
+        delete this.switchesMap[id]
+        return deletedSwitch
+    }
+
+    // removes several switches from the map and returns an array of the removed switches
+    removeSwitches(switchesIds: Array<string|SwitchType>): Array<SwitchType> {
+        const deletedSwitches: Array<SwitchType> = []
+        switchesIds.forEach(id => deletedSwitches.push(this.removeSwitch(id)))
+        return deletedSwitches
     }
 
     // Method to check if a switch with given id exists

@@ -1,5 +1,5 @@
 // CompartmentMenu.tsx
-import { Compartment as CompartmentType } from "./general/typeForComponents";
+import { Compartment as CompartmentType } from "../framework/Compartment";
 import { useGlobalState } from "./MainAppState";
 import React, { LegacyRef } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,7 +32,7 @@ export const CompartmentMenu: React.FC<CompartmentMenuProps> = ({compartment}) =
     const generateCompartmentInfoString = () => {
         const dimensions = compartment.dimensions
         const compartmentDimensionsString = dimensions ? `width:${dimensions.width} height: ${dimensions.height} depth:${dimensions.depth}` : '';
-        const compartmentInfoString = `Name: ${compartment.name} \n Feed: ${compartment.feed} \n Modules: ${compartment.modulesOrderedList.length} \n ${compartmentDimensionsString}`;
+        const compartmentInfoString = `Name: ${compartment.name} \n Feed: ${compartment.feed} \n Modules: ${compartment.modulesAmount} \n ${compartmentDimensionsString}`;
         return compartmentInfoString
     };
 

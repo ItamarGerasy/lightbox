@@ -1,19 +1,19 @@
 import { Dimensions, defaultModuleDimensions } from "../components/general/generalTypes";
-import { Compartment as CompartmentType } from "../components/general/typeForComponents"
+import { Compartment as CompartmentType } from "../framework/Compartment"
 import {Switch as SwitchType} from "./Switch"
 
 export class Module {
     id: string
     name: string
     feed: string
-    // switchesOrderedList will be responsible to hold the module switches ids
-    // in a certain order that will be changed depending on use interactions 
+    // switchesObjList will be responsible to hold the module switches ids
+    // in a certain order that will be changed depending on user interactions 
     switchesObjList: Array<SwitchType>
     _dimensions: Dimensions
     switchesAmount: number
     occupiedWidth: number = 0
     freeWidth: number
-    private _myCompartment!: CompartmentType // Compartment object which conatins this Switch
+    private _myCompartment: CompartmentType | undefined = undefined  // Compartment object which conatins this Switch
 
     constructor({id, name, feed, switchesObjList, dimensions}:{
         id: string,
@@ -38,11 +38,11 @@ export class Module {
         this.switchesAmount = this.switchesObjList.length
     }
 
-    get myCompartment(): CompartmentType{
+    get myCompartment(): CompartmentType | undefined{
         return this._myCompartment
     }
 
-    set myCompartment(compartment: CompartmentType){
+    set myCompartment(compartment: CompartmentType | undefined){
         this._myCompartment = compartment
     }
 
@@ -109,35 +109,38 @@ export class Module {
         // it is used for the drag and drop functionality
 
         if(this.isFull() && !this.canAddSwitch(sw)) return false
-        if(!index){
+        if(!index && index !== 0){
             this.switchesObjList.push(sw)
             return true;
         }
         this.switchesObjList.splice(index, 0, sw)
+        sw.myModule = this
+        this.switchesAmount++
         return true
     }
 
     removeSwitch(switchId: string): SwitchType | null{
         // this method removes a switch from the module and returns it
         // if this index doesn't exist in the switch returns null
-        if(!this.hasSwitch){
-            throw new Error(`[Modeul ${this.name}] cannor delete switch with id ${switchId} because it doesn't exists on this module`)
+        if(!this.hasSwitch(switchId)){
+            throw new Error(`[Modul ${this.name}] cannot delete switch with id ${switchId} because it doesn't exists on this module`)
         }
         const index = this.getSwitchIndexById(switchId)
-        const sw = this.getSwitchById(switchId)
+        const sw = this.removeSwitchAtIndex(index)
         sw!.myModule = undefined
-        this.switchesObjList.splice(index, 1)
         this.freeWidth += sw!.dimensions.width
         this.occupiedWidth -= sw!.dimensions.width
-        this.switchesAmount -= 1
+        this.switchesAmount--
         return sw
     }
 
     removeSwitchAtIndex(index: number): SwitchType {
         if(index > this.switchesAmount){
-            throw new Error(`[Module ${this.name}] cannor delete switch on index ${index} since there are only ${this.switchesAmount} switches on the module`)
+            throw new Error(`[Module ${this.name}] cannot delete switch on index ${index} since there are only ${this.switchesAmount} switches on the module`)
         }
         const [sw] = this.switchesObjList.splice(index, 1)
+        sw.myModule = undefined
+        this.switchesAmount--
         return sw
     }
 }
@@ -166,14 +169,18 @@ export class ModulesMap<ModuleType  extends Module> {
         });
     }
 
-    // Method to remove a module associated with an id
-    // this method returns the removes switch, if there is no such switch returns null
-    removeModule(id: string): ModuleType | null {
-        if (!this.hasModule(id)) return null
+    // removes a module from the modulees map and returns the module object
+    // you can pass a module object or module id
+    // if the module doesn't exist on the map an error will be thrown
+    removeModule(md: string|ModuleType): ModuleType {
+        let id = typeof md === 'string' ? md : md.id
+        if (!this.hasModule(id)) {
+            throw new Error(`[ModulesMap] module with id: ${id} cannot be deleted from map since it doesn't exists in the map`)
+        }
 
         const moduleToDelete = this.modulesMap[id]
         if (moduleToDelete.id === this.lastId){
-            // if the switch we want to remove has the latest index
+            // if the module we want to remove has the latest index
             // we set the latest index as the largest index before that
             const ids = Object.keys(this.modulesMap);
             ids.sort().pop();
@@ -183,6 +190,13 @@ export class ModulesMap<ModuleType  extends Module> {
         this._amount--
 
         return moduleToDelete
+    }
+
+    // removes several modules from the map and returns an array of the removed modules
+    removeModules(modules: Array<string|ModuleType>): Array<ModuleType>{
+        const deletedModules: Array<ModuleType> = []
+        modules.forEach(md => deletedModules.push(this.removeModule(md)))
+        return deletedModules
     }
 
     // Method to check if a module with given id exists
@@ -227,5 +241,15 @@ export class ModulesMap<ModuleType  extends Module> {
         }
         let newHigestIndex = Number(this.lastId.substring(1)) + 1
         return `m${newHigestIndex}`
+    }
+
+    getParentModuleOfSwitchById(id: string): ModuleType | null {
+        let parentModule = null
+        Object.values(this.modulesMap).forEach((md) => {
+            if(md.getSwitchIndexById(id) !== -1){
+                parentModule = md
+            }
+        })
+        return parentModule
     }
 }

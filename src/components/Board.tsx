@@ -1,6 +1,7 @@
 // Board.tsx
 import { BoardStyle } from './Board.styles';
 import { Compartment } from './Compartment';
+import { Compartment as CompartmentType } from "../framework/Compartment"
 import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
@@ -10,9 +11,8 @@ const Board: React.FC = () => {
   const { globalState, actions } = useGlobalState()
 
   const generateCompartmentsFromIndexList = (): React.ReactNode => {
-    const compartments = globalState.compartments
-    return globalState.compartmentsOrder.map((compartmentId, index) => (
-      <Compartment key={compartmentId} compartment={compartments[compartmentId]} index={index} />
+    return globalState.compartmentsOrder.map((compartment, index) => (
+      <Compartment key={compartment.id} compartment={compartment} index={index} />
     ));
   }
 

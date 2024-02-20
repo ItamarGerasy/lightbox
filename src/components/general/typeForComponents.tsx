@@ -1,35 +1,18 @@
 import { DropResult } from "react-beautiful-dnd"
 import { SwitchesMap, Switch as SwitchType } from "../../framework/Switch"
-import { Module, ModulesMap } from "../../framework/Module";
+import { Module, ModulesMap } from "../../framework/Module"
+import { Compartment, CompartmentsMap } from "../../framework/Compartment"
 
 //typeForComponents.tsx
 export type SwitchDetails = { switchSpecs: string; switchDescription: string; switchFeed: string};
 export type SwitchDetailsArrays = Array<SwitchDetails>;
 
-// type Cmpartment represent a single cmpartment
-export type Compartment = {
-    id: string,
-    name: string,
-    feed: string,
-    // modulesOrderedList will be responsible to hold the compartment modules
-    // in a certain order that will be changed depending on use interactions 
-    modulesOrderedList: Array<string>,
-    dimensions?: {
-      width: number,
-      height: number,
-      depth: number
-    },
-}
-  
-// type Cmpartment represent an object, key is a compartment id, and value is the compartment object
-export type Compartments = Record<string, Compartment>;
-
 export type GlobalState = {
   boardWidth: number,
   boardHeight: number,
   boardDepth: number,
-  compartmentsOrder: Array<string>,
-  compartments: Compartments,
+  compartmentsOrder: Array<Compartment>,
+  compartments: CompartmentsMap<Compartment>,
   modules: ModulesMap<Module>,
   switches: SwitchesMap<SwitchType>,
 }

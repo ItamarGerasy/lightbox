@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useGlobalState } from './MainAppState';
-import { Compartment as CompartmentType } from './general/typeForComponents';
+import { Compartment as CompartmentType } from '../framework/Compartment';
 import { Module as ModuleType, ModulesMap } from '../framework/Module';
 import { ColumnFlexBox, FlexBox, Title } from './general/GeneralStyles.styles'
 import Collapse from '@mui/material/Collapse';
@@ -15,15 +15,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 type InnerModulesListProps = {
-  modulesOrderedList: Array<string>
-  modules: ModulesMap<ModuleType>
+  modulesOrderedList: Array<ModuleType>
 }
 
-const InnerModulesList: React.FC<InnerModulesListProps> = ( { modules, modulesOrderedList } ) => {
+const InnerModulesList: React.FC<InnerModulesListProps> = ( { modulesOrderedList } ) => {
     return (
       <ColumnFlexBox>
-        {modulesOrderedList.map((moduleId: string, index: number) => (
-          <Module key={moduleId} module={modules.get(moduleId)!} index={index} />)
+        {modulesOrderedList.map((module: ModuleType, index: number) => (
+          <Module key={module.id} module={module} index={index} />)
         )}
       </ColumnFlexBox>
     )
@@ -76,7 +75,7 @@ export const Compartment: React.FC<CompartmentProps> = ({ compartment, index }) 
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 isDraggingOver={snapshot.isDraggingOver}>
-                  <InnerModulesList modulesOrderedList={compartment.modulesOrderedList} modules={globalState.modules}/>
+                  <InnerModulesList modulesOrderedList={compartment.modulesObjList}/>
                   {provided.placeholder}
                 </ModulesList>
               )
