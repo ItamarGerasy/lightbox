@@ -1,43 +1,39 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { GlobalState, GlobalStateContextType } from './general/typeForComponents';
 import { DropResult } from 'react-beautiful-dnd';
 import { SwitchesMap, Switch as SwitchObj } from '../framework/Switch';
 import { Module, ModulesMap } from '../framework/Module';
 import { Compartment , CompartmentsMap } from "../framework/Compartment"
 import { defaultSwitchDimensions } from './general/generalTypes';
 
-const s1 = new SwitchObj(
-  {id:'s1', name:'switch1', description:'lighting', prefix:'1X16A', feed:"PC",  dimensions:defaultSwitchDimensions})
-const s2 = new SwitchObj(
-  {id:'s2', name:'switch2', description:'aircon', prefix:'2X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
-const s3 = new SwitchObj(
-  {id:'s3', name:'switch3', description:'aircon', prefix:'3X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
-const s4 = new SwitchObj(
-  {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: defaultSwitchDimensions})
-const switchesArr = [s1, s2, s3, s4]  
-const m1 = new Module(
-  { id: 'm1', name: 'module1', feed: 'PC', switchesObjList: [s1, s2]})
-const m2 = new Module(
-  {id: 'm2', name: 'module2', feed: 'PC', switchesObjList: [s3, s4]})
-const modulesArr = [m1, m2]  
+export type GlobalState = {
+  boardWidth: number,
+  boardHeight: number,
+  boardDepth: number,
+  compartmentsOrder: Array<Compartment>,
+  compartments: CompartmentsMap<Compartment>,
+  modules: ModulesMap<Module>,
+  switches: SwitchesMap<SwitchObj>
+}
 
-const c1 = new Compartment(
-  {id: 'c1', name: 'compartment1', feed: 'PC', modulesObjList: [m1, m2]}
-)
-const c2 = new Compartment(
-  {id: 'c2', name: 'compartment2', feed: 'PC', modulesObjList: []} 
-)
-const compsArray = [c1, c2]
-
-
-export const initialAppGlobalState:GlobalState = {
-  boardWidth: 200,
-  boardHeight: 200,
-  boardDepth: 50,
-  compartmentsOrder: [c1, c2],
-  compartments: new CompartmentsMap(compsArray),
-  modules: new ModulesMap(modulesArr),
-  switches: new SwitchesMap(switchesArr)
+export type GlobalStateContextType = {
+  globalState: GlobalState;
+  setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
+  actions: {
+    misc:{
+      getCloneGlobalState: () => GlobalState
+    },
+    crud: {
+      deleteSwitch: (switchId: string) => void
+      deleteModuleWithSwitches: (moduleId: string) => void
+      deleteCompartmentAndModules: (comratmentId: string) => void
+      addSwitches: (switchesToAdd: Array<SwitchObj>) => boolean
+    },
+    dndActions: {
+      droppedCompratment: (result: DropResult) => void
+      droppedModule: (result: DropResult) => void
+      droppedSwitch: (result: DropResult) => void
+    }
+  }
 }
 
 const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
@@ -49,6 +45,18 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
   const [globalState, setGlobalState] = useState<GlobalState>(initialAppGlobalState);
 
   const actions = {
+    misc: {
+      getCloneGlobalState: () => {
+        return {
+          boardWidth: globalState.boardWidth,
+          boardHeight: globalState.boardHeight,
+          boardDepth: globalState.boardDepth,
+          compartmentsOrder: globalState.compartmentsOrder.map(cm => cm.clone()),
+          compartments: globalState.compartments.clone(),
+          modules: globalState.modules.clone(),
+          switches: globalState.switches.clone()
+        } as GlobalState}
+    },
     crud: {
       deleteSwitch: (switchId: string) => {
         const newGlobalState = {...globalState}
@@ -116,8 +124,22 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         newGlobalState.compartmentsOrder.filter(cm => cm.id !== compartmentId)
         
         setGlobalState(newGlobalState)
+      },
+      addSwitches: (switchesToAdd: Array<SwitchObj>): boolean => {
+        const newGlobalState = {...globalState}
+        console.log(`i'm in actions.addSwitches`)
+        const module = newGlobalState.modules.canOneModuleFitSwitches(switchesToAdd)
+        if(module){
+          console.log(`module to add switches to: ${module.name}`)
+          module.addSwitches(switchesToAdd)
+          newGlobalState.switches.addSwitches(switchesToAdd)
+          setGlobalState(newGlobalState)
+          return true
+        }
+        return false
       }
     },
+    // drag and drop actions
     dndActions: {
       droppedCompratment: (result: DropResult) => {
         const { destination, source } = result;
@@ -190,3 +212,38 @@ export const withGlobalState = <P extends object>(
     return <WrappedComponent globalState={globalState} setGlobalState={setGlobalState} actions={actions} {...props} />;
   };
 };
+
+const s1 = new SwitchObj(
+  {id:'s1', name:'switch1', description:'lighting', prefix:'1X16A', feed:"PC",  dimensions:defaultSwitchDimensions})
+const s2 = new SwitchObj(
+  {id:'s2', name:'switch2', description:'aircon', prefix:'2X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
+const s3 = new SwitchObj(
+  {id:'s3', name:'switch3', description:'aircon', prefix:'3X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
+const s4 = new SwitchObj(
+  {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: defaultSwitchDimensions})
+const switchesArr = [s1, s2, s3, s4]  
+const m1 = new Module(
+  { id: 'm1', name: 'module1', feed: 'PC', switchesObjList: [s1, s2]})
+const m2 = new Module(
+  {id: 'm2', name: 'module2', feed: 'PC', switchesObjList: [s3, s4]})
+const modulesArr = [m1, m2]  
+
+const c1 = new Compartment(
+  {id: 'c1', name: 'compartment1', feed: 'PC', modulesObjList: [m1, m2]}
+)
+const c2 = new Compartment(
+  {id: 'c2', name: 'compartment2', feed: 'PC', modulesObjList: []} 
+)
+const compsArray = [c1, c2]
+
+
+export const initialAppGlobalState:GlobalState = {
+  boardWidth: 200,
+  boardHeight: 200,
+  boardDepth: 50,
+  compartmentsOrder: [c1, c2],
+  compartments: new CompartmentsMap(compsArray),
+  modules: new ModulesMap(modulesArr),
+  switches: new SwitchesMap(switchesArr)
+}
+

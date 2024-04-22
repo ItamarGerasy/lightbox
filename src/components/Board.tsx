@@ -1,11 +1,10 @@
 // Board.tsx
-import { BoardStyle } from './Board.styles';
-import { Compartment } from './Compartment';
-import { Compartment as CompartmentType } from "../framework/Compartment"
+import { BoardStyle } from './Board.styles'
+import { Compartment } from './Compartment'
 import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
-import { useGlobalState } from './MainAppState';
-import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
+import { useGlobalState } from './MainAppState'
+import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
 const Board: React.FC = () => {
   const { globalState, actions } = useGlobalState()

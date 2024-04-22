@@ -52,6 +52,19 @@ export class Module {
         height?: number;
         depth?: number;
     }){
+        // in case you want to decrease the width of a module so some of the switches inside it will no longer fit in
+        if(width && this.occupiedWidth > width){
+            throw new Error(`[Module ${this.id}] cannot change width to be smaller since there are too many switches in the module \n
+            will not perform any action`)
+        }
+        // in case you want to decrease the height of a module which have switches in it already
+        if(height && height < this._dimensions.height && this.switchesAmount !== 0){
+            throw new Error(`[Module ${this.id}] cannot change height of module which already populated with switches`)
+        }
+        // in case you want to decrease the depth of a module which have switches in it already
+        if(depth && depth < this._dimensions.depth && this.switchesAmount !== 0){
+            throw new Error(`[Module ${this.id}] cannot change depth of module which already populated with switches`)
+        }
         this._dimensions = {
             width: width ? width : this._dimensions.width,
             height: height ? height : this._dimensions.height,
@@ -59,9 +72,23 @@ export class Module {
         }
     }
 
-    // returns a copy of the dimensions object of the switch
+    // returns a copy of the dimensions object of the module
     get dimensions(): Dimensions{
         return {...this._dimensions}
+    }
+
+    // this function return a colne/copy of this current module
+    clone(): Module {
+        const params = {
+            id: this.id,
+            name: this.name,
+            feed: this.feed,
+            switchesObjList: this.switchesObjList.map( sw => sw.clone()),
+            dimensions: {...this.dimensions}
+        }
+        const cloneModule = new Module(params)
+        cloneModule.myCompartment = this.myCompartment
+        return cloneModule
     }
 
     hasSwitch(switchId: string): boolean {
@@ -116,6 +143,21 @@ export class Module {
         this.switchesObjList.splice(index, 0, sw)
         sw.myModule = this
         this.switchesAmount++
+        return true
+    }
+
+    // a method to add switches to the module
+    // if successfull return true, else false
+    addSwitches(swArr: Array<SwitchType>): boolean{
+        if(this.canAddSwitches(swArr) !== swArr.length) return false
+
+        swArr.forEach(sw => {
+            let succes = this.addSwitch(sw)
+            if(!succes) throw new Error(`[Module ${this.id}] addSwitches() something went wrong adding switch to the module, details: \n
+            Module: ${JSON.stringify(this)} \n
+            swithces to add: ${swArr.length} \n
+            switchObj: ${sw}`) 
+        })
         return true
     }
 
@@ -251,5 +293,32 @@ export class ModulesMap<ModuleType  extends Module> {
             }
         })
         return parentModule
+    }
+
+    getFirstModuleThatCanAddSwitch(sw: SwitchType): ModuleType | null {
+        Object.values(this.modulesMap).forEach((md) => {
+            if(md.canAddSwitch(sw)){
+                return md
+            }
+        })
+        return null
+    }
+
+    canOneModuleFitSwitches(swArr: Array<SwitchType>): ModuleType | null {
+        let moduleToReturn: ModuleType | null = null
+        for(const md of Object.values(this.modulesMap)){
+            let amountOfPossibleSwitchesToAdd = md.canAddSwitches(swArr) 
+            if( amountOfPossibleSwitchesToAdd >= swArr.length){
+                moduleToReturn = md
+                break
+            }
+        }
+        return moduleToReturn
+    }
+
+    // this function creates a colne/copy of the current ModulesMap
+    clone(): ModulesMap<ModuleType> {
+        const modulesArr = Object.values(this.modulesMap).map(md => md.clone() as ModuleType)
+        return new ModulesMap<ModuleType>(modulesArr)
     }
 }

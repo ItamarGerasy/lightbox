@@ -12,15 +12,20 @@ import { SwitchDetails, SwitchDetailsArrays } from "../general/typeForComponents
 import { SelectChangeEvent } from "@mui/material/Select";
 import { InputTextFields } from "./InputTextFields";
 import { SelectWrapper } from "./SelectWrapper";
+import { useGlobalState, withGlobalState } from "../MainAppState";
+import { Switch } from "../../framework/Switch"
+import { defaultSwitchDimensions } from "../general/generalTypes";
+
 
 type InputAccordionProps = {
   appendToSwitchArray: (args: SwitchDetails | SwitchDetailsArrays) => void;
   feedList: Array<string>;
 };
 
-export function InputAccordion(props: InputAccordionProps) {
-  const [inputError, setInputError] = useState<string>("");
-  const [selectedFeed, setSelectedFeed] = useState<string>("");
+function InputAccordion(props: InputAccordionProps) {
+  const { actions, globalState } = useGlobalState()
+  const [inputError, setInputError] = useState<string>("")
+  const [selectedFeed, setSelectedFeed] = useState<string>("")
   const [input, setInput] = useState({
     switchSpecs: "",
     switchAmount: "0",
@@ -83,19 +88,32 @@ export function InputAccordion(props: InputAccordionProps) {
       return;
     }
     // Removes the switchAmount property
-    const inputCopy = { ...input };
-    const switchesAmount = parseInt(inputCopy.switchAmount ?? '1', 10);
-    console.log(typeof switchesAmount);
-    delete inputCopy.switchAmount;
+    const switchesAmount = parseInt(input.switchAmount ?? '1', 10);
 
     // Create an array of switches with separate copies of the inputCopy object
+    console.log("creating switch array")
     const newSwitchesArray = new Array(switchesAmount)
       .fill(null)
-      .map(() => inputCopy);
+      .map((_, i) => {
+        let index = globalState.switches.generateIndex() // new index of the shape: s23, s11, s123
+        let numericalIndex = Number(index.substring(1)) + i
+        index = `s${numericalIndex}`
+        const switchParams = {
+          id: `${index}`, 
+          name:`switch${index[1]}`, 
+          description: input.switchDescription, 
+          prefix: input.switchSpecs, 
+          feed: input.switchFeed,  
+          dimensions: defaultSwitchDimensions
+        }
+        return new Switch(switchParams)
+      });
+    console.log(`switch array: ${JSON.stringify(newSwitchesArray)}`)
 
-    console.log(`going to add to switches array ${newSwitchesArray.length}`);
-    // Updates the switchArray state
-    props.appendToSwitchArray(newSwitchesArray);
+    let succses = actions.crud.addSwitches(newSwitchesArray)
+    console.log(`did add new switch was succesful? ${succses}`)
+    
+
   };
 
   return (
@@ -127,3 +145,5 @@ export function InputAccordion(props: InputAccordionProps) {
     </Accordion>
   );
 }
+
+export default withGlobalState(InputAccordion)

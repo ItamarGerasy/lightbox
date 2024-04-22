@@ -66,9 +66,24 @@ export class Switch {
             this._myModule.removeSwitch(this.id)
         }
     }
+
+    // this function return a colne/copy of this current switch
+    clone(): Switch {
+        const params = {
+            id: this.id,
+            name: this.name,
+            description: this.description,
+            prefix: this.prefix,
+            dimensions: {...this.dimensions},
+            feed: this.feed
+        }
+        const cloneSwitch = new Switch(params)
+        cloneSwitch.myModule = this.myModule
+        return cloneSwitch
+    }
 }
 
-export class SwitchesMap<SwitchType  extends Switch> {
+export class SwitchesMap<SwitchType extends Switch> {
     // this class is basically a map of switches with some extra properties
     private switchesMap: { [key: string]: SwitchType } = {}
     private _amount: number = 0
@@ -142,13 +157,25 @@ export class SwitchesMap<SwitchType  extends Switch> {
         this.switchesMap[id] = newSwitch;
     }
 
+    // this function creates a colne/copy of the current SwitchesMap
+    clone(): SwitchesMap<SwitchType> {
+        const switchesArr = Object.values(this.switchesMap).map(sw => sw.clone() as SwitchType)
+        return new SwitchesMap<SwitchType>(switchesArr)
+    }
+
     addSwitch(newSwitch: SwitchType): void {
         if (this.hasSwitch(newSwitch.id)) {
             console.log(`Switches map already have switch with id: ${newSwitch.id}`)
             return
         }
         this.set(newSwitch.id, newSwitch)
-        this._amount++ 
+    }
+
+    addSwitches(swithesArr: Array<SwitchType>): void {
+        for(const sw of swithesArr) {
+            console.log(`trying to add switch: ${sw}`)
+            this.addSwitch(sw)
+        }
     }
 
     // function to generate new index based on all exsisting indexes for example

@@ -1,5 +1,5 @@
 // MainApp.tsx
-import { InputForm } from './inputComponents/InputForm';
+import InputForm from './inputComponents/InputForm';
 import BoxView from './BoxView';
 import { MainAppStyle, MainContainerStyle } from './MainApp.styles';
 import { GlobalStateProvider } from './MainAppState';

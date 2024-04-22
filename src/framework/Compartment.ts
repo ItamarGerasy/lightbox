@@ -54,6 +54,18 @@ export class Compartment {
         return {...this._dimensions}
     }
 
+    // this function return a colne/copy of this current compartment
+    clone(): Compartment {
+        const params = {
+            id: this.id,
+            name: this.name,
+            feed: this.feed,
+            modulesObjList: this.modulesObjList.map( md => md.clone()),
+            dimensions: {...this.dimensions}
+        }
+        return new Compartment(params)
+    }
+
     getModuleIndexById(moduleId: string): number{
         let index =  this.modulesObjList.findIndex((md) => md.id === moduleId)
         if(index !== -1) return index
@@ -241,5 +253,11 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
             }
         })
         return parentModule
+    }
+
+    // this function creates a colne/copy of the current ModulesMap
+    clone(): CompartmentsMap<CompartmentType> {
+        const compartmentsArr = Object.values(this.compartmentsMap).map(cm => cm.clone() as CompartmentType)
+        return new CompartmentsMap<CompartmentType>(compartmentsArr)
     }
 }
