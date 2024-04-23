@@ -108,12 +108,11 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         const newGlobalState = {...globalState}
         let switchesToDelete: Array<SwitchObj> = []
         const compartment = newGlobalState.compartments.get(compartmentId)
-        const modulesToDelete = compartment.modulesObjList // array of module IDs
-        const arrOfSwitchObjArrays = modulesToDelete.map(md => md.switchesObjList)
-        arrOfSwitchObjArrays.forEach(swArr => switchesToDelete = switchesToDelete.concat(swArr))
-        
         // removing all modules from the compartment
-        compartment.removeAllModules()
+        const modulesToDelete = compartment.removeAllModules()
+
+        // collecting all switches objects on the compartment modules
+        modulesToDelete.forEach(mdObj => switchesToDelete.concat(mdObj.switchesObjList))
 
         // removing switches from the map
         newGlobalState.switches.removeSwitches(switchesToDelete)
@@ -123,6 +122,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
 
         //removing compartment from the map
         newGlobalState.compartments.removeCompartment(compartmentId)
+        
         // removing for the compartments list that renders the compartments on the
         newGlobalState.compartmentsOrder = newGlobalState.compartmentsOrder.filter(cm => cm.id !== compartmentId)
         

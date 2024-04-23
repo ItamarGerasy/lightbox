@@ -245,10 +245,9 @@ export class ModulesMap<ModuleType  extends Module> {
     }
 
     // removes several modules from the map and returns an array of the removed modules
-    removeModules(modules: Array<string|ModuleType>): Array<ModuleType>{
+    removeModules(modules: Array<string|ModuleType>): void{
         const deletedModules: Array<ModuleType> = []
         modules.forEach(md => deletedModules.push(this.removeModule(md)))
-        return deletedModules
     }
 
     // Method to check if a module with given id exists

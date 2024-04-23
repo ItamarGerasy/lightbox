@@ -130,9 +130,9 @@ export class Compartment {
         }
         const index = this.getModuleIndexById(moduleId)
         const md = this.removeModuleAtIndex(index)
-        md!.myCompartment = undefined
-        this.freeHeight += md!.dimensions.height
-        this.occupiedHeight -= md!.dimensions.height
+        md.myCompartment = undefined
+        this.freeHeight += md.dimensions.height
+        this.occupiedHeight -= md.dimensions.height
         this.modulesAmount--
         return md
     }
