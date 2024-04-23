@@ -122,10 +122,10 @@ export class Compartment {
         return true
     }
 
-    removeModule(moduleId: string): ModuleType | null{
+    removeModule(moduleId: string): ModuleType{
         // this method removes a module from the compartment and returns it
         // if this index doesn't exist in the comaprtment returns null
-        if(!this.hasModule(moduleId)){
+        if(!this.hasModule(moduleId!)){
             throw new Error(`[Compartment ${this.name}] cannot delete module with id ${moduleId} because it doesn't exists on this compartment`)
         }
         const index = this.getModuleIndexById(moduleId)
@@ -144,6 +144,16 @@ export class Compartment {
         const [md] = this.modulesObjList.splice(index, 1)
         this.modulesAmount--
         return md
+    }
+
+    removeAllModules(): ModuleType[] {
+        let moduleIds = this.modulesObjList.map(md => md.id)
+        let removedModules: ModuleType[] = []
+        moduleIds.forEach(moduleId => {
+            let mdObj = this.removeModule(moduleId)
+            removedModules.push(mdObj)
+        })
+        return removedModules
     }
 }
 
@@ -211,11 +221,10 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
         return this._amount
     }
 
-    // get compartment with given id if doesn't exists returns null
-    get(id: string): Compartment | null {
+    // get compartment with given id if doesn't exists throws an error
+    get(id: string): Compartment {
         if(!this.hasCompartment(id)) {
-            console.warn(`[compartmentsMap] compartment with id: ${id} doesn't exsit on the map \n compartments map ids: ${Object.keys(this.compartmentsMap)}`)
-            return null
+            throw new Error(`[compartmentsMap] compartment with id: ${id} doesn't exsit on the map \n compartments map ids: ${Object.keys(this.compartmentsMap)}`)
         }
         return this.compartmentsMap[id]
     }
