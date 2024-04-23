@@ -124,8 +124,9 @@ export class Module {
     // this method will return the amount of switches from the list it can add
     // parameter: switches - and array of switches with the same dimensions
     canAddSwitches(switches: Array<SwitchType>): number {
-        if(this.isFull() && !switches) return 0
-        return Math.floor(this.freeWidth / switches[0].dimensions.width)
+        if (!switches) return 0
+        if (this.isFull()) return 0
+        return Math.floor(this.freeWidth / (switches[0].dimensions.width * switches.length))
     }
 
     // a method that adds a switch to the module
@@ -136,11 +137,11 @@ export class Module {
         // it is used for the drag and drop functionality
 
         if(this.isFull() && !this.canAddSwitch(sw)) return false
-        if(!index && index !== 0){
+        if(!index || index === 0){
             this.switchesObjList.push(sw)
-            return true;
+        } else {
+            this.switchesObjList.splice(index, 0, sw)
         }
-        this.switchesObjList.splice(index, 0, sw)
         sw.myModule = this
         this.switchesAmount++
         return true
@@ -149,15 +150,20 @@ export class Module {
     // a method to add switches to the module
     // if successfull return true, else false
     addSwitches(swArr: Array<SwitchType>): boolean{
-        if(this.canAddSwitches(swArr) !== swArr.length) return false
-
-        swArr.forEach(sw => {
+        let amountOfSwitchesAbleToAdd = this.canAddSwitches(swArr)
+        if (amountOfSwitchesAbleToAdd < swArr.length) {
+            console.log(`[Module ${this.id}] module.addSwitches - cannot add switches since tried to add ${swArr.length} switches, and can add onlt ${amountOfSwitchesAbleToAdd}`)
+            return false
+        }
+        for(const sw of swArr){
             let succes = this.addSwitch(sw)
-            if(!succes) throw new Error(`[Module ${this.id}] addSwitches() something went wrong adding switch to the module, details: \n
-            Module: ${JSON.stringify(this)} \n
-            swithces to add: ${swArr.length} \n
-            switchObj: ${sw}`) 
-        })
+            if(!succes) {
+                throw new Error(`[Module ${this.id}] failed - addSwitches() something went wrong adding switch to the module, details: \n
+                Module: ${JSON.stringify(this)} \n
+                swithces to add: ${swArr.length} \n
+                switchObj: ${sw}`)
+            }
+        }
         return true
     }
 
@@ -184,6 +190,10 @@ export class Module {
         sw.myModule = undefined
         this.switchesAmount--
         return sw
+    }
+
+    toString(): string {
+        return `[Module ${this.name}] id: ${this.id} has ${this.switchesAmount} switches`
     }
 }
 

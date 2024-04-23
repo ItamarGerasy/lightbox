@@ -1,13 +1,11 @@
 // InputForm.tsx
 import InputAccordion from "./InputAccordion";
 import { useState } from "react";
-import { SwitchDetails, SwitchDetailsArrays } from "../general/typeForComponents";
 import { FeedInput } from "./FeedInput";
 import { withGlobalState } from "../MainAppState";
 
 const InputForm = () => {
   const [feedList, setFeedList] = useState<Array<string>>([])
-  const [switchArray, setSwitchArray] = useState<Array<SwitchDetails>>([])
 
   function addToFeedList(feed: string): void {
     if (!feed) {
@@ -21,16 +19,6 @@ const InputForm = () => {
     setFeedList(updatedFeedList);
   }
 
-  function appendToSwitchArray(
-    switchDetails: SwitchDetails | SwitchDetailsArrays
-  ): void {
-    if (Array.isArray(switchDetails)) {
-      setSwitchArray([...switchArray, ...switchDetails]);
-      return;
-    }
-    setSwitchArray([...switchArray, switchDetails]);
-  }
-
   return (
     <div style={{maxWidth: '200px'}}>
       <FeedInput
@@ -39,7 +27,6 @@ const InputForm = () => {
         removeFromFeedList={removeFromFeedList}
       />{" "}
       <InputAccordion
-        appendToSwitchArray={appendToSwitchArray}
         feedList={feedList}
       />
     </div>

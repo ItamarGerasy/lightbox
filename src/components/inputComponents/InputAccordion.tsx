@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import BoltIcon from "@mui/icons-material/Bolt";
 import Button from "@mui/material/Button";
-import { SwitchDetails, SwitchDetailsArrays } from "../general/typeForComponents";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { InputTextFields } from "./InputTextFields";
 import { SelectWrapper } from "./SelectWrapper";
@@ -18,7 +17,6 @@ import { defaultSwitchDimensions } from "../general/generalTypes";
 
 
 type InputAccordionProps = {
-  appendToSwitchArray: (args: SwitchDetails | SwitchDetailsArrays) => void;
   feedList: Array<string>;
 };
 
@@ -26,16 +24,15 @@ function InputAccordion(props: InputAccordionProps) {
   const { actions, globalState } = useGlobalState()
   const [inputError, setInputError] = useState<string>("")
   const [selectedFeed, setSelectedFeed] = useState<string>("")
+  const [feedInput, setFeedInput] = useState<string>("")
   const [input, setInput] = useState({
     switchSpecs: "",
-    switchAmount: "0",
-    switchDescription: "",
-    switchFeed: ""
+    switchAmount: "1",
+    switchDescription: ""
   }as {
     switchSpecs: string;
-    switchAmount?: string;
+    switchAmount: string;
     switchDescription: string;
-    switchFeed: string;
   });
 
   const validateInputBeforeSubmit = (): boolean => {
@@ -45,20 +42,23 @@ function InputAccordion(props: InputAccordionProps) {
         ss: input.switchSpecs,
         sa: input.switchAmount,
         sd: input.switchDescription,
-        sf: input.switchFeed
+        sf: feedInput
       })
     );
     if (
       !input.switchSpecs ||
       !input.switchAmount ||
-      !input.switchDescription ||
-      !input.switchFeed
+      !input.switchDescription
     ) {
       setInputError("You cannot submit without filling all fields");
       return false;
     }
     if (!switchSpecsRegex.test(input.switchSpecs)) {
       setInputError("Switch Prefix doesn't match known pattern");
+      return false;
+    }
+    if (feedInput === "0"){
+      setInputError("switches amount cannot be 0");
       return false;
     }
     setInputError("");
@@ -76,10 +76,8 @@ function InputAccordion(props: InputAccordionProps) {
 
   const handleFeedChange = (e: SelectChangeEvent<string>): void => {
     setSelectedFeed(e.target.value as string); // Update the selected feed in state
-    setInput((prevInput) => ({
-      ...prevInput,
-      switchFeed: e.target.value as string // Update the input state with the selected feed
-    }));
+    // Update the input state with the selected feed
+    setFeedInput(e.target.value as string)
   };
 
   const handleSubmit = (): void => {
@@ -103,15 +101,20 @@ function InputAccordion(props: InputAccordionProps) {
           name:`switch${index[1]}`, 
           description: input.switchDescription, 
           prefix: input.switchSpecs, 
-          feed: input.switchFeed,  
+          feed: feedInput,  
           dimensions: defaultSwitchDimensions
         }
         return new Switch(switchParams)
       });
     console.log(`switch array: ${JSON.stringify(newSwitchesArray)}`)
-
-    let succses = actions.crud.addSwitches(newSwitchesArray)
-    console.log(`did add new switch was succesful? ${succses}`)
+    actions.crud.addSwitches(newSwitchesArray)
+    // cleaning input rows
+    setInput({
+      switchSpecs: "",
+      switchAmount: "0",
+      switchDescription: ""
+    })
+    setFeedInput("")
     
 
   };
@@ -122,11 +125,12 @@ function InputAccordion(props: InputAccordionProps) {
         expandIcon={<AddIcon />}
         aria-controls="input-content"
         id="input-header"
+        style={{ minHeight: '30px', height: '30px', alignItems: 'center' }}
       >
-        <Typography sx={{fontSize: 14}}>Add Switch</Typography>
+        <Typography sx={{fontSize: 15}}>Add Switch</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <InputTextFields handleInputChange={handleInputChange} />
+        <InputTextFields handleInputChange={handleInputChange} inputValues={input} />
         <SelectWrapper
           selectedFeed={selectedFeed}
           handleFeedChange={handleFeedChange}

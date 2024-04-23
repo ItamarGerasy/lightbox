@@ -130,11 +130,12 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         console.log(`i'm in actions.addSwitches`)
         const module = newGlobalState.modules.canOneModuleFitSwitches(switchesToAdd)
         if(module){
-          console.log(`module to add switches to: ${module.name}`)
-          module.addSwitches(switchesToAdd)
+          console.log(`module to add switches to: ${module.toString()}`)
+          let succses = module.addSwitches(switchesToAdd)
+          console.log(`module after adding switches to: ${module.toString()}`)
           newGlobalState.switches.addSwitches(switchesToAdd)
           setGlobalState(newGlobalState)
-          return true
+          return true && succses
         }
         return false
       }
