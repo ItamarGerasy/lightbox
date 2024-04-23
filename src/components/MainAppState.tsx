@@ -127,7 +127,6 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       },
       addSwitches: (switchesToAdd: Array<SwitchObj>): boolean => {
         const newGlobalState = {...globalState}
-        console.log(`i'm in actions.addSwitches`)
         const module = newGlobalState.modules.canOneModuleFitSwitches(switchesToAdd)
         if(module){
           console.log(`module to add switches to: ${module.toString()}`)
