@@ -122,7 +122,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
 
         //removing compartment from the map
         newGlobalState.compartments.removeCompartment(compartmentId)
-        
+
         // removing for the compartments list that renders the compartments on the
         newGlobalState.compartmentsOrder = newGlobalState.compartmentsOrder.filter(cm => cm.id !== compartmentId)
         
@@ -131,6 +131,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       addSwitches: (switchesToAdd: Array<SwitchObj>): boolean => {
         const newGlobalState = {...globalState}
         const module = newGlobalState.modules.canOneModuleFitSwitches(switchesToAdd)
+        // this if will be implemented if one module can fit all the switches
         if(module){
           let succses = module.addSwitches(switchesToAdd)
           newGlobalState.switches.addSwitches(switchesToAdd)

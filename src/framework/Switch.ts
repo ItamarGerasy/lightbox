@@ -1,4 +1,4 @@
-import { Dimensions } from "../components/general/generalTypes";
+import { Dimensions, defaultSwitchDimensions } from "../components/general/generalTypes";
 import { Module as ModuleType } from "./Module"
 
 export class Switch {
@@ -186,5 +186,26 @@ export class SwitchesMap<SwitchType extends Switch> {
         }
         let newHigestIndex = Number(this.lastId.substring(1)) + 1
         return `s${newHigestIndex}`
+    }
+
+    createNewSwitchesArray(switchesAmount: number, description: string, prefix: string, feed: string, 
+        dimensions?: Dimensions): Array<SwitchType> {
+        // this function returns a new array of switches, that all have the same parameters but different ids
+
+        let switchArr = new Array(switchesAmount).fill(null).map((_, i) => {
+            let index = this.generateIndex() // new index of the shape: s23, s11, s123
+            let numericalIndex = Number(index.substring(1)) + i
+            index = `s${numericalIndex}`
+            const switchParams = {
+                id: `${index}`, 
+                name:`switch${index[1]}`, 
+                description: description, 
+                prefix: prefix, 
+                feed: feed,  
+                dimensions: dimensions ?? defaultSwitchDimensions 
+            }
+            return new Switch(switchParams) as SwitchType
+        })
+        return switchArr
     }
 }
