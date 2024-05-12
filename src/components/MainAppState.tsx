@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { DropResult } from 'react-beautiful-dnd';
-import { SwitchesMap, Switch as SwitchObj } from '../framework/Switch';
-import { Module, ModulesMap } from '../framework/Module';
+import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { DropResult } from 'react-beautiful-dnd'
+import { SwitchesMap, Switch as SwitchObj } from '../framework/Switch'
+import { Module, ModulesMap } from '../framework/Module'
 import { Compartment , CompartmentsMap } from "../framework/Compartment"
-import { defaultSwitchDimensions } from './general/generalTypes';
+import { defaultSwitchDimensions } from './general/generalTypes'
 
 export type GlobalState = {
   boardWidth: number,
@@ -26,7 +26,7 @@ export type GlobalStateContextType = {
       deleteSwitch: (switchId: string) => void
       deleteModuleWithSwitches: (moduleId: string) => void
       deleteCompartmentAndModules: (comratmentId: string) => void
-      addSwitches: (switchesToAdd: Array<SwitchObj>) => boolean
+      addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>) => boolean
     },
     dndActions: {
       droppedCompratment: (result: DropResult) => void
@@ -128,17 +128,20 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         
         setGlobalState(newGlobalState)
       },
-      addSwitches: (switchesToAdd: Array<SwitchObj>): boolean => {
+      addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>): boolean => {
+        // this function adds all given switches to one module
+        // returns "true" if it's succesful, and false if the switches coud not been add to a single module
         const newGlobalState = {...globalState}
+
+        // checking if all switches can be added to one module
         const module = newGlobalState.modules.canOneModuleFitSwitches(switchesToAdd)
-        // this if will be implemented if one module can fit all the switches
-        if(module){
-          let succses = module.addSwitches(switchesToAdd)
-          newGlobalState.switches.addSwitches(switchesToAdd)
-          setGlobalState(newGlobalState)
-          return true && succses
-        }
-        return false
+        if(!module) return false
+
+        console.log(`Going to add all ${switchesToAdd.length} switches to one module ${module.name} `)
+        module.addSwitches(switchesToAdd)
+        newGlobalState.switches.addSwitches(switchesToAdd)
+        setGlobalState(newGlobalState)
+        return true
       }
     },
     // drag and drop actions
@@ -218,11 +221,11 @@ export const withGlobalState = <P extends object>(
 const s1 = new SwitchObj(
   {id:'s1', name:'switch1', description:'lighting', prefix:'1X16A', feed:"PC",  dimensions:defaultSwitchDimensions})
 const s2 = new SwitchObj(
-  {id:'s2', name:'switch2', description:'aircon', prefix:'2X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
+  {id:'s2', name:'switch2', description:'aircon', prefix:'2X16A',  feed:"PC", dimensions:{...defaultSwitchDimensions, width: 17.5 * 2}})
 const s3 = new SwitchObj(
-  {id:'s3', name:'switch3', description:'aircon', prefix:'3X16A',  feed:"PC", dimensions:defaultSwitchDimensions})
+  {id:'s3', name:'switch3', description:'aircon', prefix:'3X16A',  feed:"PC", dimensions:{...defaultSwitchDimensions, width: 17.5 * 3}})
 const s4 = new SwitchObj(
-  {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: defaultSwitchDimensions})
+  {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: {...defaultSwitchDimensions, width: 17.5 * 4}})
 const switchesArr = [s1, s2, s3, s4]  
 const m1 = new Module(
   { id: 'm1', name: 'module1', feed: 'PC', switchesObjList: [s1, s2]})

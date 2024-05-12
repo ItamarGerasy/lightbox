@@ -81,11 +81,15 @@ function InputAccordion(props: InputAccordionProps) {
     // Create an array of switches with separate copies of the inputCopy object
     console.log("creating switch array")
     const newSwitchesArray = globalState.switches.createNewSwitchesArray(switchesAmount, input.switchDescription, input.switchSpecs, feedInput)
-    let succses = actions.crud.addSwitches(newSwitchesArray)
-    console.log(`adding switches was: ${succses ? 'succsesful' : 'not succsesful'}`)
+
+    // trying to add all switches to one module
+    let sucsess = actions.crud.addSwitchesToOneModule(newSwitchesArray)
+    if (sucsess) {
+      clearAllInput()
+      return
+    }
     
-    // cleaning input rows
-    clearAllInput()
+    
   };
 
   return (

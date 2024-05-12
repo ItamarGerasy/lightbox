@@ -16,7 +16,7 @@ export class Switch {
         name: string, 
         description: string,
         prefix: string,
-        dimensions: Dimensions, 
+        dimensions?: Dimensions, 
         feed?: string
     }){
         this.id = id
@@ -24,7 +24,10 @@ export class Switch {
         this.description = description
         this.prefix = prefix
         this.size = Number(prefix.charAt(0)) // always gonna be a single digit
-        this._dimensions = {...dimensions}
+        this._dimensions = dimensions ? {...dimensions} : {
+            ...defaultSwitchDimensions, 
+            width: this.size * defaultSwitchDimensions.width
+        } 
         this.feed = feed ? feed : ""
     }
 
@@ -202,7 +205,7 @@ export class SwitchesMap<SwitchType extends Switch> {
                 description: description, 
                 prefix: prefix, 
                 feed: feed,  
-                dimensions: dimensions ?? defaultSwitchDimensions 
+                dimensions: dimensions 
             }
             return new Switch(switchParams) as SwitchType
         })

@@ -115,9 +115,9 @@ export class Module {
     }
 
     // checking if sizewize a switch can be added
-    canAddSwitch(sw: SwitchType): boolean{
+    canAddSwitch(sw: SwitchType): boolean {
         if(this.isFull()) return false
-        return sw.dimensions.width + this.occupiedWidth > this._dimensions.width 
+        return sw.dimensions.width + this.occupiedWidth < this._dimensions.width 
     }
 
     // checking if can several switches can be added to module
@@ -131,12 +131,14 @@ export class Module {
 
     // a method that adds a switch to the module
     // if successfull return true, else false
-    addSwitch(sw: SwitchType, index?: number): boolean{
+    addSwitch(sw: SwitchType, index?: number): void{
         // index parameter indicate in which index to insert it in the ordered list
         // if not provided will add it to the end
         // it is used for the drag and drop functionality
-
-        if(this.isFull() && !this.canAddSwitch(sw)) return false
+        if(!this.canAddSwitch(sw)) {
+            throw new Error(`[${module.id}] couldn't add switch since the module is either full or switch is bigger then free space on module \n
+            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch()`)
+        }
         if(!index || index === 0){
             this.switchesObjList.push(sw)
         } else {
@@ -144,27 +146,16 @@ export class Module {
         }
         sw.myModule = this
         this.switchesAmount++
-        return true
     }
 
     // a method to add switches to the module
     // if successfull return true, else false
-    addSwitches(swArr: Array<SwitchType>): boolean{
+    addSwitches(swArr: Array<SwitchType>): void {
         let amountOfSwitchesAbleToAdd = this.canAddSwitches(swArr)
         if (amountOfSwitchesAbleToAdd < swArr.length) {
-            console.log(`[Module ${this.id}] module.addSwitches - cannot add switches since tried to add ${swArr.length} switches, and can add onlt ${amountOfSwitchesAbleToAdd}`)
-            return false
+            throw new Error(`[Module ${this.id}] module.addSwitches - cannot add switches since tried to add ${swArr.length} switches, and can add onlt ${amountOfSwitchesAbleToAdd}`)
         }
-        for(const sw of swArr){
-            let succes = this.addSwitch(sw)
-            if(!succes) {
-                throw new Error(`[Module ${this.id}] failed - addSwitches() something went wrong adding switch to the module, details: \n
-                Module: ${JSON.stringify(this)} \n
-                swithces to add: ${swArr.length} \n
-                switchObj: ${sw}`)
-            }
-        }
-        return true
+        swArr.forEach(swObj => this.addSwitch(swObj))    
     }
 
     removeSwitch(switchId: string): SwitchType | null{
@@ -245,9 +236,10 @@ export class ModulesMap<ModuleType  extends Module> {
     }
 
     // removes several modules from the map and returns an array of the removed modules
-    removeModules(modules: Array<string|ModuleType>): void{
+    removeModules(modules: Array<string|ModuleType>): Array<ModuleType>{
         const deletedModules: Array<ModuleType> = []
         modules.forEach(md => deletedModules.push(this.removeModule(md)))
+        return deletedModules
     }
 
     // Method to check if a module with given id exists
@@ -314,15 +306,37 @@ export class ModulesMap<ModuleType  extends Module> {
     }
 
     canOneModuleFitSwitches(swArr: Array<SwitchType>): ModuleType | null {
-        let moduleToReturn: ModuleType | null = null
-        for(const md of Object.values(this.modulesMap)){
-            let amountOfPossibleSwitchesToAdd = md.canAddSwitches(swArr) 
-            if( amountOfPossibleSwitchesToAdd >= swArr.length){
-                moduleToReturn = md
-                break
-            }
-        }
+        // this function takes an array of identical size switch objects and checks if there
+        // is a single module who can fit all of them.
+        // if there is one the fucntion will return this module object
+        // if not this function will return null
+        const freeSlotsMap = this.getModuleFreeSlotsMap(swArr)
+        let moduleToReturn: Module | null = null
+        freeSlotsMap.forEach((swNum, moduleId) => {
+            if (moduleToReturn) return
+            if (swNum >= swArr.length) moduleToReturn = this.get(moduleId)
+        })
         return moduleToReturn
+    }
+
+    canSomeModulesFitSwitches(swArr: Array<SwitchType>): number {
+        // this function designed to be used after  canOneModuleFitSwitches() 
+        // checks for the amount of switches that can be added to existing switches
+        const moduleFreeSlotsMap = this.getModuleFreeSlotsMap(swArr)
+        let totalFreeSlots: number = 0 
+        moduleFreeSlotsMap.forEach(swNum => totalFreeSlots += swNum)
+        return totalFreeSlots
+    }
+
+    getModuleFreeSlotsMap(swArr: Array<SwitchType>): Map<string, number> {
+        // this function recives an array of switch objects and returns a map
+        // key is module id nad value is number of switches it can add to itself
+        // assuming all switches are the same size
+        const output = new Map()
+        Object.values(this.modulesMap).forEach((mdObj) => {
+            output.set(mdObj.id, mdObj.canAddSwitches(swArr)) 
+        })
+        return output
     }
 
     // this function creates a colne/copy of the current ModulesMap

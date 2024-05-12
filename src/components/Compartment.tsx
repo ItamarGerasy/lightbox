@@ -1,18 +1,17 @@
 // Compartment.tsx
 import { CompartmentStyle, ModulesList } from './Compartmen.styles'
-import Module from './Module';
-import React, { useState } from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import Module from './Module'
+import React, { useState } from 'react'
+import { Draggable } from 'react-beautiful-dnd'
 import { StrictModeDroppable } from './general/StrictModeDroppable'
-import { useGlobalState } from './MainAppState';
-import { Compartment as CompartmentType } from '../framework/Compartment';
-import { Module as ModuleType, ModulesMap } from '../framework/Module';
+import { Compartment as CompartmentType } from '../framework/Compartment'
+import { Module as ModuleType } from '../framework/Module'
 import { ColumnFlexBox, FlexBox, Title } from './general/GeneralStyles.styles'
-import Collapse from '@mui/material/Collapse';
-import { CompartmentMenu } from './CompartmentMenu';
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Collapse from '@mui/material/Collapse'
+import { CompartmentMenu } from './CompartmentMenu'
+import IconButton from '@mui/material/IconButton'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 
 type InnerModulesListProps = {
   modulesOrderedList: Array<ModuleType>
@@ -34,7 +33,6 @@ interface CompartmentProps {
 }
 
 export const Compartment: React.FC<CompartmentProps> = ({ compartment, index }) => {
-  const {globalState} = useGlobalState();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = () => {
