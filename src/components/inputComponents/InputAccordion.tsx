@@ -88,6 +88,12 @@ function InputAccordion(props: InputAccordionProps) {
       clearAllInput()
       return
     }
+
+    sucsess = actions.crud.addSwitchesToSeveralModules(newSwitchesArray)
+    if (sucsess) {
+      clearAllInput()
+      return
+    }
     
     
   };

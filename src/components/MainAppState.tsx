@@ -27,6 +27,7 @@ export type GlobalStateContextType = {
       deleteModuleWithSwitches: (moduleId: string) => void
       deleteCompartmentAndModules: (comratmentId: string) => void
       addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>) => boolean
+      addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>) => boolean
     },
     dndActions: {
       droppedCompratment: (result: DropResult) => void
@@ -142,7 +143,19 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         newGlobalState.switches.addSwitches(switchesToAdd)
         setGlobalState(newGlobalState)
         return true
+      },
+      addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>): boolean => {
+        const newGlobalState = {...globalState}
+
+        //checking if can fit switches in several modules
+        let amountOfSwitchesThatCanFit = newGlobalState.modules.canSomeModulesFitSwitches(switchesToAdd)
+        if(amountOfSwitchesThatCanFit < switchesToAdd.length) return false
+
+        newGlobalState.modules.addSwitchesToSeveralModules(switchesToAdd)
+        setGlobalState(newGlobalState)
+        return true
       }
+
     },
     // drag and drop actions
     dndActions: {

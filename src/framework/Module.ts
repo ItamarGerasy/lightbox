@@ -253,10 +253,9 @@ export class ModulesMap<ModuleType  extends Module> {
     }
 
     // get module with given id if doesn't exists returns null
-    get(id: string): Module | null {
+    get(id: string): Module {
         if(!this.hasModule(id)) {
-            console.warn(`[ModulesMap] module with id: ${id} doesn't exsit on the map \n modules map ids: ${Object.keys(this.modulesMap)}`)
-            return null
+            throw new Error(`[ModulesMap] module with id: ${id} doesn't exsit on the map \n modules map ids: ${Object.keys(this.modulesMap)}`)
         }
         return this.modulesMap[id]
     }
@@ -330,13 +329,26 @@ export class ModulesMap<ModuleType  extends Module> {
 
     getModuleFreeSlotsMap(swArr: Array<SwitchType>): Map<string, number> {
         // this function recives an array of switch objects and returns a map
-        // key is module id nad value is number of switches it can add to itself
+        // key is module id and value is number of switches it can add to itself
         // assuming all switches are the same size
         const output = new Map()
         Object.values(this.modulesMap).forEach((mdObj) => {
             output.set(mdObj.id, mdObj.canAddSwitches(swArr)) 
         })
         return output
+    }
+
+    addSwitchesToSeveralModules(swArr: Array<SwitchType>): boolean {
+        // this function will add the switches to available modules, might add them all to one module if he has the capacity
+        if(!this.canSomeModulesFitSwitches(swArr)) return false
+        const freeSlotsMap = this.getModuleFreeSlotsMap(swArr)
+        freeSlotsMap.forEach((freeSlots, moduleId) => {
+            if(swArr.length === 0 || !freeSlots) return
+            const switchesForModule = swArr.splice(0, freeSlots);
+            const module = this.get(moduleId)
+            module.addSwitches(switchesForModule)
+        })
+        return true
     }
 
     // this function creates a colne/copy of the current ModulesMap
