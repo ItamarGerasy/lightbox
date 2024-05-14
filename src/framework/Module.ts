@@ -2,19 +2,31 @@ import { Dimensions, defaultModuleDimensions } from "../components/general/gener
 import { Compartment as CompartmentType } from "../framework/Compartment"
 import {Switch as SwitchType} from "./Switch"
 
+/** class to represent a module containning switches in  a certain oreder */
 export class Module {
     id: string
     name: string
     feed: string
-    // switchesObjList will be responsible to hold the module switches ids
-    // in a certain order that will be changed depending on user interactions 
+    /** switchesObjList will be responsible to hold the module switches ids
+     * in a certain order that will be changed depending on user interactions  */
     switchesObjList: Array<SwitchType>
     _dimensions: Dimensions
     switchesAmount: number
     occupiedWidth: number = 0
     freeWidth: number
-    private _myCompartment: CompartmentType | undefined = undefined  // Compartment object which conatins this Switch
+    /**Compartment object which conatins this Switch*/
+    private _myCompartment: CompartmentType | undefined = undefined  
 
+    /**
+     * Creates an instance of a module with specified properties.
+     *
+     * @param {Object} params - The input object containing the properties for the module.
+     * @param {string} params.id - The unique identifier for the module, example: m1, m123, m346.
+     * @param {string} params.name - The name of the module.
+     * @param {string} params.feed - The feed for the module.
+     * @param {Array<SwitchType>} [params.switchesObjList] - An optional array of switch objects to be added to the module. Each switch should have a `dimensions` property containing its width.
+     * @param {Dimensions} [params.dimensions] - An optional dimensions object specifying the width of the module. If not provided, a default value is used.
+     */
     constructor({id, name, feed, switchesObjList, dimensions}:{
         id: string,
         name: string,
@@ -46,7 +58,16 @@ export class Module {
         this._myCompartment = compartment
     }
 
-    // setter for the switch dimensions, you can set some or all of the dimensions
+    /**
+     * Dimesnions object containning width, height and depth of the module
+     * 
+     * @property {Object} dimensions - Dimenisons object to set the module dimensions
+     * @property {number} dimensions.width  
+     * @property {number} dimensions.height 
+     * @property {number} dimensions.depth 
+     * 
+     * @throws {error} throw an error if you try to set new width which is smaller then the already occupied width the function will 
+     */
     set dimensions({width, height, depth}:{
         width?: number;
         height?: number;
@@ -72,12 +93,16 @@ export class Module {
         }
     }
 
-    // returns a copy of the dimensions object of the module
+    /**
+     * @returns a copy of the dimensions object of the module 
+     */
     get dimensions(): Dimensions{
         return {...this._dimensions}
     }
 
-    // this function return a colne/copy of this current module
+    /**
+     *  @returns this function return a colne/copy of this current module
+     */
     clone(): Module {
         const params = {
             id: this.id,
@@ -95,6 +120,10 @@ export class Module {
         return this.getSwitchIndexById(switchId) !== -1
     }
 
+    /** 
+     * @param switchId id of the desired switch
+     * @returns the switch index on the ordered list by switch ID  
+    */
     getSwitchIndexById(switchId: string): number{
         let index =  this.switchesObjList.findIndex((sw) => sw.id === switchId)
         if(index !== -1) return index
@@ -102,6 +131,10 @@ export class Module {
         return -1
     }
 
+    /** 
+     * @param switchId id of the desired switch
+     * @returns switch object by switch ID if switch doesn't exists on the module will return null
+     */
     getSwitchById(switchId: string): SwitchType | null {
         if(!this.hasSwitch(switchId)){
             return null;
@@ -114,27 +147,35 @@ export class Module {
         return this.freeWidth === 0;
     }
 
-    // checking if sizewize a switch can be added
+    /**
+     * checking if sizewize a switch can be added 
+     * @param sw switch object
+     * @returns true if the switch can be added to the module
+     */
     canAddSwitch(sw: SwitchType): boolean {
         if(this.isFull()) return false
         return sw.dimensions.width + this.occupiedWidth < this._dimensions.width 
     }
 
-    // checking if can several switches can be added to module
-    // this method will return the amount of switches from the list it can add
-    // parameter: switches - and array of switches with the same dimensions
+    /**
+     * checking if can several switches can be added to module
+     *  
+     * @param switches an array of switches with the same dimensions
+     * @returns The number of switches that can be added to the module. Returns 0 if the module is full or if the `switches` array is empty.
+     */
     canAddSwitches(switches: Array<SwitchType>): number {
         if (!switches) return 0
         if (this.isFull()) return 0
         return Math.floor(this.freeWidth / (switches[0].dimensions.width * switches.length))
     }
 
-    // a method that adds a switch to the module
-    // if successfull return true, else false
+    /**
+     * a method that adds a single switch to the module
+     * @param sw switch object to add to the module
+     * @param index index parameter indicate in which index to insert the switch object in the ordered list. if not provided will add it to the end. it is used for the drag and drop functionality
+     * @returns true if operation was succesful, and false if it wasn't
+     */
     addSwitch(sw: SwitchType, index?: number): void{
-        // index parameter indicate in which index to insert it in the ordered list
-        // if not provided will add it to the end
-        // it is used for the drag and drop functionality
         if(!this.canAddSwitch(sw)) {
             throw new Error(`[${module.id}] couldn't add switch since the module is either full or switch is bigger then free space on module \n
             Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch()`)
@@ -148,8 +189,11 @@ export class Module {
         this.switchesAmount++
     }
 
-    // a method to add switches to the module
-    // if successfull return true, else false
+    /**
+     * a method to add several switches to the module, they will be added to the end of the oredered list
+     * @param swArr array of switches object to be added
+     * @returns if successfull return true, else false
+     */
     addSwitches(swArr: Array<SwitchType>): void {
         let amountOfSwitchesAbleToAdd = this.canAddSwitches(swArr)
         if (amountOfSwitchesAbleToAdd < swArr.length) {
@@ -158,9 +202,12 @@ export class Module {
         swArr.forEach(swObj => this.addSwitch(swObj))    
     }
 
+    /**
+     * this method removes a switch from the module and returns it
+     * @param switchId id of the switch 
+     * @returns switch object. if switch with this index doesn't exist in the switch returns null
+     */
     removeSwitch(switchId: string): SwitchType | null{
-        // this method removes a switch from the module and returns it
-        // if this index doesn't exist in the switch returns null
         if(!this.hasSwitch(switchId)){
             throw new Error(`[Modul ${this.name}] cannot delete switch with id ${switchId} because it doesn't exists on this module`)
         }
@@ -173,6 +220,12 @@ export class Module {
         return sw
     }
 
+    /**
+     * Removes switch object from the module in a spesific index from the list
+     * @param {number} index switch index on the ordered list
+     * @returns {SwitchType} the removed switch object
+     * @throws an error if no switch object exists on this index
+     */
     removeSwitchAtIndex(index: number): SwitchType {
         if(index > this.switchesAmount){
             throw new Error(`[Module ${this.name}] cannot delete switch on index ${index} since there are only ${this.switchesAmount} switches on the module`)
@@ -188,17 +241,25 @@ export class Module {
     }
 }
 
-export class ModulesMap<ModuleType  extends Module> {
-    // this class is basically a map of modules with some extra properties
-    private modulesMap: { [key: string]: ModuleType } = {}
+/**
+ * this class is basically a map of modules with some extra properties
+ * also used as proxy to create and delete Modules in this project
+ */
+export class ModulesMap {
+    private modulesMap: { [key: string]: Module } = {}
     private _amount: number = 0
     lastId: string | undefined = undefined
     
-    // Constructor for Modules map
-    // option 1: do not pass any argument, will initialize empty map
-    // option 2: pass an array of modules , in that case we assume all modules 
-    // id's on the array are different
-    constructor(modulesArray?: ModuleType[]){
+    /**
+     * Constructor for Modules map
+     * 
+     * option 1: do not pass any argument, will initialize empty map
+     * 
+     * option 2: pass an array of modules , in that case we assume all modules id's on the array are different
+     * @param modulesArray 
+     * @returns 
+     */
+    constructor(modulesArray?: Module[]){
         if(!modulesArray){
             return
         }
@@ -212,19 +273,22 @@ export class ModulesMap<ModuleType  extends Module> {
         });
     }
 
-    // removes a module from the modulees map and returns the module object
-    // you can pass a module object or module id
-    // if the module doesn't exist on the map an error will be thrown
-    removeModule(md: string|ModuleType): ModuleType {
+    /**
+     * removes a module from the modules map
+     * @param {string|Module} md module object or module ID
+     * @returns the removed module object
+     * @throws error if the module doesn't exist on the map
+     */
+    removeModule(md: string|Module): Module {
         let id = typeof md === 'string' ? md : md.id
         if (!this.hasModule(id)) {
             throw new Error(`[ModulesMap] module with id: ${id} cannot be deleted from map since it doesn't exists in the map`)
         }
 
         const moduleToDelete = this.modulesMap[id]
+        // if the module we want to remove has the latest index
+        // we set the latest index as the largest index before that
         if (moduleToDelete.id === this.lastId){
-            // if the module we want to remove has the latest index
-            // we set the latest index as the largest index before that
             const ids = Object.keys(this.modulesMap);
             ids.sort().pop();
             this.lastId = ids.pop()
@@ -235,24 +299,38 @@ export class ModulesMap<ModuleType  extends Module> {
         return moduleToDelete
     }
 
-    // removes several modules from the map and returns an array of the removed modules
-    removeModules(modules: Array<string|ModuleType>): Array<ModuleType>{
-        const deletedModules: Array<ModuleType> = []
+    /**
+     * removes several modules from the map
+     * @param {Array<string | Module>} modules array of modules IDs or module objects
+     * @returns array of the removed modules
+     */
+    removeModules(modules: Array<string|Module>): Array<Module>{
+        const deletedModules: Array<Module> = []
         modules.forEach(md => deletedModules.push(this.removeModule(md)))
         return deletedModules
     }
 
-    // Method to check if a module with given id exists
+    /**
+     * Method to check if a module with given id exists
+     * @param {string} moduleId module ID 
+     * @returns {boolean} true if module with this ID exists on the map
+     */
     hasModule(moduleId: string): boolean {
         return moduleId in this.modulesMap
     }
 
-    // Custom property to get the number of modules
+    /**
+     * @property the number of switches on this module
+     */
     get amount(): number {
         return this._amount
     }
 
-    // get module with given id if doesn't exists returns null
+    /**
+     * Gets module with given id
+     * @param {string} id module ID 
+     * @returns {Module} module object, if module with ID doesn't exists returns null
+     */
     get(id: string): Module {
         if(!this.hasModule(id)) {
             throw new Error(`[ModulesMap] module with id: ${id} doesn't exsit on the map \n modules map ids: ${Object.keys(this.modulesMap)}`)
@@ -260,23 +338,26 @@ export class ModulesMap<ModuleType  extends Module> {
         return this.modulesMap[id]
     }
 
-    set(id: string, newModule: ModuleType): void {
+    /**
+     * Adding new module in the map with ID as key and module object as value
+     * @param {string} id module ID
+     * @param {ModuleType} newModule module object 
+     */
+    set(id: string, newModule: Module): void {
+        if (this.hasModule(newModule.id)) {
+            console.log(`Modules map already have module with id: ${newModule.id}`)
+            return
+        }
         this._amount++
         this.lastId = id
         this.modulesMap[id] = newModule;
     }
 
-    addModule(newModule: ModuleType): void {
-        if (this.hasModule(newModule.id)) {
-            console.log(`Modules map already have module with id: ${newModule.id}`)
-            return
-        }
-        this.set(newModule.id, newModule)
-        this._amount++ 
-    }
-
-    // function to generate new index based on all exsisting indexes for example
-    // if the latest module added has the index of "m123" the function will return m124
+    /**
+     * Function to generate new index based on all exsisting indexes.
+     * If the latest module added has the index of "m123" the function will return "m124"
+     * @returns {string} new index to assign to new module
+     */
     generateIndex(): string {
         if(!this.lastId){
             return "m1"
@@ -285,7 +366,12 @@ export class ModulesMap<ModuleType  extends Module> {
         return `m${newHigestIndex}`
     }
 
-    getParentModuleOfSwitchById(id: string): ModuleType | null {
+    /**
+     * Finds a module containning a switch with given ID
+     * @param {string} id ID of switch to look for 
+     * @returns {Module} returns 
+     */
+    getParentModuleOfSwitchById(id: string): Module | null {
         let parentModule = null
         Object.values(this.modulesMap).forEach((md) => {
             if(md.getSwitchIndexById(id) !== -1){
@@ -295,7 +381,7 @@ export class ModulesMap<ModuleType  extends Module> {
         return parentModule
     }
 
-    getFirstModuleThatCanAddSwitch(sw: SwitchType): ModuleType | null {
+    getFirstModuleThatCanAddSwitch(sw: SwitchType): Module | null {
         Object.values(this.modulesMap).forEach((md) => {
             if(md.canAddSwitch(sw)){
                 return md
@@ -304,7 +390,7 @@ export class ModulesMap<ModuleType  extends Module> {
         return null
     }
 
-    canOneModuleFitSwitches(swArr: Array<SwitchType>): ModuleType | null {
+    canOneModuleFitSwitches(swArr: Array<SwitchType>): Module | null {
         // this function takes an array of identical size switch objects and checks if there
         // is a single module who can fit all of them.
         // if there is one the fucntion will return this module object
@@ -315,7 +401,7 @@ export class ModulesMap<ModuleType  extends Module> {
             if (moduleToReturn) return
             if (swNum >= swArr.length) moduleToReturn = this.get(moduleId)
         })
-        return moduleToReturn
+        return moduleToReturn 
     }
 
     canSomeModulesFitSwitches(swArr: Array<SwitchType>): number {
@@ -352,8 +438,8 @@ export class ModulesMap<ModuleType  extends Module> {
     }
 
     // this function creates a colne/copy of the current ModulesMap
-    clone(): ModulesMap<ModuleType> {
-        const modulesArr = Object.values(this.modulesMap).map(md => md.clone() as ModuleType)
-        return new ModulesMap<ModuleType>(modulesArr)
+    clone(): ModulesMap {
+        const modulesArr = Object.values(this.modulesMap).map(md => md.clone() as Module)
+        return new ModulesMap(modulesArr)
     }
 }

@@ -146,7 +146,6 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       },
       addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>): boolean => {
         const newGlobalState = {...globalState}
-
         //checking if can fit switches in several modules
         let amountOfSwitchesThatCanFit = newGlobalState.modules.canSomeModulesFitSwitches(switchesToAdd)
         if(amountOfSwitchesThatCanFit < switchesToAdd.length) return false

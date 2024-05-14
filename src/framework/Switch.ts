@@ -5,11 +5,16 @@ export class Switch {
     id: string
     name: string
     description: string
-    prefix: string   // prefix of the switch, of specific format. example: 3X16 first number is the size, second number is the Voltage of the switch
+    /** 
+     * prefix of the switch, of specific format. first number is the size, second number is the Voltage of the switch 
+     * @example 3X16A, 1X40A
+     * */
+    prefix: string   
     readonly size: number
     feed?: string
     private _dimensions: Dimensions
-    private _myModule!: ModuleType | undefined // Module object which conatins this Switch
+    /** Module object which contains this switch */
+    private _myModule!: ModuleType | undefined
 
     constructor({id, name, description, prefix, dimensions, feed}:{
         id: string, 
@@ -31,20 +36,20 @@ export class Switch {
         this.feed = feed ? feed : ""
     }
 
-    // setter for myModule property, be sure to pass a pointer and not a copy in order
-    // for removeSwitch to do it job well (removing the switch from the module)
-    // important notice: this function doesn't add the switch itself to the module property
-    // make sure to use module properties for that
+    /** setter for myModule property, be sure to pass a pointer and not a copy in order
+    * for removeSwitch to do it job well (removing the switch from the module)
+    * important notice: this function doesn't add the switch itself to the module property
+    * make sure to use module properties for that */
     set myModule(module: ModuleType | undefined){
         this._myModule = module
     }
 
-    // returns a pointer to the module object which contains this switch
+    /**returns a pointer to the module object which contains this switch */
     get myModule(): ModuleType | undefined{
         return this._myModule
     }
 
-    // setter for the switch dimensions, you can set some or all of the dimensions
+    /**setter for the switch dimensions, you can set some or all of the dimensions */
     set dimensions({width, height, depth}:{
         width?: number;
         height?: number;
@@ -57,7 +62,7 @@ export class Switch {
         }
     }
 
-    // returns a copy of the dimensions object of the switch
+    /** returns a copy of the dimensions object of the switch */ 
     get dimensions(): Dimensions{
         return {...this._dimensions}
     }
@@ -70,7 +75,7 @@ export class Switch {
         }
     }
 
-    // this function return a colne/copy of this current switch
+    /**this function return a colne/copy of this current switch */ 
     clone(): Switch {
         const params = {
             id: this.id,
@@ -86,34 +91,40 @@ export class Switch {
     }
 }
 
-export class SwitchesMap<SwitchType extends Switch> {
-    // this class is basically a map of switches with some extra properties
-    private switchesMap: { [key: string]: SwitchType } = {}
+/**this class is basically a map of switches with some extra properties */ 
+export class SwitchesMap {    
+    private switchesMap: { [key: string]: Switch } = {}
     private _amount: number = 0
+    /** The ID of the last switch inserted into the map */
     lastId: string | undefined = undefined
     
-    // Constructor for Switches map
-    // option 1: do not pass any argument, will initialize empty map
-    // option 2: pass an array of switches , in that case we assume all switches 
-    // id's on the array are different
-    constructor(switchesArray?: SwitchType[]){
+    /**
+     * Constructor for Switches map 
+     * 
+     * option 1: do not pass any argument, will initialize empty map 
+     * 
+     * option 2: pass an array of switches , in that case we assume all switches 
+     * 
+     * id's on the array are different
+     * */ 
+    constructor(switchesArray?: Switch[]){
         if(!switchesArray){
             return
         }
 
+        this.addSwitches(switchesArray)
         switchesArray.forEach((sw) => {
-            this.switchesMap[sw.id] = sw;
-            if (!this.lastId || sw.id > this.lastId) {
-                this.lastId = sw.id;
-            }
-            this._amount++;
+            
         });
     }
 
-    // removes a switch from the switches map and returns the switch object
-    // you can pass a switch object or switch id
-    // if the switch doesn't exist on the map an error will be thrown
-    removeSwitch(sw: SwitchType | string): SwitchType {
+    /** removes a switch from the switches map and returns the switch object
+     * 
+    * you can pass a switch object or switch id to be removed
+    * 
+    * if the switch doesn't exist on the map an error will be thrown 
+    * */
+    removeSwitch(sw: Switch | string): Switch {
         let id = typeof sw === 'string' ? sw : sw.id
         if (!this.hasSwitch(id)) {
             throw new Error(`[SwitchesMap] switch with id ${id} doesn't exsits in the map`)
@@ -131,58 +142,52 @@ export class SwitchesMap<SwitchType extends Switch> {
         return deletedSwitch
     }
 
-    // removes several switches from the map and returns an array of the removed switches
-    removeSwitches(switchesIds: Array<string|SwitchType>): Array<SwitchType> {
-        const deletedSwitches: Array<SwitchType> = []
+    /** removes several switches from the map and returns an array of the removed switches */
+    removeSwitches(switchesIds: Array<string|Switch>): Array<Switch> {
+        const deletedSwitches: Array<Switch> = []
         switchesIds.forEach(id => deletedSwitches.push(this.removeSwitch(id)))
         return deletedSwitches
     }
 
-    // Method to check if a switch with given id exists
+    /**Method to check if a switch with given id exists */
     hasSwitch(switchId: string): boolean {
         return switchId in this.switchesMap
     }
 
-    // Custom property to get the number of switches
+    /**Custom property to get the number of switches */
     get amount(): number {
         return this._amount
     }
 
-    // getter and setter for switches by id
+    /** getter and setter for switches by id */
     get(id: string): Switch | null {
         if(!this.hasSwitch(id)) return null
         return this.switchesMap[id]
     }
 
-    set(id: string, newSwitch: SwitchType): void {
+    /** set a new switch in the map */
+    set(id: string, newSwitch: Switch): void {
+        if (this.hasSwitch(newSwitch.id)) {
+            console.log(`Switches map already have switch with id: ${newSwitch.id}`)
+            return
+        }
         this._amount++
         this.lastId = id
         this.switchesMap[id] = newSwitch;
     }
 
-    // this function creates a colne/copy of the current SwitchesMap
-    clone(): SwitchesMap<SwitchType> {
-        const switchesArr = Object.values(this.switchesMap).map(sw => sw.clone() as SwitchType)
-        return new SwitchesMap<SwitchType>(switchesArr)
+    /**this function creates a colne/copy of the current SwitchesMap */
+    clone(): SwitchesMap {
+        const switchesArr = Object.values(this.switchesMap).map(sw => sw.clone() as Switch)
+        return new SwitchesMap(switchesArr)
     }
 
-    addSwitch(newSwitch: SwitchType): void {
-        if (this.hasSwitch(newSwitch.id)) {
-            console.log(`Switches map already have switch with id: ${newSwitch.id}`)
-            return
-        }
-        this.set(newSwitch.id, newSwitch)
+    addSwitches(swithesArr: Array<Switch>): void {
+        swithesArr.forEach((sw) => this.set(sw.id, sw))
     }
 
-    addSwitches(swithesArr: Array<SwitchType>): void {
-        for(const sw of swithesArr) {
-            console.log(`trying to add switch: ${sw}`)
-            this.addSwitch(sw)
-        }
-    }
-
-    // function to generate new index based on all exsisting indexes for example
-    // if the latest switch added has the index of "s123" the function will return 124
+    /**function to generate new index based on all exsisting indexes for example
+     * if the latest switch added has the index of "s123" the function will return 124 */
     generateIndex(): string {
         if(!this.lastId){
             return "s1"
@@ -191,24 +196,29 @@ export class SwitchesMap<SwitchType extends Switch> {
         return `s${newHigestIndex}`
     }
 
-    createNewSwitchesArray(switchesAmount: number, description: string, prefix: string, feed: string, 
-        dimensions?: Dimensions): Array<SwitchType> {
+    /** Creates an array of switch objects with same parameters to all switches */
+    createNewSwitchesArray(switchesAmount: number, description: string, prefix: string, feed: string, name?: string, 
+        dimensions?: Dimensions): Array<Switch> {
         // this function returns a new array of switches, that all have the same parameters but different ids
 
-        let switchArr = new Array(switchesAmount).fill(null).map((_, i) => {
-            let index = this.generateIndex() // new index of the shape: s23, s11, s123
-            let numericalIndex = Number(index.substring(1)) + i
-            index = `s${numericalIndex}`
-            const switchParams = {
-                id: `${index}`, 
-                name:`switch${index[1]}`, 
-                description: description, 
-                prefix: prefix, 
-                feed: feed,  
-                dimensions: dimensions 
-            }
-            return new Switch(switchParams) as SwitchType
-        })
+        let switchArr = new Array(switchesAmount).fill(null)
+        switchArr.map((_, i) => this.createNewSwitch(description, prefix, feed, name, dimensions))
         return switchArr
+    }
+    
+    /**Factory function for Switch object, adds it to the map and returns it */
+    createNewSwitch(description: string, prefix: string, feed: string, name?: string, dimensions?: Dimensions): Switch {
+        let newId = this.generateIndex() // new index of the shape: s23, s11, s123
+        const switchParams = {
+            id: `${newId}`, 
+            name: name || `switch${newId.substring(1)}`, 
+            description: description, 
+            prefix: prefix, 
+            feed: feed,  
+            dimensions: dimensions 
+        }
+        const sw = new Switch(switchParams)
+        this.set(sw.id, sw)
+        return sw
     }
 }
