@@ -1,4 +1,5 @@
-import { Switch, SwitchesMap } from './Switch'
+import { Switch } from './Switch'
+import { SwitchesMap } from './SwitchesMap'
 import { Dimensions, defaultSwitchDimensions } from "../components/general/generalTypes";
 
 describe('Switch class constructor', () => {
