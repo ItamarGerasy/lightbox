@@ -52,7 +52,7 @@ describe('SwitchesMap', () => {
         })
         const switchesMap = new SwitchesMap()
 
-        switchesMap.addSwitch(switchInstance)
+        switchesMap.set(switchInstance.id, switchInstance)
         expect(switchesMap.get(switchInstance.id)).toEqual(switchInstance)
         expect(switchesMap.hasSwitch(switchInstance.id)).toBe(true)
         expect(switchesMap.amount).toBe(1)

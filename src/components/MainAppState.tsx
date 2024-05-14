@@ -11,8 +11,8 @@ export type GlobalState = {
   boardDepth: number,
   compartmentsOrder: Array<Compartment>,
   compartments: CompartmentsMap<Compartment>,
-  modules: ModulesMap<Module>,
-  switches: SwitchesMap<SwitchObj>
+  modules: ModulesMap,
+  switches: SwitchesMap
 }
 
 export type GlobalStateContextType = {
@@ -146,6 +146,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
       },
       addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>): boolean => {
         const newGlobalState = {...globalState}
+
         //checking if can fit switches in several modules
         let amountOfSwitchesThatCanFit = newGlobalState.modules.canSomeModulesFitSwitches(switchesToAdd)
         if(amountOfSwitchesThatCanFit < switchesToAdd.length) return false
