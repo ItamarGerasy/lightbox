@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { DropResult } from 'react-beautiful-dnd'
 import { SwitchesMap, Switch as SwitchObj } from '../framework/Switch'
-import { Module, ModulesMap } from '../framework/Module'
+import { Module } from '../framework/Module'
+import { ModulesMap } from '../framework/ModulesMap'
 import { Compartment , CompartmentsMap } from "../framework/Compartment"
 import { defaultSwitchDimensions } from './general/generalTypes'
 
