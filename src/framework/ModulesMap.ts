@@ -222,6 +222,59 @@ export class ModulesMap {
     }
 
     /**
+     * Factory function for Module object, adds it to the map and returns it
+     * @param feed Modules feed, Default: ""
+     * @param switchesObjList Oredered switch array (not sorting order, orgenizational order), Default: []
+     * @param name Optional - Mdule name, if not provided will name it module and a number, example: module5 
+     * @param dimensions Modules dimensions, Default: {@link defaultModuleDimensions}
+     * @returns 
+     */
+    createNewModule({feed = "", switchesObjList=null, name, dimensions = defaultModuleDimensions}:{
+        feed?: string,
+        switchesObjList?: Switch[] | null,
+        name?: string
+        dimensions?: Dimensions
+    }): Module {
+        let newId = this.generateIndex() // new index of the shape: m23, m11, m123
+
+        const moduleParams = {
+            id: `${newId}`, 
+            name: name || `module${newId.substring(1)}`, 
+            feed: feed,
+            switchesObjList: switchesObjList || [],
+            dimensions: dimensions
+        }
+        const md = new Module(moduleParams)
+        this.set(md.id, md)
+        return md
+    }
+
+    /**
+     * Creates an array of module objects without any switches with same feed and dimensions to all modules
+     * 
+     * They will have different IDs and names
+     * @param feed Modules feed, Default: ""
+     * @param dimensions Modules dimensions, Default: {@link defaultModuleDimensions}
+     * @returns Array of new module objects
+     */
+    createNewModulesArray({modulesAmount, feed = "", dimensions = defaultModuleDimensions}:{
+        modulesAmount: number, 
+        feed?: string, 
+        dimensions: Dimensions
+    }): Module[] {
+        let params = {
+            feed: feed, 
+            dimensions: dimensions
+        }
+
+        let modulesArr = new Array(modulesAmount).fill(null)
+        modulesArr.map((_, i) => this.createNewModule(params))
+
+        return modulesArr
+    }
+    
+
+    /**
      * this function creates a clone/copy of the current ModulesMap
      * @returns ModuleMap copy
      */
