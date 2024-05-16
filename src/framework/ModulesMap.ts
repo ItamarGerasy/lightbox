@@ -223,7 +223,7 @@ export class ModulesMap {
 
     /**
      * Factory function for Module object, adds it to the map and returns it
-     * @param feed Modules feed, Default: ""
+     * @param feed Modules feed, Default: module+number
      * @param switchesObjList Oredered switch array (not sorting order, orgenizational order), Default: []
      * @param name Optional - Mdule name, if not provided will name it module and a number, example: module5 
      * @param dimensions Modules dimensions, Default: {@link defaultModuleDimensions}
@@ -260,15 +260,14 @@ export class ModulesMap {
     createNewModulesArray({modulesAmount, feed = "", dimensions = defaultModuleDimensions}:{
         modulesAmount: number, 
         feed?: string, 
-        dimensions: Dimensions
+        dimensions?: Dimensions
     }): Module[] {
         let params = {
             feed: feed, 
             dimensions: dimensions
         }
 
-        let modulesArr = new Array(modulesAmount).fill(null)
-        modulesArr.map((_, i) => this.createNewModule(params))
+        let modulesArr = new Array(modulesAmount).fill(null).map( _ => this.createNewModule(params))
 
         return modulesArr
     }

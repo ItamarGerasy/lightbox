@@ -114,7 +114,7 @@ export class SwitchesMap {
         // this function returns a new array of switches, that all have the same parameters but different ids
 
         let switchArr = new Array(switchesAmount).fill(null)
-        switchArr.map((_, i) => this.createNewSwitch(description, prefix, feed, name, dimensions))
+        switchArr = switchArr.map((_, i) => this.createNewSwitch(description, prefix, feed, name, dimensions))
         return switchArr
     }
     

@@ -20,18 +20,17 @@ export class Module {
     /**
      * Creates an instance of a module with specified properties.
      *
-     * @param {Object} params - The input object containing the properties for the module.
-     * @param {string} params.id - The unique identifier for the module, example: m1, m123, m346.
-     * @param {string} params.name - The name of the module.
-     * @param {string} params.feed - The feed for the module.
-     * @param {Array<Switch>} [params.switchesObjList] - An optional array of switch objects to be added to the module. Each switch should have a `dimensions` property containing its width.
-     * @param {Dimensions} [params.dimensions] - An optional dimensions object specifying the width of the module. If not provided, a default value is used.
+     * @param {string} id - The unique identifier for the module, example: m1, m123, m346.
+     * @param {string} name - The name of the module.
+     * @param {string} feed - The feed for the module.
+     * @param {Array<Switch>} [switchesObjList] - An optional array of switch objects to be added to the module. Each switch should have a `dimensions` property containing its width.
+     * @param {Dimensions} [dimensions] - An optional dimensions object specifying the width of the module. If not provided, a default value is used.
      */
     constructor({id, name, feed, switchesObjList, dimensions}:{
         id: string,
         name: string,
         feed: string,
-        switchesObjList?: Array<Switch>,
+        switchesObjList?: Switch[],
         dimensions?: Dimensions
     }){
         this.id = id
@@ -166,7 +165,7 @@ export class Module {
     canAddSwitches(switches: Array<Switch>): number {
         if (!switches) return 0
         if (this.isFull()) return 0
-        return Math.floor(this.freeWidth / (switches[0].dimensions.width * switches.length))
+        return Math.floor(this.freeWidth / switches[0].dimensions.width)
     }
 
     /**
@@ -187,6 +186,7 @@ export class Module {
         }
         sw.myModule = this
         this.switchesAmount++
+        this.freeWidth -= sw.dimensions.width
     }
 
     /**
