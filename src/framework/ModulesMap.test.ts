@@ -1,7 +1,8 @@
 import {Module} from "./Module"
 import { ModulesMap } from "./ModulesMap"
+import { SwitchesMap } from "./SwitchesMap"
 import { Dimensions, defaultModuleDimensions } from "../components/general/generalTypes"
-import { defaultMaxListeners } from "stream"
+import exp from "constants"
 
 describe("ModulesMap", () => {
     it("Should Create an empty ModuleMap", () => {
@@ -48,5 +49,114 @@ describe("ModulesMap", () => {
         expect(mm.lastId).toBe('m2')
         expect(mm.get(md1.id)).toBe(md1)
         expect(mm.get(md2.id)).toBe(md2)
+    })
+
+    it("Should have a module (hasModule)", () => {
+        const mm = new ModulesMap()
+        const md = mm.createNewModule({feed: "", dimensions: defaultModuleDimensions})
+
+        expect(mm.hasModule(md.id)).toBe(true)
+    })
+
+    it("Should not have module (hasModule)", () => {
+        const mm = new ModulesMap()
+        expect(mm.hasModule("s3")).toBe(false)
+    })
+
+    it("Should throw error when trying to get a non-existing module", () => {
+        const mm = new ModulesMap()
+    
+        expect(() => mm.get("s1")).toThrow(Error)
+    });
+    
+    it("Should set a module", () => {
+        const mm = new ModulesMap();
+        const md = new Module({id: "m3", name: "module3", feed: ""})
+        mm.set(md.id, md)
+
+        expect(mm.amount).toBe(1)
+        expect(mm.lastId).toBe(md.id)
+        expect(mm.get(md.id)).toBe(md)
+    })
+
+    it("Should not set module with id which already exists", () => {
+        const mm = new ModulesMap()
+        const mdOut = new Module({id: "m1", name: "module3", feed: ""})
+        const mdIn = mm.createNewModule({name: "module3", feed: ""})
+        
+        expect(mm.amount).toBe(1)
+        expect(mm.lastId).toBe('m1')
+        expect(mm.get(mdIn.id)).toBe(mdIn)
+    })
+
+    it("Should retrun parent module of given switch", () => {
+        const mm = new ModulesMap()
+        const md = mm.createNewModule({name: "module1", feed: ""})
+
+        const swMap = new SwitchesMap()
+        const swArr = swMap.createNewSwitchesArray(3, "", "1X16A", "")
+        const [s1, s2, s3] = swArr
+
+        md.addSwitches(swArr)
+
+        expect(mm.getParentModuleOfSwitchById(s1.id)).toBe(md)
+        expect(mm.getParentModuleOfSwitchById(s2.id)).toBe(md)
+        expect(mm.getParentModuleOfSwitchById(s3.id)).toBe(md)
+    })
+
+    it("Should get first module that can add switches", () => {
+        const mdMap = new ModulesMap()
+        const [md1, md2] = mdMap.createNewModulesArray({modulesAmount: 2})
+
+        const swMap = new SwitchesMap()
+        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "")
+        md1.addSwitches(swArr)
+
+        expect(mdMap.getFirstModuleThatCanAddSwitch(swArr[0])).toBe(md2)
+    })
+
+    it("Should return free slots map", () => {
+        const mdMap = new ModulesMap()
+        const swMap = new SwitchesMap()
+        
+        const md1 = mdMap.createNewModule({})
+        const md2 = mdMap.createNewModule({dimensions: {...defaultModuleDimensions, width: 17.5}})
+        const md3 = mdMap.createNewModule({dimensions: {...defaultModuleDimensions, width: 52.5}})
+        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "")
+        const expectedMap = { 
+            [md1.id]: md1.canAddSwitches(swArr), 
+            [md2.id]: md2.canAddSwitches(swArr),
+            [md3.id]: md3.canAddSwitches(swArr) 
+        } 
+        const givenMap = mdMap.getModuleFreeSlotsMap(swArr)
+
+        expect(mdMap.get(md1.id)).toBe(md1)
+        expect(mdMap.get(md2.id)).toBe(md2)
+        expect(mdMap.get(md3.id)).toBe(md3)
+        expect(givenMap.get(md1.id)).toBe(expectedMap[md1.id])
+        expect(givenMap.get(md2.id)).toBe(expectedMap[md2.id])
+        expect(givenMap.get(md3.id)).toBe(expectedMap[md3.id])
+    })
+
+    it("Should return one module that can fit all switches", () => {
+        const mdMap = new ModulesMap()
+        const swMap = new SwitchesMap()
+        const md = mdMap.createNewModule({})
+        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "", "")
+
+        const returnMd = mdMap.canOneModuleFitSwitches(swArr)
+
+        expect(returnMd).toBe(md)
+    })
+
+    it("Should not return one module that can fit all switches", () => {
+        const mdMap = new ModulesMap()
+        const swMap = new SwitchesMap()
+        const md = mdMap.createNewModule({})
+        const swArr = swMap.createNewSwitchesArray(11, "", "1X16A", "", "")
+
+        const returnMd = mdMap.canOneModuleFitSwitches(swArr)
+
+        expect(returnMd).toBeNull
     })
 })

@@ -9,7 +9,7 @@ import { Dimensions, defaultModuleDimensions } from "../components/general/gener
  * also used as proxy to create and delete Modules in this project
  */
 export class ModulesMap {
-    private modulesMap: { [key: string]: Module } = {}
+    private modulesMap: Map<string, Module> = new Map()
     private _amount: number = 0
     lastId: string | undefined = undefined
     
@@ -28,7 +28,7 @@ export class ModulesMap {
         }
 
         modulesArray.forEach((md) => {
-            this.modulesMap[md.id] = md;
+            this.modulesMap.set(md.id, md)
             if (!this.lastId || md.id > this.lastId) {
                 this.lastId = md.id;
             }
@@ -48,18 +48,18 @@ export class ModulesMap {
             throw new Error(`[ModulesMap] module with id: ${id} cannot be deleted from map since it doesn't exists in the map`)
         }
 
-        const moduleToDelete = this.modulesMap[id]
+        const moduleToDelete = this.modulesMap.get(id)
         // if the module we want to remove has the latest index
         // we set the latest index as the largest index before that
-        if (moduleToDelete.id === this.lastId){
+        if (moduleToDelete!.id === this.lastId){
             const ids = Object.keys(this.modulesMap);
             ids.sort().pop();
             this.lastId = ids.pop()
         }
-        delete this.modulesMap[id]
+        this.modulesMap.delete(id)
         this._amount--
 
-        return moduleToDelete
+        return moduleToDelete!
     }
 
     /**
@@ -79,7 +79,7 @@ export class ModulesMap {
      * @returns {boolean} true if module with this ID exists on the map
      */
     hasModule(moduleId: string): boolean {
-        return moduleId in this.modulesMap
+        return this.modulesMap.has(moduleId)
     }
 
     /**
@@ -98,7 +98,7 @@ export class ModulesMap {
         if(!this.hasModule(id)) {
             throw new Error(`[ModulesMap] module with id: ${id} doesn't exsit on the map \n modules map ids: ${Object.keys(this.modulesMap)}`)
         }
-        return this.modulesMap[id]
+        return this.modulesMap.get(id)!
     }
 
     /**
@@ -113,7 +113,7 @@ export class ModulesMap {
         }
         this._amount++
         this.lastId = id
-        this.modulesMap[id] = newModule;
+        this.modulesMap.set(id, newModule)
     }
 
     /**
@@ -136,7 +136,7 @@ export class ModulesMap {
      */
     getParentModuleOfSwitchById(id: string): Module | null {
         let parentModule = null
-        Object.values(this.modulesMap).forEach((md) => {
+        this.modulesMap.forEach((md) => {
             if(md.getSwitchIndexById(id) !== -1){
                 parentModule = md
             }
@@ -149,13 +149,12 @@ export class ModulesMap {
      * @param {Switch} sw switch object
      * @returns module object that can add the switch
      */
-    getFirstModuleThatCanAddSwitch(sw: Switch): Module | null {
-        Object.values(this.modulesMap).forEach((md) => {
-            if(md.canAddSwitch(sw)){
-                return md
-            }
+    getFirstModuleThatCanAddSwitch(sw: Switch): Module | undefined {
+        let module = undefined
+        this.modulesMap.forEach((md) => {
+            if(md.canAddSwitch(sw)) module = md
         })
-        return null
+        return module
     }
 
     /**
@@ -198,9 +197,7 @@ export class ModulesMap {
      */
     getModuleFreeSlotsMap(swArr: Switch[]): Map<string, number> {
         const output = new Map()
-        Object.values(this.modulesMap).forEach((mdObj) => {
-            output.set(mdObj.id, mdObj.canAddSwitches(swArr)) 
-        })
+        this.modulesMap.forEach(md => output.set(md.id, md.canAddSwitches(swArr)) )
         return output
     }
 
@@ -227,7 +224,6 @@ export class ModulesMap {
      * @param switchesObjList Oredered switch array (not sorting order, orgenizational order), Default: []
      * @param name Optional - Mdule name, if not provided will name it module and a number, example: module5 
      * @param dimensions Modules dimensions, Default: {@link defaultModuleDimensions}
-     * @returns 
      */
     createNewModule({feed = "", switchesObjList=null, name, dimensions = defaultModuleDimensions}:{
         feed?: string,
@@ -253,6 +249,7 @@ export class ModulesMap {
      * Creates an array of module objects without any switches with same feed and dimensions to all modules
      * 
      * They will have different IDs and names
+     * @param modulesAmount amount of modules to reate
      * @param feed Modules feed, Default: ""
      * @param dimensions Modules dimensions, Default: {@link defaultModuleDimensions}
      * @returns Array of new module objects

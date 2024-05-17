@@ -1,6 +1,7 @@
 import { Dimensions, defaultSwitchDimensions } from "../components/general/generalTypes";
-import { Module as ModuleType } from "./Module"
+import { Module } from "./Module"
 
+/**This class represents an electric switch */
 export class Switch {
     id: string
     name: string
@@ -14,8 +15,16 @@ export class Switch {
     feed?: string
     private _dimensions: Dimensions
     /** Module object which contains this switch */
-    private _myModule!: ModuleType | undefined
+    private _myModule!: Module | undefined
 
+    /**
+     * Creates a switch object
+     * @param id switch id
+     * @param name switch name
+     * @param description switch description
+     * @param prefix switch prefix, example: 1X16A, 3X40A
+     * @param feed switch power feed
+     */
     constructor({id, name, description, prefix, dimensions, feed}:{
         id: string, 
         name: string, 
@@ -36,20 +45,21 @@ export class Switch {
         this.feed = feed ? feed : ""
     }
 
-    /** setter for myModule property, be sure to pass a pointer and not a copy in order
+    /** myModule property, be sure to pass a pointer and not a copy in order
     * for removeSwitch to do it job well (removing the switch from the module)
     * important notice: this function doesn't add the switch itself to the module property
-    * make sure to use module properties for that */
-    set myModule(module: ModuleType | undefined){
+    * make sure to use module properties for that 
+    * */
+    set myModule(module: Module | undefined){
         this._myModule = module
     }
 
     /**returns a pointer to the module object which contains this switch */
-    get myModule(): ModuleType | undefined{
+    get myModule(): Module | undefined{
         return this._myModule
     }
 
-    /**setter for the switch dimensions, you can set some or all of the dimensions */
+    /**dimension property, returns a copy */
     set dimensions({width, height, depth}:{
         width?: number;
         height?: number;
