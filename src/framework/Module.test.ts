@@ -70,27 +70,4 @@ describe("Module", () => {
         expect(md.freeWidth).toEqual(0)
         expect(md.isFull()).toBe(true)
     })
-
-    it("Should return one module that can fit all switches", () => {
-        const mdMap = new ModulesMap()
-        const swMap = new SwitchesMap()
-        const md = mdMap.createNewModule({})
-        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "", "")
-
-        const returnMd = mdMap.canOneModuleFitSwitches(swArr)
-
-        expect(returnMd).toBe(md)
-    })
-
-    it("Should not return one module that can fit all switches", () => {
-        const mdMap = new ModulesMap()
-        const swMap = new SwitchesMap()
-        const md = mdMap.createNewModule({})
-        const swArr = swMap.createNewSwitchesArray(11, "", "1X16A", "", "")
-
-        const returnMd = mdMap.canOneModuleFitSwitches(swArr)
-
-        expect(returnMd).toBeNull
-    })
-
 })

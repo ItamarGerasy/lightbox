@@ -159,4 +159,38 @@ describe("ModulesMap", () => {
 
         expect(returnMd).toBeNull
     })
+
+    it("Should not fit 0 switches 2 modules", () => {
+        const mdMap = new ModulesMap()
+        const swMap = new SwitchesMap()
+        const md1 = mdMap.createNewModule({})
+        const md2 = mdMap.createNewModule({})
+        const swArr1 = swMap.createNewSwitchesArray(5, "", "2X16A", "", "")
+        const swArr2 = swMap.createNewSwitchesArray(5, "", "2X16A", "", "")
+        md1.addSwitches(swArr1)
+        md2.addSwitches(swArr2)
+
+        expect(md1.switchesAmount).toBe(5)
+        expect(md2.switchesAmount).toBe(5)
+        expect(mdMap.canSomeModulesFitSwitches(swArr1)).toBe(0)
+
+    })
+
+    it("Should fit 3 switches on 3 modules", () => {
+        const mdMap = new ModulesMap()
+        const swMap = new SwitchesMap()
+        const md1 = mdMap.createNewModule({})
+        const md2 = mdMap.createNewModule({})
+        const md3 = mdMap.createNewModule({})
+        const swArr1 = swMap.createNewSwitchesArray(9, "", "1X16A", "", "")
+        const swArr2 = swMap.createNewSwitchesArray(9, "", "1X16A", "", "")
+        const swArr3 = swMap.createNewSwitchesArray(9, "", "1X16A", "", "")
+        const swArrToAdd = swMap.createNewSwitchesArray(3, "", "1X16A", "", "")
+        md1.addSwitches(swArr1)
+        md2.addSwitches(swArr2)
+        md3.addSwitches(swArr3)
+
+        expect(mdMap.canSomeModulesFitSwitches(swArr3)).toBe(3)
+
+    })
 })
