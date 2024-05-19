@@ -214,7 +214,6 @@ export class Module {
         const sw = this.removeSwitchAtIndex(index)
         sw!.myModule = undefined
         this.freeWidth += sw!.dimensions.width
-        this.occupiedWidth -= sw!.dimensions.width
         this.switchesAmount--
         return sw
     }
