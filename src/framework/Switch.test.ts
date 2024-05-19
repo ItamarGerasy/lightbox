@@ -1,6 +1,7 @@
 import { Switch } from './Switch'
 import { SwitchesMap } from './SwitchesMap'
 import { defaultSwitchDimensions } from "../components/general/generalTypes";
+import { ModulesMap } from './ModulesMap';
 
 describe('Switch class constructor', () => {
     it('should correctly initialize with all parameters provided', () => {
@@ -39,7 +40,59 @@ describe('Switch class constructor', () => {
       expect(switchInstance.size).toBe(2);
       expect(switchInstance.feed).toBe('');
       expect(switchInstance.dimensions.width).toBe(defaultSwitchDimensions.width * 2); // size * defaultWidth
-    });
-});
+    })
+
+    it("Should set _myModule one added to a module", () => {
+      const mdMap = new ModulesMap()
+      const md = mdMap.createNewModule({})
+      const sw = new Switch({
+        id: 's2',
+        name: 'Secondary Switch',
+        description: 'A secondary power switch',
+        prefix: '2X10A'
+      })
+      md.addSwitch(sw)
+
+      expect(sw.myModule).toBe(md)
+    })
+
+    it("Should remove switch", () => {
+      const mdMap = new ModulesMap()
+      const md = mdMap.createNewModule({})
+      const sw = new Switch({
+        id: 's2',
+        name: 'Secondary Switch',
+        description: 'A secondary power switch',
+        prefix: '2X10A'
+      })
+      md.addSwitch(sw)
+      sw.removeSwitch()
+
+      expect(md.hasSwitch('s2')).toBe(false)
+      expect(md.occupiedWidth).toBe(0)
+      expect(sw.id).toBe('-1')
+      expect(sw.myModule).toBeUndefined()
+    })
+
+    it("Should clone switch", () => {
+      const sw = new Switch({
+        id: 's2',
+        name: 'Secondary Switch',
+        description: 'A secondary power switch',
+        prefix: '2X10A'
+      })
+
+      const clone = sw.clone()
+
+      expect(sw.description).toBe(clone.description)
+      expect(sw.name).toBe(clone.name)
+      expect(sw.id).toBe(clone.id)
+      expect(sw.myModule).toBe(clone.myModule)
+      expect(sw.prefix).toBe(clone.prefix)
+      expect(sw.dimensions.width).toBe(clone.dimensions.width)
+      expect(sw.dimensions.height).toBe(clone.dimensions.height)
+      expect(sw.dimensions.depth).toBe(clone.dimensions.depth)
+    })
+})
 
   

@@ -187,6 +187,7 @@ export class Module {
         sw.myModule = this
         this.switchesAmount++
         this.freeWidth -= sw.dimensions.width
+        this.occupiedWidth += sw.dimensions.width
     }
 
     /**
