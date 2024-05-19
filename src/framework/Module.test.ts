@@ -1,10 +1,7 @@
 import {Module} from "./Module"
 import { ModulesMap } from "./ModulesMap"
 import { SwitchesMap } from "./SwitchesMap"
-import { Dimensions, defaultModuleDimensions, defaultSwitchDimensions } from "../components/general/generalTypes"
-import { defaultMaxListeners } from "stream"
-import exp from "constants"
-import { Widgets } from "@mui/icons-material"
+import { defaultModuleDimensions, defaultSwitchDimensions } from "../components/general/generalTypes"
 
 describe("Module", () => {
 
@@ -18,6 +15,16 @@ describe("Module", () => {
         expect(md.dimensions.depth).toEqual(defaultModuleDimensions.depth)
         expect(md.isFull()).toBe(false)
         expect(md.freeWidth).toBe(md.dimensions.width)
+    })
+
+    it("Should create a module from switch array", () => {
+        const swMap = new SwitchesMap()
+        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "", "")
+        const md = new Module({feed: "", id: "m1", name:"module 1", switchesObjList: swArr})
+
+        expect(md.freeWidth).toBe(0)
+        expect(md.occupiedWidth).toBe(md.dimensions.width)
+        expect(md.switchesObjList.length).toBe(10)
     })
 
     it('Should add a single switch', () => {
@@ -83,5 +90,27 @@ describe("Module", () => {
         md.addSwitches(swArr)
         expect(md.freeWidth).toEqual(0)
         expect(md.isFull()).toBe(true)
+    })
+
+    it("Should throw error, when removing switch in index and index doesn't exsits", () => {
+        const swMap = new SwitchesMap()
+        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "", "")
+        const md = new Module({feed: "", id: "m1", name:"module 1", switchesObjList: swArr})
+
+        expect(() => md.removeSwitchAtIndex(11)).toThrow(Error)
+    })
+
+    it("Should remove switch at index", () => {
+        const swMap = new SwitchesMap()
+        const swArr = swMap.createNewSwitchesArray(10, "", "1X16A", "", "")
+        const md = new Module({feed: "", id: "m1", name:"module 1", switchesObjList: swArr})
+
+        const sw = md.removeSwitchAtIndex(0)
+        expect(sw.id).toBe('s1')
+        expect(md.switchesObjList.length).toBe(9)
+        expect(md.switchesAmount).toBe(9)
+        expect(md.getSwitchById(sw.id)).toBeNull()
+        expect(md.hasSwitch(sw.id)).toBe(false)
+        expect(md.switchesObjList[0].id).toBe('s2')
     })
 })

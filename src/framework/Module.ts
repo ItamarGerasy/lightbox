@@ -37,14 +37,14 @@ export class Module {
         this.name = name
         this.feed = feed
         this._dimensions = dimensions ? dimensions : defaultModuleDimensions
-        this.freeWidth = this._dimensions.width
         this.switchesObjList = switchesObjList ? switchesObjList : []
-        
-        // setting myModule property of each switch added to this module
-        // and updating the occupied width and free width property 
-        this.switchesObjList.forEach((sw) => {
-            this.addSwitch(sw)
-        })
+        this.occupiedWidth = this.switchesObjList.reduce((sum, sw) => sum += sw.dimensions.width, 0)
+        this.freeWidth = this._dimensions.width - this.occupiedWidth
+        this.switchesAmount = this.switchesObjList.length
+
+        if(this.occupiedWidth > this.dimensions.width){
+            throw new Error(`[Module ${this.id}] cannot initialize module with total switches width bigger than module width`)
+        }
     }
 
     get myCompartment(): CompartmentType | undefined{
@@ -231,6 +231,8 @@ export class Module {
         }
         const [sw] = this.switchesObjList.splice(index, 1)
         sw.myModule = undefined
+        this.occupiedWidth -= sw.dimensions.width
+        this.freeWidth += sw.dimensions.width
         this.switchesAmount--
         return sw
     }
