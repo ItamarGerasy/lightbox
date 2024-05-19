@@ -11,7 +11,7 @@ export class Module {
      * in a certain order that will be changed depending on user interactions  */
     switchesObjList: Array<Switch>
     _dimensions: Dimensions
-    switchesAmount: number
+    switchesAmount: number = 0
     occupiedWidth: number = 0
     freeWidth: number
     /**Compartment object which conatins this Switch*/
@@ -37,16 +37,14 @@ export class Module {
         this.name = name
         this.feed = feed
         this._dimensions = dimensions ? dimensions : defaultModuleDimensions
+        this.freeWidth = this._dimensions.width
         this.switchesObjList = switchesObjList ? switchesObjList : []
         
         // setting myModule property of each switch added to this module
         // and updating the occupied width and free width property 
         this.switchesObjList.forEach((sw) => {
-            sw.myModule = this
-            this.occupiedWidth += sw.dimensions.width
+            this.addSwitch(sw)
         })
-        this.freeWidth = this._dimensions.width - this.occupiedWidth
-        this.switchesAmount = this.switchesObjList.length
     }
 
     get myCompartment(): CompartmentType | undefined{
@@ -153,7 +151,7 @@ export class Module {
      */
     canAddSwitch(sw: Switch): boolean {
         if(this.isFull()) return false
-        return sw.dimensions.width + this.occupiedWidth < this._dimensions.width 
+        return sw.dimensions.width <= this.freeWidth
     }
 
     /**
@@ -177,7 +175,8 @@ export class Module {
     addSwitch(sw: Switch, index?: number): void{
         if(!this.canAddSwitch(sw)) {
             throw new Error(`[${module.id}] couldn't add switch since the module is either full or switch is bigger then free space on module \n
-            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch()`)
+            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch() \n
+            FreeWidth: ${this.freeWidth}, occupiedWidth: ${this.occupiedWidth}, total width: ${this.dimensions.width}`)
         }
         if(!index || index === 0){
             this.switchesObjList.push(sw)
@@ -200,7 +199,7 @@ export class Module {
         if (amountOfSwitchesAbleToAdd < swArr.length) {
             throw new Error(`[Module ${this.id}] module.addSwitches - cannot add switches since tried to add ${swArr.length} switches, and can add onlt ${amountOfSwitchesAbleToAdd}`)
         }
-        swArr.forEach(swObj => this.addSwitch(swObj))    
+        for(const swObj of swArr) this.addSwitch(swObj)
     }
 
     /**

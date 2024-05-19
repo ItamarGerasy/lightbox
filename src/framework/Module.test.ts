@@ -4,6 +4,7 @@ import { SwitchesMap } from "./SwitchesMap"
 import { Dimensions, defaultModuleDimensions, defaultSwitchDimensions } from "../components/general/generalTypes"
 import { defaultMaxListeners } from "stream"
 import exp from "constants"
+import { Widgets } from "@mui/icons-material"
 
 describe("Module", () => {
 
@@ -17,6 +18,19 @@ describe("Module", () => {
         expect(md.dimensions.depth).toEqual(defaultModuleDimensions.depth)
         expect(md.isFull()).toBe(false)
         expect(md.freeWidth).toBe(md.dimensions.width)
+    })
+
+    it('Should add a single switch', () => {
+        const swMap = new SwitchesMap()
+        const mdMap = new ModulesMap()
+        const md = mdMap.createNewModule({})
+        const sw = swMap.createNewSwitch("", "1X16A", "", "")
+
+        md.addSwitch(sw)
+        expect(md.freeWidth).toBe(md.dimensions.width - sw.dimensions.width)
+        expect(md.occupiedWidth).toBe(sw.dimensions.width)
+        expect(md.switchesAmount).toBe(1)
+        expect(md.isFull()).toBe(false)
     })
 
     it("should be able to add 10 switches", () => {

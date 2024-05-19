@@ -93,6 +93,22 @@ describe('Switch class constructor', () => {
       expect(sw.dimensions.height).toBe(clone.dimensions.height)
       expect(sw.dimensions.depth).toBe(clone.dimensions.depth)
     })
+
+    it("Should set dimensions", () => {
+      const sw = new Switch({
+        id: 's2',
+        name: 'Secondary Switch',
+        description: 'A secondary power switch',
+        prefix: '2X10A'
+      })
+
+      sw.dimensions = {width: 43}
+      sw.dimensions = {height: 43, depth: 43}
+
+      expect(sw.dimensions.width).toBe(43)
+      expect(sw.dimensions.height).toBe(43)
+      expect(sw.dimensions.depth).toBe(43)
+    })
 })
 
   
