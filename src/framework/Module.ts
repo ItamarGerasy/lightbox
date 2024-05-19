@@ -175,8 +175,7 @@ export class Module {
     addSwitch(sw: Switch, index?: number): void{
         if(!this.canAddSwitch(sw)) {
             throw new Error(`[${module.id}] couldn't add switch since the module is either full or switch is bigger then free space on module \n
-            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch() \n
-            FreeWidth: ${this.freeWidth}, occupiedWidth: ${this.occupiedWidth}, total width: ${this.dimensions.width}`)
+            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch()`)
         }
         if(!index || index === 0){
             this.switchesObjList.push(sw)
