@@ -5,7 +5,8 @@ import { Dimensions } from "../components/general/generalTypes"
 
 /**this class is basically a map of switches with some extra properties */ 
 export class SwitchesMap {    
-    private switchesMap: { [key: string]: Switch } = {}
+    // private switchesMap: { [key: string]: Switch } = {}
+    private switchesMap = new Map<string, Switch>()
     private _amount: number = 0
     /** The ID of the last switch inserted into the map */
     lastId: string | undefined = undefined
@@ -35,20 +36,20 @@ export class SwitchesMap {
     * */
     removeSwitch(sw: Switch | string): Switch {
         let id = typeof sw === 'string' ? sw : sw.id
-        if (!this.hasSwitch(id)) {
+        if (!this.switchesMap.has(id)) {
             throw new Error(`[SwitchesMap] switch with id ${id} doesn't exsits in the map`)
         }
+        const deletedSwitch = this.switchesMap.get(id)
+        this._amount--
+        this.switchesMap.delete(id)
         if (id === this.lastId){
             // if the switch we want to remove has the latest index
             // we set the latest index as the largest index before that
-            const ids = Object.keys(this.switchesMap);
-            ids.sort().pop();
+            const ids = Array.from(this.switchesMap.keys())
+            ids.sort()
             this.lastId = ids.pop()
         }
-        this._amount--
-        const deletedSwitch = this.switchesMap[id]
-        delete this.switchesMap[id]
-        return deletedSwitch
+        return deletedSwitch!
     }
 
     /** removes several switches from the map and returns an array of the removed switches */
@@ -60,7 +61,7 @@ export class SwitchesMap {
 
     /**Method to check if a switch with given id exists */
     hasSwitch(switchId: string): boolean {
-        return switchId in this.switchesMap
+        return this.switchesMap.has(switchId)
     }
 
     /**Custom property to get the number of switches */
@@ -70,19 +71,19 @@ export class SwitchesMap {
 
     /** getter and setter for switches by id */
     get(id: string): Switch | null {
-        if(!this.hasSwitch(id)) return null
-        return this.switchesMap[id]
+        if(!this.switchesMap.has(id)) return null
+        return this.switchesMap.get(id)!
     }
 
     /** set a new switch in the map */
     set(id: string, newSwitch: Switch): void {
-        if (this.hasSwitch(newSwitch.id)) {
+        if (this.switchesMap.has(newSwitch.id)) {
             console.log(`Switches map already have switch with id: ${newSwitch.id}`)
             return
         }
         this._amount++
         this.lastId = id
-        this.switchesMap[id] = newSwitch;
+        this.switchesMap.set(id, newSwitch)
     }
 
     /**this function creates a colne/copy of the current SwitchesMap */

@@ -49,15 +49,15 @@ export class ModulesMap {
         }
 
         const moduleToDelete = this.modulesMap.get(id)
+        this.modulesMap.delete(id)
+        this._amount--
         // if the module we want to remove has the latest index
         // we set the latest index as the largest index before that
         if (moduleToDelete!.id === this.lastId){
-            const ids = Object.keys(this.modulesMap);
-            ids.sort().pop();
+            const ids = Array.from(this.modulesMap.keys())
+            ids.sort()
             this.lastId = ids.pop()
         }
-        this.modulesMap.delete(id)
-        this._amount--
 
         return moduleToDelete!
     }

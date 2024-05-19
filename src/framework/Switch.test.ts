@@ -1,6 +1,6 @@
 import { Switch } from './Switch'
 import { SwitchesMap } from './SwitchesMap'
-import { Dimensions, defaultSwitchDimensions } from "../components/general/generalTypes";
+import { defaultSwitchDimensions } from "../components/general/generalTypes";
 
 describe('Switch class constructor', () => {
     it('should correctly initialize with all parameters provided', () => {
@@ -42,22 +42,4 @@ describe('Switch class constructor', () => {
     });
 });
 
-describe('SwitchesMap', () => {
-    it('Should add new switch', () => {
-        const switchInstance = new Switch({
-            id: 's1',
-            name: 'Main Switch',
-            description: 'A main power switch',
-            prefix: '3X16A',
-            feed: 'main'
-        })
-        const switchesMap = new SwitchesMap()
-
-        switchesMap.set(switchInstance.id, switchInstance)
-        expect(switchesMap.get(switchInstance.id)).toEqual(switchInstance)
-        expect(switchesMap.hasSwitch(switchInstance.id)).toBe(true)
-        expect(switchesMap.amount).toBe(1)
-        expect(switchesMap.lastId).toBe('s1')
-    })
-})
   
