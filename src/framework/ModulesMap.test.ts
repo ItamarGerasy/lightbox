@@ -13,6 +13,18 @@ describe("ModulesMap", () => {
         expect(mm.lastId).toBe(undefined)
     })
 
+    it("Should Create a module from modules array", () => {
+        const m1 = new ModulesMap()
+        const mdArr = m1.createNewModulesArray({modulesAmount: 4})
+
+        const m2 = new ModulesMap(mdArr)
+
+        expect(m2.amount).toBe(4)
+        expect(m2.generateIndex()).toBe('m5')
+        expect(m2.lastId).toBe('m4')
+        expect(m2.get('m4')).toBe(mdArr[mdArr.length-1])
+    })
+
     it("Should create a single module, with default params", () => {
         const mm = new ModulesMap()
         const md = mm.createNewModule({feed: "", dimensions: defaultModuleDimensions})

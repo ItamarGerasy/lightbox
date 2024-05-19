@@ -25,9 +25,6 @@ export class SwitchesMap {
         }
 
         this.addSwitches(switchesArray)
-        switchesArray.forEach((sw) => {
-            
-        });
     }
 
     /** removes a switch from the switches map and returns the switch object
