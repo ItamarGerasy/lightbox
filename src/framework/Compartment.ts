@@ -1,28 +1,35 @@
 import { Dimensions, defaultCompartmentDimensions } from "../components/general/generalTypes";
-import {Module as ModuleType} from "./Module"
+import {Module} from "./Module"
 
 export class Compartment {
     id: string
     name: string
     feed: string
-    // modulesObjList will be responsible to hold the compartment modules ids
-    // in a certain order that will be changed depending on user interactions 
-    modulesObjList: Array<ModuleType>
+    /** modulesObjList will be responsible to hold the compartment modules ids
+        in a certain order that will be changed depending on user interactions */ 
+    modulesObjList: Array<Module>
     _dimensions: Dimensions
     modulesAmount: number
     occupiedHeight: number = 0
     freeHeight: number
 
+    /**Constructor for Comaprtment object, only id is required the rest are optional parameters and can be set to default
+     * @param id compartment id of the format c<number> example: c1
+     * @param name compartment name
+     * @param feed compartment feed
+     * @param modulesObjList list of module objects in the order of their appearnce on the compartment from top to bottom
+     * @param dimensions object literal containning compartments dimensions: depth, width, height.
+     */
     constructor({id, name, feed, modulesObjList, dimensions}:{
         id: string,
-        name: string,
-        feed: string,
-        modulesObjList?: Array<ModuleType>,
+        name?: string,
+        feed?: string,
+        modulesObjList?: Array<Module>,
         dimensions?: Dimensions
     }){
         this.id = id
-        this.name = name
-        this.feed = feed
+        this.name = name ? name : `compartment${this.id.substring(1)}`
+        this.feed = feed ? feed : ""
         this._dimensions = dimensions ? dimensions : defaultCompartmentDimensions
         this.modulesObjList = modulesObjList ? modulesObjList : []
         
@@ -36,7 +43,9 @@ export class Compartment {
         this.modulesAmount = this.modulesObjList.length
     }
 
-    // setter for the switch dimensions, you can set some or all of the dimensions
+    /**
+     * @property dimesnsions, getter get's a copy of this property and not a pointer
+     */
     set dimensions({width, height, depth}:{
         width?: number;
         height?: number;
@@ -49,12 +58,11 @@ export class Compartment {
         }
     }
 
-    // returns a copy of the dimensions object of the compartment
     get dimensions(): Dimensions{
         return {...this._dimensions}
     }
 
-    // this function return a colne/copy of this current compartment
+    /** @returns returns a colne/copy of this current compartment */
     clone(): Compartment {
         const params = {
             id: this.id,
@@ -66,18 +74,32 @@ export class Compartment {
         return new Compartment(params)
     }
 
+    /**
+     * Gets a module index on the modulesObjectsList by module id
+     * @param moduleId id of the desired module
+     * @returns the module index, or -1 if module doesn\t exsits on the compartment
+     */
     getModuleIndexById(moduleId: string): number{
         let index =  this.modulesObjList.findIndex((md) => md.id === moduleId)
         if(index !== -1) return index
-        console.warn(`[Module ${this.id}] Couldn't find switch with id: ${moduleId} on module: ${this.name}`)       
+        console.warn(`[Compartment ${this.id}] Couldn't find module with id: ${moduleId} on compartment: ${this.name}`)       
         return -1
     }
     
+    /**
+     * @param moduleId id of the module
+     * @returns True of module exsits on the comaprtment and False otherwise
+     */
     hasModule(moduleId: string): boolean {
         return this.getModuleIndexById(moduleId) !== -1
     }
 
-    getModuleById(moduleId: string): ModuleType | null {
+    /**
+     * returns module object by module ID
+     * @param moduleId module id
+     * @returns module object if exists on the compartment else will return null
+     */
+    getModuleById(moduleId: string): Module | null {
         if(!this.hasModule(moduleId)){
             return null;
         }
@@ -85,31 +107,35 @@ export class Compartment {
         return this.modulesObjList[moduleIndex]
     }
 
+    /** @returns a boolean indicating wether or not the compartment is full */
     isFull(): boolean {
         return this.freeHeight === 0;
     }
 
-    // checking if sizewize a module can be added
-    canAddModule(md: ModuleType): boolean{
+    /** checking if sizewize a module can be added 
+     * @param md Module object*/ 
+    canAddModule(md: Module): boolean{
         if(this.isFull()) return false
         return md.dimensions.height + this.occupiedHeight > this._dimensions.height 
     }
 
-    // checking if can several modules can be added to module
-    // this method will return the amount of modules from the list it can add
-    // parameter: modules - and array of modules with the same dimensions
-    canAddModules(modules: Array<ModuleType>): number {
+    /** checking if can several modules can be added to comaprtment
+    *   this method will return the amount of modules from the list it can add
+    *   this function assumes all modules have the same dimensions
+    *   @param modules an array of module objects
+    *   @returns the number of modules that can be added to the compartment
+    */
+    canAddModules(modules: Array<Module>): number {
         if(this.isFull() && !modules) return 0
         return Math.floor(this.freeHeight / modules[0].dimensions.height)
     }
 
-    // a method that adds a module to the compartment
-    // if successfull return true, else false
-    addModule(md: ModuleType, index?: number): boolean{
-        // index parameter indicate in which index to insert it in the ordered list
-        // if not provided will add it to the end
-        // it is used for the drag and drop functionality
-
+    /** a method that adds a module to the compartment
+    * @param md Module object to add
+    * @param index optional - indicate in which index to insert it in the ordered list, if not provided will add it to the end. it is used for the drag and drop functionality
+    * @returns true successfull, else false
+    */
+    addModule(md: Module, index?: number): boolean{
         if(this.isFull() && !this.canAddModule(md)) return false
         if(!index && index !== 0){
             this.modulesObjList.push(md)
@@ -122,9 +148,12 @@ export class Compartment {
         return true
     }
 
-    removeModule(moduleId: string): ModuleType{
-        // this method removes a module from the compartment and returns it
-        // if this index doesn't exist in the comaprtment returns null
+    /** this method removes a module from the compartment and returns it
+     * Throws an error if the module doesn't exists on the compartment
+     * @param moduleId id of module to remove
+     * @returns Module object that have been removed
+     */
+    removeModule(moduleId: string): Module{
         if(!this.hasModule(moduleId!)){
             throw new Error(`[Compartment ${this.name}] cannot delete module with id ${moduleId} because it doesn't exists on this compartment`)
         }
@@ -137,7 +166,12 @@ export class Compartment {
         return md
     }
 
-    removeModuleAtIndex(index: number): ModuleType {
+    /**
+     * 
+     * @param index 
+     * @returns 
+     */
+    removeModuleAtIndex(index: number): Module {
         if(index > this.modulesAmount){
             throw new Error(`[Compartment ${this.name}] cannot delete module on index ${index} since there are only ${this.modulesAmount} modules on the compartment`)
         }
@@ -146,9 +180,9 @@ export class Compartment {
         return md
     }
 
-    removeAllModules(): ModuleType[] {
+    removeAllModules(): Module[] {
         let moduleIds = this.modulesObjList.map(md => md.id)
-        let removedModules: ModuleType[] = []
+        let removedModules: Module[] = []
         moduleIds.forEach(moduleId => {
             let mdObj = this.removeModule(moduleId)
             removedModules.push(mdObj)
