@@ -275,7 +275,8 @@ export class ModulesMap {
      * @returns ModuleMap copy
      */
     clone(): ModulesMap {
-        const modulesArr = Object.values(this.modulesMap).map(md => md.clone() as Module)
+        const modulesArr: Module[] = []
+        this.modulesMap.forEach((md) => modulesArr.push(md.clone()))
         return new ModulesMap(modulesArr)
     }
 }

@@ -203,6 +203,31 @@ describe("ModulesMap", () => {
         md3.addSwitches(swArr3)
 
         expect(mdMap.canSomeModulesFitSwitches(swArr3)).toBe(3)
+    })
 
+    it("Should Create a clone", () => {
+        const mdMap = new ModulesMap()
+        mdMap.createNewModulesArray({modulesAmount: 4})
+        const mmClone = mdMap.clone()
+        const md2 = mdMap.get('m2')
+        const cl2 = mmClone.get('m2')
+        
+        expect(mdMap.amount).toBe(mmClone.amount)
+        expect(md2.freeWidth).toBe(cl2.freeWidth)
+    })
+
+    it("Should throw an error whenn trying to remove non existing module", () => {
+        const mdMap = new ModulesMap()
+        expect(() => {mdMap.removeModule('m1')}).toThrow(Error)
+    })
+
+    it("Should remove module with last ID", () => {
+        const mdMap = new ModulesMap()
+        const mdArr = mdMap.createNewModulesArray({modulesAmount: 2})
+        let md2 = mdMap.removeModule(mdArr[1].id)
+
+        expect(md2).toBe(mdArr[1])
+        expect(mdMap.lastId).toBe(mdArr[0].id)
+        expect(mdMap.amount).toBe(1)
     })
 })
