@@ -59,4 +59,23 @@ describe("Module", () => {
         expect(cp.freeHeight).toEqual(clone.freeHeight)
         expect(cp.occupiedHeight).toEqual(clone.occupiedHeight)
     })
+
+    it("Should return Module index by id (getModuleIndexById)", () => {
+        const mdMap = new ModulesMap()
+        const mdArr = mdMap.createNewModulesArray({modulesAmount: 1})
+        const [ md ] = mdArr
+        const cpAtt = {
+            id: 'c2',
+            modulesObjList: mdArr
+        }
+        const cp = new Compartment(cpAtt)
+        
+        expect(cp.getModuleIndexById(md.id)).toBe(0)
+    })
+
+    it("Should return Module index as -1 if id is not found (getModuleIndexById)", () => {
+        const cp = new Compartment({id: 'c1'})
+        
+        expect(cp.getModuleIndexById('a')).toBe(-1)
+    })
 })
