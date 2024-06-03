@@ -228,4 +228,29 @@ describe("Module", () => {
         expect(cp6.modulesAmount).toBe(5)
         expect(cp6.modulesObjList[0].id).toBe('m2')
     })
+
+    it("Should remove all modules", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const cp = new Compartment({id: "c1", modulesObjList: mdArr6})
+        const removedMds = cp.removeAllModules()
+
+        expect(cp.occupiedHeight).toBe(0)
+        expect(cp.freeHeight).toBe(cp.dimensions.height)
+        expect(cp.isFull()).toBe(false)
+        expect(cp.modulesAmount).toBe(0)
+        expect(removedMds.length).toBe(6)
+    })
+
+    it("Should set dimensions", () => {
+        let {height, width, depth} = defaultCompartmentDimensions
+        const cp = new Compartment({id: "c1", dimensions: defaultCompartmentDimensions})
+        cp.dimensions = {height: height+1}
+        cp.dimensions = {depth: depth+1}
+        cp.dimensions = {width: width+1}
+
+        expect(cp.dimensions.width).toBe(width+1)
+        expect(cp.dimensions.height).toBe(height+1)
+        expect(cp.dimensions.depth).toBe(depth+1)
+    })
 })
