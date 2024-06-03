@@ -91,8 +91,26 @@ describe("Module", () => {
         expect(cp.hasModule(mdArr[0].id)).toBe(true)
     })
 
-    it("Should not have module (hasModule)", () => {
+    it("Should not have module (getModuleById)", () => {
         const cp = new Compartment({id: "c1"})
         expect(cp.hasModule('m1')).toBe(false)
+    })
+
+    it("Should get module by ID ", () => {
+        const mdMap = new ModulesMap()
+        const mdArr = mdMap.createNewModulesArray({modulesAmount: 1})
+        const [ md ] = mdArr
+        const cpAtt = {
+            id: 'c2',
+            modulesObjList: mdArr
+        }
+        const cp = new Compartment(cpAtt)
+        
+        expect(cp.getModuleById(md.id)).toBe(md)
+    })
+
+    it("Should not get module (getModuleById)", () => {
+        const cp = new Compartment({id: "c1"})
+        expect(cp.getModuleById('m1')).toBe(null)
     })
 })
