@@ -2,6 +2,7 @@
 import { ModulesMap } from "./ModulesMap"
 import { defaultModuleDimensions, defaultSwitchDimensions, defaultCompartmentDimensions } from "../components/general/generalTypes"
 import { Compartment } from "./Compartment"
+import exp from "constants"
 
 describe("Module", () => {
 
@@ -201,8 +202,30 @@ describe("Module", () => {
         
         expect(removedMd).toBe(mdToRemove)
         expect(removedMd.myCompartment).toBeUndefined()
+        expect(cp6.hasModule(removedMd.id)).toBe(false)
         expect(cp6.freeHeight).toBe(removedMd.dimensions.height)
         expect(cp6.occupiedHeight).toBe(removedMd.dimensions.height * 5)
         expect(cp6.modulesAmount).toBe(5)
+    })
+
+    it("Should throw error when trying to remove non-existing module index", () => {
+        const cp = new Compartment({id: "c6"})
+        expect(() => cp.removeModuleAtIndex(1)).toThrow(Error)
+    })
+
+    it("Should Remove Module at index", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const cp6 = new Compartment({id: "c6", modulesObjList: mdArr6})
+        const mdToRemove = mdArr6[0]
+        const removedMd = cp6.removeModuleAtIndex(0)
+
+        expect(removedMd).toBe(mdToRemove)
+        expect(removedMd.myCompartment).toBeUndefined()
+        expect(cp6.hasModule(removedMd.id)).toBe(false)
+        expect(cp6.freeHeight).toBe(removedMd.dimensions.height)
+        expect(cp6.occupiedHeight).toBe(removedMd.dimensions.height * 5)
+        expect(cp6.modulesAmount).toBe(5)
+        expect(cp6.modulesObjList[0].id).toBe('m2')
     })
 })
