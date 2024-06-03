@@ -135,4 +135,22 @@ describe("Module", () => {
         expect(cp.canAddModule(mdArr[0])).toBe(true)
         expect(cp.canAddModule(md)).toBe(false)
     })
+
+    it("canAddModules Should return the amount of Modules the comaprtment can add", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const mdArr5 = mdMap.createNewModulesArray({modulesAmount: 5})
+        const mdArr4 = mdMap.createNewModulesArray({modulesAmount: 4})
+        const mdArr2 = mdMap.createNewModulesArray({modulesAmount: 2})
+        const cp4 = new Compartment({id: "c4", modulesObjList: mdArr4})
+        const cp5 = new Compartment({id: "c5", modulesObjList: mdArr5})
+        const cp6 = new Compartment({id: "c6", modulesObjList: mdArr6})
+        const cp0 = new Compartment({id: "c0"})
+
+        expect(cp0.canAddModules(mdArr6)).toBe(6)
+        expect(cp4.canAddModules(mdArr2)).toBe(2)
+        expect(cp5.canAddModules(mdArr2)).toBe(1)
+        expect(cp5.canAddModules([])).toBe(0)
+        expect(cp6.canAddModules(mdArr2)).toBe(0)
+    })
 })
