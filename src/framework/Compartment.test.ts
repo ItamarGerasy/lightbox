@@ -113,4 +113,17 @@ describe("Module", () => {
         const cp = new Compartment({id: "c1"})
         expect(cp.getModuleById('m1')).toBe(null)
     })
+
+    it("Should not be full", () => {
+        const cp = new Compartment({id: "c1"})
+        expect(cp.isFull()).toBe(false)
+    })
+    
+    it("Should be full", () => {
+        const mdMap = new ModulesMap()
+        const mdArr = mdMap.createNewModulesArray({modulesAmount: 6})
+        const cp = new Compartment({id: "c1", modulesObjList: mdArr})
+        expect(cp.isFull()).toBe(true)
+    })
+
 })
