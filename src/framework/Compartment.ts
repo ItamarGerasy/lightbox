@@ -80,6 +80,7 @@ export class Compartment {
      * @returns the module index, or -1 if module doesn\t exsits on the compartment
      */
     getModuleIndexById(moduleId: string): number{
+        console.log(`getModuleIndexById was called with moduleId: ${moduleId}`)
         let index =  this.modulesObjList.findIndex((md) => md.id === moduleId)
         if(index !== -1) return index
         console.warn(`[Compartment ${this.id}] Couldn't find module with id: ${moduleId} on compartment: ${this.name}`)       
@@ -91,6 +92,7 @@ export class Compartment {
      * @returns True of module exsits on the comaprtment and False otherwise
      */
     hasModule(moduleId: string): boolean {
+        console.log(`hasModule called getModuleIndexById`)
         return this.getModuleIndexById(moduleId) !== -1
     }
 
@@ -160,7 +162,7 @@ export class Compartment {
             throw new Error(`[Compartment ${this.name}] cannot delete module with id ${moduleId} because it doesn't exists on this compartment`)
         }
         const index = this.getModuleIndexById(moduleId)
-        const md = this.removeModuleAtIndex(index)
+        const md = this.modulesObjList.splice(index, 1)[0]
         md.myCompartment = undefined
         this.freeHeight += md.dimensions.height
         this.occupiedHeight -= md.dimensions.height
@@ -176,8 +178,12 @@ export class Compartment {
         if(index > this.modulesAmount - 1 ){
             throw new Error(`[Compartment ${this.name}] cannot delete module on index ${index} since there are only ${this.modulesAmount} modules on the compartment`)
         }
-        let moduleId = this.modulesObjList[index].id
-        const md = this.removeModule(moduleId)
+        const md = this.modulesObjList.splice(index, 1)[0]
+        md.myCompartment = undefined
+        this.freeHeight += md.dimensions.height
+        this.occupiedHeight -= md.dimensions.height
+        this.modulesAmount--
+        
         return md
     }
 

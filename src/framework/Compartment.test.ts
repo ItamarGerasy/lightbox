@@ -186,4 +186,23 @@ describe("Module", () => {
         expect(cp6.addModule(lastMd!)).toBe(true)
         expect(cp6.modulesObjList[5]).toBe(lastMd)
     })
+
+    it("Should throw error when trying to remove non-existing module", () => {
+        const cp = new Compartment({id: "c6"})
+        expect(() => cp.removeModule('m1')).toThrow(Error)
+    })
+
+    it("Should Remove Module", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const cp6 = new Compartment({id: "c6", modulesObjList: mdArr6})
+        const mdToRemove = mdArr6[5]
+        const removedMd = cp6.removeModule('m6')
+        
+        expect(removedMd).toBe(mdToRemove)
+        expect(removedMd.myCompartment).toBeUndefined()
+        expect(cp6.freeHeight).toBe(removedMd.dimensions.height)
+        expect(cp6.occupiedHeight).toBe(removedMd.dimensions.height * 5)
+        expect(cp6.modulesAmount).toBe(5)
+    })
 })
