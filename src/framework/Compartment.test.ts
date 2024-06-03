@@ -130,10 +130,11 @@ describe("Module", () => {
         const mdMap = new ModulesMap()
         const mdArr = mdMap.createNewModulesArray({modulesAmount: 5})
         const cp = new Compartment({id: "c1", modulesObjList: mdArr})
-        const [md] = mdMap.createNewModulesArray({modulesAmount: 1, dimensions: {...defaultModuleDimensions, height: defaultModuleDimensions.height + 1}})
-        console.log(`md height: ${mdArr[0].dimensions.height}, free height: ${cp.freeHeight}`)
-        expect(cp.canAddModule(mdArr[0])).toBe(true)
-        expect(cp.canAddModule(md)).toBe(false)
+        const [md1] = mdMap.createNewModulesArray({modulesAmount: 1})
+        const [md2] = mdMap.createNewModulesArray({modulesAmount: 1, dimensions: {...defaultModuleDimensions, height: defaultModuleDimensions.height + 1}})
+
+        expect(cp.canAddModule(md1)).toBe(true)
+        expect(cp.canAddModule(md2)).toBe(false)
     })
 
     it("canAddModules Should return the amount of Modules the comaprtment can add", () => {
@@ -152,5 +153,37 @@ describe("Module", () => {
         expect(cp5.canAddModules(mdArr2)).toBe(1)
         expect(cp5.canAddModules([])).toBe(0)
         expect(cp6.canAddModules(mdArr2)).toBe(0)
+    })
+
+    it("Should not add moudle", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const [md] = mdMap.createNewModulesArray({modulesAmount: 1})
+        const cp6 = new Compartment({id: "c6", modulesObjList: mdArr6})
+
+        expect(cp6.addModule(mdArr6[0])).toBe(false)
+        expect(cp6.addModule(md)).toBe(false)
+    })
+
+    it("Should add moudle at certain index", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const lastMd = mdArr6.pop()
+        const cp6 = new Compartment({id: "c6", modulesObjList: mdArr6})
+        
+        expect(cp6.addModule(lastMd!, 3)).toBe(true)
+        expect(cp6.modulesObjList[3]).toBe(lastMd)
+        expect(cp6.modulesAmount).toBe(6)
+        expect(cp6.isFull()).toBe(true)
+    })
+
+    it("Should add moudle to the end of the list", () => {
+        const mdMap = new ModulesMap()
+        const mdArr6 = mdMap.createNewModulesArray({modulesAmount: 6})
+        const lastMd = mdArr6.pop()
+        const cp6 = new Compartment({id: "c6", modulesObjList: mdArr6})
+
+        expect(cp6.addModule(lastMd!)).toBe(true)
+        expect(cp6.modulesObjList[5]).toBe(lastMd)
     })
 })

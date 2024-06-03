@@ -115,7 +115,7 @@ export class Compartment {
     /** checking if sizewize a module can be added 
      * @param md Module object*/ 
     canAddModule(md: Module): boolean{
-        if(this.isFull()) return false
+        if(this.isFull() || this.hasModule(md.id)) return false
         return md.dimensions.height  <= this.freeHeight 
     }
 
@@ -139,12 +139,14 @@ export class Compartment {
         if(this.isFull() && !this.canAddModule(md)) return false
         if(!index && index !== 0){
             this.modulesObjList.push(md)
-            this.modulesAmount++
-            return true;
         }
-        this.modulesObjList.splice(index, 0, md)
+        else {
+            this.modulesObjList.splice(index, 0, md)
+        }
         md.myCompartment = this
         this.modulesAmount++
+        this.freeHeight -= md.dimensions.height
+        this.occupiedHeight += md.dimensions.height
         return true
     }
 
