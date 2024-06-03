@@ -116,7 +116,7 @@ export class Compartment {
      * @param md Module object*/ 
     canAddModule(md: Module): boolean{
         if(this.isFull()) return false
-        return md.dimensions.height + this.occupiedHeight > this._dimensions.height 
+        return md.dimensions.height  <= this.freeHeight 
     }
 
     /** checking if can several modules can be added to comaprtment

@@ -126,4 +126,13 @@ describe("Module", () => {
         expect(cp.isFull()).toBe(true)
     })
 
+    it("Should be able to add module", () => {
+        const mdMap = new ModulesMap()
+        const mdArr = mdMap.createNewModulesArray({modulesAmount: 5})
+        const cp = new Compartment({id: "c1", modulesObjList: mdArr})
+        const [md] = mdMap.createNewModulesArray({modulesAmount: 1, dimensions: {...defaultModuleDimensions, height: defaultModuleDimensions.height + 1}})
+        console.log(`md height: ${mdArr[0].dimensions.height}, free height: ${cp.freeHeight}`)
+        expect(cp.canAddModule(mdArr[0])).toBe(true)
+        expect(cp.canAddModule(md)).toBe(false)
+    })
 })
