@@ -128,7 +128,7 @@ export class Compartment {
     *   @returns the number of modules that can be added to the compartment
     */
     canAddModules(modules: Array<Module>): number {
-        if(this.isFull() || !modules || modules.length == 0) return 0
+        if(this.isFull() || !modules || modules.length === 0) return 0
         return Math.floor(this.freeHeight / modules[0].dimensions.height)
     }
 
