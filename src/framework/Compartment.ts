@@ -80,7 +80,6 @@ export class Compartment {
      * @returns the module index, or -1 if module doesn\t exsits on the compartment
      */
     getModuleIndexById(moduleId: string): number{
-        console.log(`getModuleIndexById was called with moduleId: ${moduleId}`)
         let index =  this.modulesObjList.findIndex((md) => md.id === moduleId)
         if(index !== -1) return index
         console.warn(`[Compartment ${this.id}] Couldn't find module with id: ${moduleId} on compartment: ${this.name}`)       
@@ -92,7 +91,6 @@ export class Compartment {
      * @returns True of module exsits on the comaprtment and False otherwise
      */
     hasModule(moduleId: string): boolean {
-        console.log(`hasModule called getModuleIndexById`)
         return this.getModuleIndexById(moduleId) !== -1
     }
 
