@@ -3,7 +3,7 @@ import { SwitchesMap } from './SwitchesMap'
 import { defaultSwitchDimensions } from "../components/general/generalTypes";
 import { ModulesMap } from './ModulesMap';
 
-describe('Switch class constructor', () => {
+describe('Switch', () => {
     it('should correctly initialize with all parameters provided', () => {
       const dimensions = { width: 10, height: 5, depth: 2 };
       const switchInstance = new Switch({

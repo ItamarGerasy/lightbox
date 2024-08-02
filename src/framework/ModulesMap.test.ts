@@ -1,8 +1,7 @@
 import {Module} from "./Module"
 import { ModulesMap } from "./ModulesMap"
 import { SwitchesMap } from "./SwitchesMap"
-import { Dimensions, defaultModuleDimensions } from "../components/general/generalTypes"
-import exp from "constants"
+import { defaultModuleDimensions } from "../components/general/generalTypes"
 
 describe("ModulesMap", () => {
     it("Should Create an empty ModuleMap", () => {
