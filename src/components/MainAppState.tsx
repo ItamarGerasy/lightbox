@@ -12,8 +12,8 @@ export type GlobalState = {
   boardWidth: number,
   boardHeight: number,
   boardDepth: number,
-  compartmentsOrder: Array<Compartment>,
-  compartments: CompartmentsMap<Compartment>,
+  compartmentsOrder: Compartment[],
+  compartments: CompartmentsMap,
   modules: ModulesMap,
   switches: SwitchesMap
 }
