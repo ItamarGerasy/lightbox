@@ -135,6 +135,30 @@ export class CompartmentsMap {
         return cm
     }
 
+    /**
+     * Creates an array of comaprtment objects without any switches with same feed and dimensions to all compartments
+     * 
+     * They will have different IDs and names
+     * @param compartmentsAmount amount of comaprtments to reate
+     * @param feed Comaprtments feed, Default: ""
+     * @param dimensions Comaprtments dimensions, Default: {@link defaultCompartmentDimensions}
+     * @returns Array of new module objects
+     */
+    createNewComaprtmentsArray({compartmentsAmount, feed = "", dimensions = defaultCompartmentDimensions}:{
+        compartmentsAmount: number, 
+        feed?: string, 
+        dimensions?: Dimensions
+    }): Compartment[] {
+        let params = {
+            feed: feed, 
+            dimensions: dimensions
+        }
+
+        let compsArr = new Array(compartmentsAmount).fill(null).map( _ => this.createNewComaprtment(params))
+
+        return compsArr
+    }
+
     /** function to generate new index based on all exsisting indexes for example
      * if the latest compartment added has the index of "c123" the function will return c124  
      * @returns new unused compartment index*/

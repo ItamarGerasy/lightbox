@@ -46,22 +46,22 @@ describe("CompartmentsMap", () => {
     // })
 
 
-    // it("Should Create a Modules Array", () => {
-    //     const mm = new ModulesMap()
-    //     const mdArr = mm.createNewModulesArray({modulesAmount: 2})
-    //     const [md1, md2] = mdArr
+    it("Should Create a Comaprtment Array", () => {
+        const cmMap = new CompartmentsMap()
+        const cmArr = cmMap.createNewComaprtmentsArray({compartmentsAmount: 2})
+        const [cm1, cm2] = cmArr
 
-    //     expect(md1).not.toBeNull
-    //     expect(md2).not.toBeNull
-    //     expect(md1.dimensions.height).toBe(defaultModuleDimensions.height)
-    //     expect(md1.dimensions.width).toBe(defaultModuleDimensions.width)
-    //     expect(md1.dimensions.depth).toBe(defaultModuleDimensions.depth)
-    //     expect(mm.amount).toBe(2)
-    //     expect(mm.generateIndex()).toBe("m3")
-    //     expect(mm.lastId).toBe('m2')
-    //     expect(mm.get(md1.id)).toBe(md1)
-    //     expect(mm.get(md2.id)).toBe(md2)
-    // })
+        expect(cm1).not.toBeNull
+        expect(cm2).not.toBeNull
+        expect(cm1.dimensions.height).toBe(defaultCompartmentDimensions.height)
+        expect(cm1.dimensions.width).toBe(defaultCompartmentDimensions.width)
+        expect(cm1.dimensions.depth).toBe(defaultCompartmentDimensions.depth)
+        expect(cmMap.amount).toBe(2)
+        expect(cmMap.generateIndex()).toBe("c3")
+        expect(cmMap.lastId).toBe('c2')
+        expect(cmMap.get(cm1.id)).toBe(cm1)
+        expect(cmMap.get(cm2.id)).toBe(cm2)
+    })
 
     // it("Should have a module (hasModule)", () => {
     //     const mm = new ModulesMap()
