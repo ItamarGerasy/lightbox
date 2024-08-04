@@ -1,7 +1,7 @@
-import {Module} from "./Module"
-import { ModulesMap } from "./ModulesMap"
-import { SwitchesMap } from "./SwitchesMap"
-import { defaultModuleDimensions, defaultSwitchDimensions } from "../components/general/generalTypes"
+import {Module} from "../Module"
+import { ModulesMap } from "../ModulesMap"
+import { SwitchesMap } from "../SwitchesMap"
+import { defaultModuleDimensions, defaultSwitchDimensions } from "../../components/general/generalTypes"
 
 describe("Module", () => {
 

@@ -1,7 +1,7 @@
-import { Switch } from './Switch'
-import { SwitchesMap } from './SwitchesMap'
-import { defaultSwitchDimensions } from "../components/general/generalTypes";
-import { ModulesMap } from './ModulesMap';
+import { Switch } from '../Switch'
+import { SwitchesMap } from '../SwitchesMap'
+import { defaultSwitchDimensions } from "../../components/general/generalTypes";
+import { ModulesMap } from '../ModulesMap';
 
 describe('Switch', () => {
     it('should correctly initialize with all parameters provided', () => {

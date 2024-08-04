@@ -1,7 +1,7 @@
-import {Module} from "./Module"
-import { ModulesMap } from "./ModulesMap"
-import { SwitchesMap } from "./SwitchesMap"
-import { defaultModuleDimensions } from "../components/general/generalTypes"
+import {Module} from "../Module"
+import { ModulesMap } from "../ModulesMap"
+import { SwitchesMap } from "../SwitchesMap"
+import { defaultModuleDimensions } from "../../components/general/generalTypes"
 
 describe("ModulesMap", () => {
     it("Should Create an empty ModuleMap", () => {
