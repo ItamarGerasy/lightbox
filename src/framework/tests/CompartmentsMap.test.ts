@@ -2,17 +2,37 @@ import {Module} from "../Module"
 import { ModulesMap } from "../ModulesMap"
 import { SwitchesMap } from "../SwitchesMap"
 import { CompartmentsMap } from "../ComaprtmentsMap"
-import { defaultModuleDimensions } from "../../components/general/generalTypes"
+import { defaultCompartmentDimensions } from "../../components/general/generalTypes"
 
 describe("CompartmentsMap", () => {
     it("Should Create an empty CompartmentsMap", () => {
         const cm = new CompartmentsMap()
-
+        
         expect(cm.amount).toBe(0)
         expect(cm.generateIndex()).toBe("c1")
         expect(cm.lastId).toBe(undefined)
     })
+    
+    it("Should create a single comaprtment, with default params", () => {
+        const compMap = new CompartmentsMap()
+        const cm = compMap.createNewComaprtment({})
 
+        // module verification
+        expect(cm.dimensions.height).toBe(defaultCompartmentDimensions.height)
+        expect(cm.dimensions.width).toBe(defaultCompartmentDimensions.width)
+        expect(cm.dimensions.depth).toBe(defaultCompartmentDimensions.depth)
+        expect(cm.feed).toBe("")
+        expect(cm.id).toBe('c1')
+        expect(cm.name).toBe('compartment1')
+        expect(cm.freeHeight).toBe(defaultCompartmentDimensions.height)
+        expect(cm.occupiedHeight).toBe(0)
+
+        // ComaprtmentMap verification
+        expect(compMap.amount).toBe(1)
+        expect(compMap.generateIndex()).toBe("c2")
+        expect(compMap.lastId).toBe('c1')
+        expect(compMap.get(cm.id)).toBe(cm)
+    })
     // it("Should Create a module from modules array", () => {
     //     const m1 = new ModulesMap()
     //     const mdArr = m1.createNewModulesArray({modulesAmount: 4})
@@ -25,26 +45,6 @@ describe("CompartmentsMap", () => {
     //     expect(m2.get('m4')).toBe(mdArr[mdArr.length-1])
     // })
 
-    // it("Should create a single module, with default params", () => {
-    //     const mm = new ModulesMap()
-    //     const md = mm.createNewModule({feed: "", dimensions: defaultModuleDimensions})
-
-    //     // module verification
-    //     expect(md.dimensions.height).toBe(defaultModuleDimensions.height)
-    //     expect(md.dimensions.width).toBe(defaultModuleDimensions.width)
-    //     expect(md.dimensions.depth).toBe(defaultModuleDimensions.depth)
-    //     expect(md.feed).toBe("")
-    //     expect(md.id).toBe('m1')
-    //     expect(md.name).toBe('module1')
-    //     expect(md.freeWidth).toBe(defaultModuleDimensions.width)
-    //     expect(md.occupiedWidth).toBe(0)
-
-    //     // ModulesMap verification
-    //     expect(mm.amount).toBe(1)
-    //     expect(mm.generateIndex()).toBe("m2")
-    //     expect(mm.lastId).toBe('m1')
-    //     expect(mm.get(md.id)).toBe(md)
-    // })
 
     // it("Should Create a Modules Array", () => {
     //     const mm = new ModulesMap()

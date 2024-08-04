@@ -1,10 +1,12 @@
 // CompartmentsMap.ts
 // Author: Itamar Gerasy
 import { Compartment } from "./Compartment"
+import { defaultCompartmentDimensions, Dimensions } from "../components/general/generalTypes"
+import { Module } from "./Module"
 
 /** this class is basically a map of modules with some extra properties */
-export class CompartmentsMap<CompartmentType  extends Compartment> {
-    private compartmentsMap: { [key: string]: CompartmentType } = {}
+export class CompartmentsMap {
+    private compartmentsMap: { [key: string]: Compartment } = {}
     private _amount: number = 0
     lastId: string | undefined = undefined
     
@@ -13,17 +15,16 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
      * option 1: do not pass any argument, will initialize empty map
      * option 2: pass an array of compartments , in that case we assume all compartments 
      * id's on the array are different */
-    constructor(compratmentsArray?: CompartmentType[]){
+    constructor(compratmentsArray?: Compartment[]){
         if(!compratmentsArray){
             return
         }
 
         compratmentsArray.forEach((cm) => {
-            this.compartmentsMap[cm.id] = cm;
+            this.set(cm)
             if (!this.lastId || cm.id > this.lastId) {
                 this.lastId = cm.id;
             }
-            this._amount++;
         });
     }
 
@@ -31,7 +32,7 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
      * @param cm compartment object or compartment id
      * @returns the removed compartment object
      * @throws error if the compartment doesn't exist on the map */
-    removeCompartment(cm: string|CompartmentType): CompartmentType {
+    removeCompartment(cm: string|Compartment): Compartment {
         let id = typeof cm === 'string' ? cm : cm.id
         if (!this.hasCompartment(id)) {
             throw new Error(`[CompartmentsMap] compartment with id: ${id} cannot be deleted from map since it doesn't exists in the map`)
@@ -55,8 +56,8 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
      * @param compartments - array of compartment objects/ids to remove
      * @returns array of the removed compartment objects
     */
-    removeCompartments(compartments: Array<string|CompartmentType>): Array<CompartmentType>{
-        const deletedCompartments: Array<CompartmentType> = []
+    removeCompartments(compartments: Array<string|Compartment>): Array<Compartment>{
+        const deletedCompartments: Array<Compartment> = []
         compartments.forEach(cm => deletedCompartments.push(this.removeCompartment(cm)))
         return deletedCompartments
     }
@@ -87,22 +88,51 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
      * Add a new compartment on the map property
      * @param newCompartment compartment obect to add
      */
-    set(newCompartment: CompartmentType): void {
+    set(newCompartment: Compartment): void {
         this.compartmentsMap[newCompartment.id] = newCompartment;
+        this._amount++
     }
 
     /**
      * Adds new compartment to the our map
      * @param newCompartment compartment object to add
      */
-    addCompartment(newCompartment: CompartmentType): void {
+    addCompartment(newCompartment: Compartment): void {
         if (this.hasCompartment(newCompartment.id)) {
             console.log(`Compartments map already have compartment with id: ${newCompartment.id}`)
             return
         }
         this.set(newCompartment)
         this.lastId = newCompartment.id
-        this._amount++ 
+    }
+
+    /**
+     * Factory function for Compartment object, adds it to the map and returns it
+     * @param feed Compartment feed, Default: compartment+number
+     * @param moduleObjList Oredered modules array (not sorting order, orgenizational order), Default: []
+     * @param name Optional - Comaprtment name, if not provided will name it compartment and a number, example: comaprtment5 
+     * @param dimensions Compartment dimensions, Default: {@link defaultModuleDimensions}
+     */
+    createNewComaprtment({feed = "", moduleObjList=null, name, dimensions = defaultCompartmentDimensions}:{
+        feed?: string,
+        moduleObjList?: Module[] | null,
+        name?: string 
+        dimensions?: Dimensions
+    }): Compartment {
+        let newId = this.generateIndex() // new index of the shape: c23, c11, c123
+
+        const compartmentParams = {
+            id: `${newId}`, 
+            name: name || `compartment${newId.substring(1)}`, 
+            feed: feed,
+            moduleObjList: moduleObjList || [],
+            dimensions: dimensions
+        }
+
+        const cm = new Compartment(compartmentParams)
+        this.addCompartment(cm)
+
+        return cm
     }
 
     /** function to generate new index based on all exsisting indexes for example
@@ -132,8 +162,8 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
     }
 
     /** this function creates a colne/copy of the current ModulesMap */ 
-    clone(): CompartmentsMap<CompartmentType> {
-        const compartmentsArr = Object.values(this.compartmentsMap).map(cm => cm.clone() as CompartmentType)
-        return new CompartmentsMap<CompartmentType>(compartmentsArr)
+    clone(): CompartmentsMap {
+        const compartmentsArr = Object.values(this.compartmentsMap).map(cm => cm.clone() as Compartment)
+        return new CompartmentsMap(compartmentsArr)
     }
 }
