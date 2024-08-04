@@ -97,6 +97,8 @@ function InputAccordion(props: InputAccordionProps) {
       clearAllInput()
       return
     }
+
+    globalState.switches.removeSwitches(newSwitchesArray)
     
     setDialogDetails({title: "hello", 
       message: `There isn't enough space on the board to add ${input.switchAmount} switches, nor there is space to add enough modules to accomedate them. \n try adding new compartments and than add the switches `})

@@ -143,7 +143,6 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
 
         console.log(`Going to add all ${switchesToAdd.length} switches to one module ${module.name} `)
         module.addSwitches(switchesToAdd)
-        newGlobalState.switches.addSwitches(switchesToAdd)
         setGlobalState(newGlobalState)
         return true
       },
