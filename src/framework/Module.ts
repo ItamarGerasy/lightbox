@@ -9,7 +9,7 @@ export class Module {
     feed: string
     /** switchesObjList will be responsible to hold the module switches ids
      * in a certain order that will be changed depending on user interactions  */
-    switchesObjList: Array<Switch>
+    switchesObjList: Array<Switch> = []
     _dimensions: Dimensions
     switchesAmount: number = 0
     occupiedWidth: number = 0
@@ -37,10 +37,9 @@ export class Module {
         this.name = name
         this.feed = feed
         this._dimensions = dimensions ? dimensions : defaultModuleDimensions
-        this.switchesObjList = switchesObjList ? switchesObjList : []
-        this.occupiedWidth = this.switchesObjList.reduce((sum, sw) => sum += sw.dimensions.width, 0)
-        this.freeWidth = this._dimensions.width - this.occupiedWidth
-        this.switchesAmount = this.switchesObjList.length
+        this.freeWidth = this._dimensions.width
+
+        if (switchesObjList) switchesObjList.forEach((sw) => {this.addSwitch(sw)})
 
         if(this.occupiedWidth > this.dimensions.width){
             throw new Error(`[Module ${this.id}] cannot initialize module with total switches width bigger than module width`)
@@ -175,7 +174,14 @@ export class Module {
     addSwitch(sw: Switch, index?: number): void{
         if(!this.canAddSwitch(sw)) {
             throw new Error(`[${module.id}] couldn't add switch since the module is either full or switch is bigger then free space on module \n
-            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch()`)
+            Please make sure to use moduleObj.canAddSwitch() and recive the value true before calling addSwitch() \n
+            details: \n
+            module information: \n
+            total width: ${this.dimensions.width} \n
+            occupied width: ${this.occupiedWidth} \n
+            free width: ${this.freeWidth} \n
+            switch information: \n
+            switch dimensions: ${JSON.stringify(sw.dimensions)}`)
         }
         if(!index || index === 0){
             this.switchesObjList.push(sw)
@@ -186,6 +192,7 @@ export class Module {
         this.switchesAmount++
         this.freeWidth -= sw.dimensions.width
         this.occupiedWidth += sw.dimensions.width
+        // console.log(`[${this.name}] switch with id ${sw.id} was added to the module`)
     }
 
     /**

@@ -12,7 +12,7 @@ import { SelectChangeEvent } from "@mui/material/Select"
 import { InputTextFields } from "./InputTextFields"
 import { SelectWrapper } from "./SelectWrapper"
 import { useGlobalState, withGlobalState } from "../MainAppState"
-
+import { InfoDialog } from "../general/InfoDialog"
 
 type InputAccordionProps = {
   feedList: Array<string>;
@@ -28,6 +28,9 @@ function InputAccordion(props: InputAccordionProps) {
     switchAmount: "1",
     switchDescription: ""
   });
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [dialogDetails, setDialogDetails] = useState({title: "", message: ""})
+
   const clearAllInput = () => {
     setFeedInput("")
     setInput({switchSpecs: "", switchAmount: "1", switchDescription: ""})
@@ -95,6 +98,9 @@ function InputAccordion(props: InputAccordionProps) {
       return
     }
     
+    setDialogDetails({title: "hello", 
+      message: `There isn't enough space on the board to add ${input.switchAmount} switches, nor there is space to add enough modules to accomedate them. \n try adding new compartments and than add the switches `})
+    setIsDialogOpen(true)
     
   };
 
@@ -125,6 +131,7 @@ function InputAccordion(props: InputAccordionProps) {
         </Button>
         <Typography color={"red"}>{inputError}</Typography>
       </AccordionDetails>
+      <InfoDialog deatils={dialogDetails} open={isDialogOpen} closeDialog={() => setIsDialogOpen(false)} />
     </Accordion>
   );
 }
