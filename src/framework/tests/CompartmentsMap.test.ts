@@ -33,17 +33,18 @@ describe("CompartmentsMap", () => {
         expect(compMap.lastId).toBe('c1')
         expect(compMap.get(cm.id)).toBe(cm)
     })
-    // it("Should Create a module from modules array", () => {
-    //     const m1 = new ModulesMap()
-    //     const mdArr = m1.createNewModulesArray({modulesAmount: 4})
 
-    //     const m2 = new ModulesMap(mdArr)
+    it("Should Create a compartment map from comaprtment array", () => {
+        const c1 = new CompartmentsMap()
+        const cmArr = c1.createNewComaprtmentsArray({compartmentsAmount: 4})
 
-    //     expect(m2.amount).toBe(4)
-    //     expect(m2.generateIndex()).toBe('m5')
-    //     expect(m2.lastId).toBe('m4')
-    //     expect(m2.get('m4')).toBe(mdArr[mdArr.length-1])
-    // })
+        const c2 = new CompartmentsMap(cmArr)
+
+        expect(c2.amount).toBe(4)
+        expect(c2.generateIndex()).toBe('c5')
+        expect(c2.lastId).toBe('c4')
+        expect(c2.get('c4')).toBe(cmArr[cmArr.length-1])
+    })
 
 
     it("Should Create a Comaprtment Array", () => {
