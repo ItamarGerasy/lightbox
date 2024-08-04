@@ -110,7 +110,7 @@ export class CompartmentsMap<CompartmentType  extends Compartment> {
      * @returns new unused compartment index*/
     generateIndex(): string {
         if(!this.lastId){
-            return "m1"
+            return "c1"
         }
         let newHigestIndex = Number(this.lastId.substring(1)) + 1
         return `m${newHigestIndex}`
