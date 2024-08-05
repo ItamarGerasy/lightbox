@@ -1,4 +1,5 @@
 import TextField from "@mui/material/TextField";
+import { ColumnFlexBox } from "../general/GeneralStyles.styles";
 
 type InputTextFieldsProps = {
   handleInputChange: (
@@ -13,7 +14,7 @@ type InputTextFieldsProps = {
 
 export const InputTextFields = ({ handleInputChange, inputValues }: InputTextFieldsProps) => {
   return (
-    <div>
+    <ColumnFlexBox>
       <TextField
         style={{paddingBottom: '5px', paddingTop: '5px'}}
         required
@@ -44,6 +45,6 @@ export const InputTextFields = ({ handleInputChange, inputValues }: InputTextFie
         onChange={handleInputChange}
         value={inputValues.switchDescription}
       />
-    </div>
+    </ColumnFlexBox>
   );
 };

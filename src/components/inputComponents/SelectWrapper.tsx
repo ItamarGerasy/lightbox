@@ -1,6 +1,7 @@
 // SelectWrapper.tsx
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { FlexBox } from "../general/GeneralStyles.styles";
 
 type SelectWrapperProps = {
   selectedFeed: string;
@@ -10,7 +11,7 @@ type SelectWrapperProps = {
 
 export const SelectWrapper = (props: SelectWrapperProps) => {
   return (
-    <div>
+    <FlexBox>
       <Select
         style={{paddingBottom: '8px', maxHeight: '30px', fontSize: "10", textAlign: 'center'}}
         value={props.selectedFeed}
@@ -27,6 +28,6 @@ export const SelectWrapper = (props: SelectWrapperProps) => {
           </MenuItem>
         ))}
       </Select>
-    </div>
+    </FlexBox>
   );
 };

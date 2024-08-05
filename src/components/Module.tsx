@@ -52,23 +52,25 @@ const Module: React.FC<ModuleProps> = ({module, index}) => {
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          <Collapse orientation="horizontal" in={isHovered}>
-            <ModuleMenu provided={provided} module={module} />
-          </Collapse>
-          {/* dnd droppable component for modules */}
-          <StrictModeDroppable droppableId={module.id} type='switch' direction="horizontal">
-            {(provided, snapshot) => {
-              // the next code line is used to cancel isHover in case the hover is for DND purpose 
-              // eslint-disable-next-line no-lone-blocks 
-              {if(snapshot.isDraggingOver){setIsHovered(false)}}
-              return(
-                <SwitchesList ref={provided.innerRef} {...provided.droppableProps} isDraggingOver={snapshot.isDraggingOver}>
-                  <InnerSwitchesList switchesOrderedList={module.switchesObjList} />
-                  {provided.placeholder}
-                </SwitchesList>
-              )
-            }}
-          </StrictModeDroppable>
+          <FlexBox>
+            <Collapse orientation="horizontal" in={isHovered}>
+              <ModuleMenu provided={provided} module={module} />
+            </Collapse>
+            {/* dnd droppable component for modules */}
+            <StrictModeDroppable droppableId={module.id} type='switch' direction="horizontal">
+              {(provided, snapshot) => {
+                // the next code line is used to cancel isHover in case the hover is for DND purpose 
+                // eslint-disable-next-line no-lone-blocks 
+                {if(snapshot.isDraggingOver){setIsHovered(false)}}
+                return(
+                  <SwitchesList ref={provided.innerRef} {...provided.droppableProps} isDraggingOver={snapshot.isDraggingOver}>
+                    <InnerSwitchesList switchesOrderedList={module.switchesObjList} />
+                    {provided.placeholder}
+                  </SwitchesList>
+                )
+              }}
+            </StrictModeDroppable>
+          </FlexBox>
         </ModuleStyle> 
       )}
     </Draggable>

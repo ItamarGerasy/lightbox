@@ -1,6 +1,7 @@
 // Info.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import InfoIcon from '@mui/icons-material/Info'
+import { ColumnFlexBox, FlexBox } from './GeneralStyles.styles';
 
 export const infoWindowDefaultStyle = {
     position: 'absolute',
@@ -19,9 +20,9 @@ type InfoWindowProps = {
 
 export const InfoWindow: React.FC<InfoWindowProps> = (props) => {
     const style = props.style ? props.style : infoWindowDefaultStyle;
-    return <div ref={props.infoRef} style={style}>
+    return <FlexBox ref={props.infoRef} style={style}>
         {props.infoStr}
-    </div>
+    </FlexBox>
 }
 
 type InfoProps = {
@@ -55,10 +56,10 @@ export const Info: React.FC<InfoProps> = ({ infoStr }) => {
     }, [showInfo]);
 
     return (
-        <div onClick={handleInfoClick}>
+        <ColumnFlexBox onClick={handleInfoClick}>
             <InfoIcon sx={{ fontSize: '15px', paddingBottom: '4px' }}  />
             {showInfo && (<InfoWindow infoRef={infoRef} infoStr={infoStr} />
             )}
-        </div>
+        </ColumnFlexBox>
     );
 };

@@ -3,6 +3,7 @@ import InputAccordion from "./InputAccordion";
 import { useState } from "react";
 import { FeedInput } from "./FeedInput";
 import { withGlobalState } from "../MainAppState";
+import { ColumnFlexBox } from "../general/GeneralStyles.styles";
 
 const InputForm = () => {
   const [feedList, setFeedList] = useState<Array<string>>([])
@@ -20,7 +21,7 @@ const InputForm = () => {
   }
 
   return (
-    <div style={{maxWidth: '200px'}}>
+    <ColumnFlexBox style={{maxWidth: '200px'}}>
       <FeedInput
         feedList={feedList}
         addToFeedList={addToFeedList}
@@ -29,7 +30,7 @@ const InputForm = () => {
       <InputAccordion
         feedList={feedList}
       />
-    </div>
+    </ColumnFlexBox>
   );
 };
 

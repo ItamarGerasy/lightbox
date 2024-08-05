@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import { FlexBox } from "../general/GeneralStyles.styles";
 
 type FeedInputProps = {
   feedList: Array<string>;
@@ -39,7 +40,7 @@ export const FeedInput = (props: FeedInputProps) => {
   };
 
   return (
-    <div style={{ display: "flex", paddingBottom: '8px'}}>
+    <FlexBox style={{ display: "flex", paddingBottom: '8px'}}>
       <TextField
         size="small"
         id="feed"
@@ -53,11 +54,11 @@ export const FeedInput = (props: FeedInputProps) => {
         Add
       </Button>
       {props.feedList.map((feed, index) => (
-        <div key={index}>
+        <FlexBox key={index}>
           <Typography>{feed}</Typography>
           <CloseIcon onClick={() => handleRemove(feed)} />
-        </div>
+        </FlexBox>
       ))}
-    </div>
+    </FlexBox>
   );
 };
