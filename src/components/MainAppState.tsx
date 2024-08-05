@@ -31,6 +31,7 @@ export type GlobalStateContextType = {
       deleteCompartmentAndModules: (comratmentId: string) => void
       addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>) => boolean
       addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>) => boolean
+      addModuleAndAddSwitches: (switchesToAdd: Array<SwitchObj>) => boolean
     },
     dndActions: {
       droppedCompratment: (result: DropResult) => void
@@ -155,6 +156,93 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
 
         newGlobalState.modules.addSwitchesToSeveralModules(switchesToAdd)
         setGlobalState(newGlobalState)
+        return true
+      },
+      /**
+       * Create and add new models to existing compartments in order to fit in all given switches
+       * If there isn't enough space on existing compartments will not add any modules and will return false
+       * Designed to be used when addSwitchesToSeveralModules failed and there is no room in existing modules for the switches 
+       * @param switchesToAdd Array of switch objects to add
+       * @returns true if sucsessful, false if not.
+       */
+      addModuleAndAddSwitches: (switchesToAdd: SwitchObj[]): boolean => {
+        
+        const newGlobalState = {...globalState}
+
+        let totalSwitchesToAdd = switchesToAdd.length
+        let switchesInExistingModules = 0
+        let swWidth = switchesToAdd[0].dimensions.width
+        let swHeight = switchesToAdd[0].dimensions.height
+        
+        const modulesToSwitches = newGlobalState.modules.getModuleFreeSlotsMap(switchesToAdd)
+        const compartmentFreeSlots = newGlobalState.compartments.getCompartmentsFreeSlotsMap(undefined, switchesToAdd[0].dimensions.height)
+        const compartmentToModules: { [key: string]: number } = {};
+        const compartmentToSwitches: { [key: string]: number } = {}
+
+        // take into account the switches that can be added into existing modules
+        modulesToSwitches.forEach(swAmount => {
+          totalSwitchesToAdd -= swAmount
+          switchesInExistingModules += swAmount
+        })
+
+        for(const [cmId, mdAmount] of compartmentFreeSlots.entries()){
+
+          const cmObj = newGlobalState.compartments.get(cmId)
+          let cmWidth = cmObj.dimensions.width
+          let swPerModuleInCm = Math.floor(cmWidth / swWidth)
+          // calculating amount of switches that will fit the compartment
+          let switchesInCm = swPerModuleInCm * mdAmount
+
+          // in case the available space in the compartment can't hold all the desired switches
+          if(switchesInCm < totalSwitchesToAdd) {
+            console.log(`Compartment ${cmId} can't fit all remainning switches ${totalSwitchesToAdd}, he can fit ${switchesInCm} switches in ${mdAmount} modules`)           
+            // this compartment will have to add all the possible modules he can, and all the switches he can
+            compartmentToModules[cmId] = mdAmount
+            compartmentToSwitches[cmId] = switchesInCm
+            totalSwitchesToAdd -= switchesInCm
+            continue
+          }
+
+          // in case the available space in the compartment can hold all the desired switches
+          let amountOfNewModulesNeeded = Math.ceil(totalSwitchesToAdd / swPerModuleInCm)
+          compartmentToModules[cmId] = amountOfNewModulesNeeded
+          compartmentToSwitches[cmId] = totalSwitchesToAdd
+          console.log(`Compartment ${cmId} can fit all remainning switches ${totalSwitchesToAdd}, he can fit ${switchesInCm} switches in ${mdAmount} modules. \n
+            and will need to add ${amountOfNewModulesNeeded} modules`)
+          totalSwitchesToAdd = 0
+          break
+        }
+
+        if (totalSwitchesToAdd > 0) {
+          console.log(`There isn't enough space in existing compartments to add ${totalSwitchesToAdd} switches, even with adding modules`)
+          return false
+        }
+
+        // Adds the switches first to existing modules
+        const swichesForExistingModules = switchesToAdd.slice(0, switchesInExistingModules)
+        const switchesForNewModules = switchesToAdd.slice(switchesInExistingModules)
+        if(switchesInExistingModules){
+          console.log(`Adding ${switchesInExistingModules} switches to existing modules`)
+          newGlobalState.modules.addSwitchesToSeveralModules(swichesForExistingModules)
+        }
+
+        // Adding the required Modules
+        for(const [cmId, mdAmount] of Object.entries(compartmentToModules)){
+          const cm = newGlobalState.compartments.get(cmId)
+          const mdParams = {
+            modulesAmount: mdAmount, 
+            feed: cm.feed, 
+            dimensions: {...cm.dimensions, height: swHeight}
+          }
+          console.log(`Adding ${mdAmount} modules to compartment ${cmId}`)
+          const newModules = newGlobalState.modules.createNewModulesArray(mdParams)
+          newModules.forEach(md => cm.addModule(md))
+        }
+
+        newGlobalState.modules.addSwitchesToSeveralModules(switchesForNewModules)
+
+        setGlobalState(newGlobalState)
+      
         return true
       }
 

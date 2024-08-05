@@ -6,7 +6,7 @@ import { Module } from "./Module"
 
 /** this class is basically a map of modules with some extra properties */
 export class CompartmentsMap {
-    private compartmentsMap: { [key: string]: Compartment } = {}
+    private compartmentsMap = new Map<string, Compartment>()
     private _amount: number = 0
     lastId: string | undefined = undefined
     
@@ -38,18 +38,18 @@ export class CompartmentsMap {
             throw new Error(`[CompartmentsMap] compartment with id: ${id} cannot be deleted from map since it doesn't exists in the map`)
         }
 
-        const compartmentToDelete = this.compartmentsMap[id]
-        if (compartmentToDelete.id === this.lastId){
+        const compartmentToDelete = this.compartmentsMap.get(id)
+        if (compartmentToDelete!.id === this.lastId){
             // if the compartment we want to remove has the latest index
             // we set the latest index as the largest index before that
             const ids = Object.keys(this.compartmentsMap);
             ids.sort().pop();
             this.lastId = ids.pop()
         }
-        delete this.compartmentsMap[id]
+        this.compartmentsMap.delete(id)
         this._amount--
 
-        return compartmentToDelete
+        return compartmentToDelete!
     }
 
     /** removes several compartments from the map and returns an array of the removed compartments  
@@ -66,7 +66,7 @@ export class CompartmentsMap {
      * @param compartmentId id of compartment to check
     */
     hasCompartment(compartmentId: string): boolean {
-        return compartmentId in this.compartmentsMap
+        return this.compartmentsMap.has(compartmentId)
     }
 
     /** number of compartments in the map */
@@ -81,7 +81,7 @@ export class CompartmentsMap {
         if(!this.hasCompartment(id)) {
             throw new Error(`[compartmentsMap] compartment with id: ${id} doesn't exsit on the map \n compartments map ids: ${Object.keys(this.compartmentsMap)}`)
         }
-        return this.compartmentsMap[id]
+        return this.compartmentsMap.get(id)!
     }
 
     /**
@@ -89,7 +89,7 @@ export class CompartmentsMap {
      * @param newCompartment compartment obect to add
      */
     set(newCompartment: Compartment): void {
-        this.compartmentsMap[newCompartment.id] = newCompartment;
+        this.compartmentsMap.set(newCompartment.id, newCompartment)
         this._amount++
     }
 
@@ -136,13 +136,13 @@ export class CompartmentsMap {
     }
 
     /**
-     * Creates an array of comaprtment objects without any switches with same feed and dimensions to all compartments
+     * Creates an array of comaprtment objects without any modules with same feed and dimensions to all compartments
      * 
      * They will have different IDs and names
      * @param compartmentsAmount amount of comaprtments to reate
      * @param feed Comaprtments feed, Default: ""
      * @param dimensions Comaprtments dimensions, Default: {@link defaultCompartmentDimensions}
-     * @returns Array of new module objects
+     * @returns Array of new compartments objects
      */
     createNewComaprtmentsArray({compartmentsAmount, feed = "", dimensions = defaultCompartmentDimensions}:{
         compartmentsAmount: number, 
@@ -183,6 +183,33 @@ export class CompartmentsMap {
             }
         })
         return parentModule
+    }
+
+    /**
+     * Returns a map of free slots on each compartment in the map 
+     * You can Provide either array of module object or height to check for
+     * @param mdArr  Array of module objects, if provided will check only for given amount of modules
+     * @param height height of compartments to check for, if provided will check to maximum amount each compartment can fit
+     * @returns A map, key is compartment id and value is number of switches it can add to itself.
+     */
+    getCompartmentsFreeSlotsMap(
+        mdArr?: Module[], 
+        height?: number
+    ): Map<string, number> 
+    {
+        if(!mdArr && !height){
+            throw new Error(`[CompMap][getModuleFreeSlotsMap] please provide either modules array or height parameters`)
+        }
+
+        const output = new Map<string, number>()
+        
+        if(height !== undefined){
+            this.compartmentsMap.forEach(cm => output.set(cm.id, Math.floor(cm.freeHeight / height)))
+        } else {
+            this.compartmentsMap.forEach(cm => output.set(cm.id, cm.canAddModules(mdArr!)) )
+        }
+        
+        return output
     }
 
     /** this function creates a colne/copy of the current ModulesMap */ 
