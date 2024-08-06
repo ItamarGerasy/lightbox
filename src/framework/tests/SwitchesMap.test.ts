@@ -130,4 +130,26 @@ describe("SwtichesMap", () => {
         expect(sw).toBeNull
     })
 
+    it("Should Iterate through the switches map", () => {
+        const swMap = new SwitchesMap()
+        let description = "some description"
+        let prefix = "1X16A"
+        let feed = " some feed"
+        let switchesAmount = 3
+
+        let swArr = swMap.createNewSwitchesArray(switchesAmount, description, prefix, feed)
+        let ids = swArr.map(sw => sw.id)
+        let counter = 0
+
+        swMap.forEach((mapSw, mapId) => {
+            counter++
+            const foundSW = swArr.find(arrSw => arrSw === mapSw)
+            const foundId = ids.find(arrId => arrId === mapId)
+            expect(foundSW).toBe(mapSw)
+            expect(foundId).toBe(mapId)
+        })
+
+        expect(counter).toBe(switchesAmount)
+    })
+
 })

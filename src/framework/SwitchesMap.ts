@@ -131,4 +131,16 @@ export class SwitchesMap {
         this.set(sw.id, sw)
         return sw
     }
+
+    /**
+     * A function that calls a provided callback function once for each key/value pair in the SwitchesMap object, in insertion order.
+     *
+     * @param {Switch} value - The value of the current element being processed in the map.
+     * @param {string} key - The key of the current element being processed in the map.
+     * @param {Map<string, Switch>} map - The map object being iterated.
+     * @param {any} thisArg - An object to which the this keyword can refer in the callbackfn function.
+     */
+    forEach(callbackfn: (value: Switch, key: string, map: Map<string, Switch>) => void, thisArg?: any): void {
+        this.switchesMap.forEach(callbackfn, thisArg)
+    }
 }
