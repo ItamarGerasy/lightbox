@@ -217,4 +217,16 @@ export class CompartmentsMap {
         const compartmentsArr = Object.values(this.compartmentsMap).map(cm => cm.clone() as Compartment)
         return new CompartmentsMap(compartmentsArr)
     }
+
+    /**
+     * A function that calls a provided callback function once for each key/value pair in the CompartmentsMap object, in insertion order.
+     *
+     * @param {Compartment} value - The value of the current element being processed in the map.
+     * @param {string} key - The key of the current element being processed in the map.
+     * @param {Map<string, Compartment>} map - The map object being iterated.
+     * @param {any} thisArg - An object to which the this keyword can refer in the callbackfn function.
+     */
+    forEach(callbackfn: (value: Compartment, key: string, map: Map<string, Compartment>) => void, thisArg?: any): void {
+        this.compartmentsMap.forEach(callbackfn, thisArg)
+    }
 }
