@@ -21,3 +21,9 @@ export const defaultCompartmentDimensions: Dimensions = {
     height: defaultModuleDimensions.height * 3,
     depth: 69
 }
+
+export const defaultBoardDimensions: Dimensions = {
+    width: defaultCompartmentDimensions.width * 3,
+    height: defaultCompartmentDimensions.height,
+    depth: 69
+}

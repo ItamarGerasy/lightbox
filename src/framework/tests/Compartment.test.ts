@@ -1,8 +1,7 @@
 
 import { ModulesMap } from "../ModulesMap"
-import { defaultModuleDimensions, defaultSwitchDimensions, defaultCompartmentDimensions } from "../../components/general/generalTypes"
+import { defaultModuleDimensions, defaultCompartmentDimensions } from "../../components/general/generalTypes"
 import { Compartment } from "../Compartment"
-import exp from "constants"
 
 describe("Module", () => {
 
