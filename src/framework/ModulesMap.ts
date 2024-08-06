@@ -279,4 +279,16 @@ export class ModulesMap {
         this.modulesMap.forEach((md) => modulesArr.push(md.clone()))
         return new ModulesMap(modulesArr)
     }
+
+    /**
+     * A function that calls a provided callback function once for each key/value pair in the ModulesMap object, in insertion order.
+     *
+     * @param {Module} value - The value of the current element being processed in the map.
+     * @param {string} key - The key of the current element being processed in the map.
+     * @param {Map<string, Module>} map - The map object being iterated.
+     * @param {any} thisArg - An object to which the this keyword can refer in the callbackfn function.
+     */
+    forEach(callbackfn: (value: Module, key: string, map: Map<string, Module>) => void, thisArg?: any): void {
+        this.modulesMap.forEach(callbackfn, thisArg)
+    }
 }

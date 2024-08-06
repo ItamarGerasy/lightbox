@@ -229,4 +229,25 @@ describe("ModulesMap", () => {
         expect(mdMap.lastId).toBe(mdArr[0].id)
         expect(mdMap.amount).toBe(1)
     })
+
+    it("Should Iterate through the switches map", () => {
+        const mdMap = new ModulesMap()
+        let dimensions = defaultModuleDimensions
+        let feed = " some feed"
+        let modulesAmount = 3
+
+        let mdArr = mdMap.createNewModulesArray({modulesAmount, feed, dimensions})
+        let ids = mdArr.map(sw => sw.id)
+        let counter = 0
+
+        mdMap.forEach((mapMd, mapId) => {
+            counter++
+            const foundMd = mdArr.find(arrSw => arrSw === mapMd)
+            const foundId = ids.find(arrId => arrId === mapId)
+            expect(foundMd).toBe(mapMd)
+            expect(foundId).toBe(mapId)
+        })
+
+        expect(counter).toBe(modulesAmount)
+    })
 })
