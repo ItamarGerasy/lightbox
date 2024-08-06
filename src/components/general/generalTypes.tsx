@@ -18,7 +18,7 @@ export const defaultModuleDimensions: Dimensions = {
 
 export const defaultCompartmentDimensions: Dimensions = {
     width: defaultModuleDimensions.width,
-    height: defaultModuleDimensions.height * 3,
+    height: defaultModuleDimensions.height * 6,
     depth: 69
 }
 
