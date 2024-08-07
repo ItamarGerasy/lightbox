@@ -30,7 +30,7 @@ export class Module {
         id: string,
         name: string,
         feed: string,
-        switchesObjList?: Switch[],
+        switchesObjList?: Array<Switch>,
         dimensions?: Dimensions
     }){
         this.id = id

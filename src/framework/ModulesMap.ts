@@ -10,7 +10,6 @@ import { Dimensions, defaultModuleDimensions } from "../components/general/gener
  */
 export class ModulesMap {
     private modulesMap: Map<string, Module> = new Map()
-    private _amount: number = 0
     lastId: string | undefined = undefined
     
     /**
@@ -32,7 +31,6 @@ export class ModulesMap {
             if (!this.lastId || md.id > this.lastId) {
                 this.lastId = md.id;
             }
-            this._amount++;
         });
     }
 
@@ -50,7 +48,6 @@ export class ModulesMap {
 
         const moduleToDelete = this.modulesMap.get(id)
         this.modulesMap.delete(id)
-        this._amount--
         // if the module we want to remove has the latest index
         // we set the latest index as the largest index before that
         if (moduleToDelete!.id === this.lastId){
@@ -86,7 +83,7 @@ export class ModulesMap {
      * @property the number of switches on this module
      */
     get amount(): number {
-        return this._amount
+        return this.modulesMap.size
     }
 
     /**
@@ -111,7 +108,6 @@ export class ModulesMap {
             console.log(`Modules map already have module with id: ${newModule.id}`)
             return
         }
-        this._amount++
         this.lastId = id
         this.modulesMap.set(id, newModule)
     }

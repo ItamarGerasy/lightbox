@@ -1,7 +1,7 @@
 import {Module} from "../Module"
 import { ModulesMap } from "../ModulesMap"
 import { SwitchesMap } from "../SwitchesMap"
-import { CompartmentsMap } from "../ComaprtmentsMap"
+import { CompartmentsMap } from "../ComapartmentsMap"
 import { defaultCompartmentDimensions } from "../../components/general/generalTypes"
 
 describe("CompartmentsMap", () => {
@@ -62,6 +62,27 @@ describe("CompartmentsMap", () => {
         expect(cmMap.lastId).toBe('c2')
         expect(cmMap.get(cm1.id)).toBe(cm1)
         expect(cmMap.get(cm2.id)).toBe(cm2)
+    })
+
+    it("Should Iterate through the switches map", () => {
+        const cmMap = new CompartmentsMap()
+        let dimensions = defaultCompartmentDimensions
+        let feed = " some feed"
+        let compartmentsAmount = 3
+
+        let cmArr = cmMap.createNewComaprtmentsArray({compartmentsAmount, feed, dimensions})
+        let ids = cmArr.map(cm => cm.id)
+        let counter = 0
+
+        cmMap.forEach((mapCm, mapId) => {
+            counter++
+            const foundCm = cmArr.find(arrSw => arrSw === mapCm)
+            const foundId = ids.find(arrId => arrId === mapId)
+            expect(foundCm).toBe(mapCm)
+            expect(foundId).toBe(mapId)
+        })
+
+        expect(counter).toBe(compartmentsAmount)
     })
 
     // it("Should have a module (hasModule)", () => {

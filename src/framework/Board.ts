@@ -5,7 +5,7 @@ import { SwitchesMap } from "./SwitchesMap"
 import { Module } from "./Module"
 import { ModulesMap } from "./ModulesMap"
 import { Compartment } from "./Compartment"
-import { CompartmentsMap } from "./ComaprtmentsMap"
+import { CompartmentsMap } from "./ComapartmentsMap"
 import { Dimensions, defaultBoardDimensions, defaultCompartmentDimensions } from "../components/general/generalTypes"
 
 
@@ -13,9 +13,13 @@ import { Dimensions, defaultBoardDimensions, defaultCompartmentDimensions } from
 export class Board {
     private _dimensions
     public name
+    /** Ordered list of compartments on the board from left to right */
     public compObjList: Compartment[] = []
+    /** A map containning all the compartments on the board and some extra fucntions */
     public compartments: CompartmentsMap
+    /** A map containning all the moduless on the board and some extra fucntions */
     public modules: ModulesMap
+    /** A map containning all the switches on the board and some extra fucntions */
     public switches: SwitchesMap
     public freeWidth
 
@@ -74,7 +78,7 @@ export class Board {
      * 
      * @returns true if succesfully created, false otherwise
     */
-    createEmptyCompartment({name, feed = "", moduleObjList = [], dimensions = defaultCompartmentDimensions}:{
+    createCompartment({name, feed = "", moduleObjList = [], dimensions = defaultCompartmentDimensions}:{
         name: string 
         feed?: string,
         moduleObjList?: Module[],
@@ -116,5 +120,40 @@ export class Board {
     /** Returs the minimum depth that can be set on the board */
     minimumDepthToSet(): number {
         return this.compObjList.reduce((maxDepth, cm) => Math.max(maxDepth, cm.dimensions.depth), 0)
+    }
+
+    deleteCompartmentAndModules = (compartmentId: string): void => {
+        // validating compartment with given id exists
+        if(!this.compartments.hasCompartment(compartmentId)){
+          throw new Error(`[deleteCompartmentAndModules()] comaprtment with id:${compartmentId} doesn't exists`)
+        }
+
+        let switchesToDelete: Array<Switch> = []
+        const compartment = this.compartments.get(compartmentId)
+        this.freeWidth += compartment.dimensions.width
+
+        // removing all modules from the compartment
+        const modulesToDelete = compartment.removeAllModules()
+        
+        // collecting all switches objects on the compartment modules
+        modulesToDelete.forEach(mdObj => switchesToDelete.push(...mdObj.switchesObjList))
+        // removing switches from the map
+        this.switches.removeSwitches(switchesToDelete)
+
+        //removing modules from the map
+        this.modules.removeModules(modulesToDelete)
+
+        //removing compartment from the map
+        this.compartments.removeCompartment(compartmentId)
+
+        // removing for the compartments list that renders the compartments on the
+        this.compObjList = this.compObjList.filter(cm => cm.id !== compartmentId)
+    }
+
+    /** Clears all the compartments on the board */
+    clearBoard(): void {
+        this.compartments.forEach((compartmentObj, compartmentId) => {
+            this.deleteCompartmentAndModules(compartmentId)
+        })
     }
 }

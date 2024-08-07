@@ -7,7 +7,6 @@ import { Dimensions } from "../components/general/generalTypes"
 export class SwitchesMap {    
     // private switchesMap: { [key: string]: Switch } = {}
     private switchesMap = new Map<string, Switch>()
-    private _amount: number = 0
     /** The ID of the last switch inserted into the map */
     lastId: string | undefined = undefined
     
@@ -40,7 +39,6 @@ export class SwitchesMap {
             throw new Error(`[SwitchesMap] switch with id ${id} doesn't exsits in the map`)
         }
         const deletedSwitch = this.switchesMap.get(id)
-        this._amount--
         this.switchesMap.delete(id)
         if (id === this.lastId){
             // if the switch we want to remove has the latest index
@@ -66,7 +64,7 @@ export class SwitchesMap {
 
     /**Custom property to get the number of switches */
     get amount(): number {
-        return this._amount
+        return this.switchesMap.size
     }
 
     /** getter and setter for switches by id */
@@ -81,7 +79,6 @@ export class SwitchesMap {
             console.log(`Switches map already have switch with id: ${newSwitch.id}`)
             return
         }
-        this._amount++
         this.lastId = id
         this.switchesMap.set(id, newSwitch)
     }

@@ -7,7 +7,6 @@ import { Module } from "./Module"
 /** this class is basically a map of modules with some extra properties */
 export class CompartmentsMap {
     private compartmentsMap = new Map<string, Compartment>()
-    private _amount: number = 0
     lastId: string | undefined = undefined
     
     /**  Constructor for Compartments map
@@ -47,7 +46,6 @@ export class CompartmentsMap {
             this.lastId = ids.pop()
         }
         this.compartmentsMap.delete(id)
-        this._amount--
 
         return compartmentToDelete!
     }
@@ -71,7 +69,7 @@ export class CompartmentsMap {
 
     /** number of compartments in the map */
     get amount(): number {
-        return this._amount
+        return this.compartmentsMap.size
     }
 
     /** get compartment with given id 
@@ -90,7 +88,6 @@ export class CompartmentsMap {
      */
     set(newCompartment: Compartment): void {
         this.compartmentsMap.set(newCompartment.id, newCompartment)
-        this._amount++
     }
 
     /**
@@ -113,19 +110,18 @@ export class CompartmentsMap {
      * @param name Optional - Comaprtment name, if not provided will name it compartment and a number, example: comaprtment5 
      * @param dimensions Compartment dimensions, Default: {@link defaultModuleDimensions}
      */
-    createNewComaprtment({feed = "", moduleObjList=null, name, dimensions = defaultCompartmentDimensions}:{
+    createNewComaprtment({feed = "", moduleObjList=[], name, dimensions = defaultCompartmentDimensions}:{
         feed?: string,
-        moduleObjList?: Module[] | null,
+        moduleObjList?: Module[],
         name?: string 
         dimensions?: Dimensions
     }): Compartment {
         let newId = this.generateIndex() // new index of the shape: c23, c11, c123
-
         const compartmentParams = {
             id: `${newId}`, 
             name: name || `compartment${newId.substring(1)}`, 
             feed: feed,
-            moduleObjList: moduleObjList || [],
+            modulesObjList: moduleObjList,
             dimensions: dimensions
         }
 
@@ -216,5 +212,17 @@ export class CompartmentsMap {
     clone(): CompartmentsMap {
         const compartmentsArr = Object.values(this.compartmentsMap).map(cm => cm.clone() as Compartment)
         return new CompartmentsMap(compartmentsArr)
+    }
+
+    /**
+     * A function that calls a provided callback function once for each key/value pair in the CompartmentsMap object, in insertion order.
+     *
+     * @param {Compartment} value - The value of the current element being processed in the map.
+     * @param {string} key - The key of the current element being processed in the map.
+     * @param {Map<string, Compartment>} map - The map object being iterated.
+     * @param {any} thisArg - An object to which the this keyword can refer in the callbackfn function.
+     */
+    forEach(callbackfn: (value: Compartment, key: string, map: Map<string, Compartment>) => void, thisArg?: any): void {
+        this.compartmentsMap.forEach(callbackfn, thisArg)
     }
 }
