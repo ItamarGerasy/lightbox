@@ -36,7 +36,7 @@ export class Module {
         this.id = id
         this.name = name
         this.feed = feed
-        this._dimensions = dimensions ? dimensions : defaultModuleDimensions
+        this._dimensions = dimensions ? dimensions : {...defaultModuleDimensions}
         this.freeWidth = this._dimensions.width
 
         if (switchesObjList) switchesObjList.forEach((sw) => {this.addSwitch(sw)})

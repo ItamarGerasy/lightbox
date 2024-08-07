@@ -29,7 +29,7 @@ export class Board {
      */ 
     constructor(name?: string, dimensions?: Dimensions) {
         this.name = name ? name : "Board"
-        this._dimensions = dimensions ? dimensions : defaultBoardDimensions
+        this._dimensions = dimensions ? dimensions : {...defaultBoardDimensions}
         this.freeWidth = this._dimensions.width
         this.compObjList = []
         this.compartments = new CompartmentsMap()
@@ -96,7 +96,7 @@ export class Board {
         }
 
         if(dimensions.width > this.freeWidth){
-            console.warn(`[${this.name}] Cannot create new compartment with width of ${dimensions.width} because the board width is only ${this.freeWidth}`)
+            console.warn(`[${this.name}] Cannot create new compartment with width of ${dimensions.width} because the board free width is only ${this.freeWidth}`)
             return false
         }
 

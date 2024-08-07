@@ -1,5 +1,5 @@
 import { Board } from "../Board";
-import { defaultBoardDimensions } from "../../components/general/generalTypes";
+import { defaultBoardDimensions, defaultSwitchDimensions, defaultModuleDimensions, defaultCompartmentDimensions } from "../../components/general/generalTypes";
 
 describe("Board", () => {
 
@@ -25,6 +25,19 @@ describe("Board", () => {
         expect(cm.name).toBe('comp1')
         expect(board.compartments.get(cm.id)).toBe(cm)
         expect(board.freeWidth).toBe(board.dimensions.width - cm.dimensions.width)
+    })
+
+
+    it('Should add 3 compartments to the board', () => {
+        const board = new Board()
+
+        board.createCompartment({name: 'comp1'})
+        board.createCompartment({name: 'comp2'})
+        board.createCompartment({name: 'comp3'})
+
+        expect(board.compObjList.length).toBe(3)
+        expect(board.freeWidth).toBe(0)
+        expect(board.compartments.amount).toBe(3)
     })
 
     it('Should fail to create a compartment if the sizes are too big', () => {
@@ -95,5 +108,46 @@ describe("Board", () => {
         expect(board.freeWidth).toBe(board.dimensions.width)
         expect(board.compartments.hasCompartment(cm.id)).toBeFalsy()
         expect(() => board.compartments.get(cm.id)).toThrow()
+    })
+
+
+    it('Should clear the board and all its compartments and modules', () => {
+        const board = new Board()
+        console.log(`defaultSwitchDimensions: ${JSON.stringify(defaultSwitchDimensions)} \n
+        defaultModuleDimensions: ${JSON.stringify(defaultModuleDimensions)} \n
+        defaultCompartmentDimensions: ${JSON.stringify(defaultCompartmentDimensions)} \n
+        defaultBoardDimensions: ${JSON.stringify(defaultBoardDimensions)}`)
+        expect(board.freeWidth).toBe(board.dimensions.width)
+        expect(board.dimensions.width).toBe(defaultBoardDimensions.width)
+        expect(board.dimensions.width).toBe(175 * 3)
+
+        const swArr1 = board.switches.createNewSwitchesArray(3, "des1", "1X16A", "feed1")
+        const swArr2 = board.switches.createNewSwitchesArray(3, "des2", "2X16A", "feed2")
+        const [md1, md2] = board.modules.createNewModulesArray({modulesAmount: 2})
+        md1.addSwitches(swArr1)
+        md2.addSwitches(swArr2)
+        board.createCompartment({name: 'comp1', moduleObjList: [md1, md2]})
+        expect(board.freeWidth).toBe(board.dimensions.width - 175)
+
+        const swArr3 = board.switches.createNewSwitchesArray(3, "des1", "1X16A", "feed1")
+        const swArr4 = board.switches.createNewSwitchesArray(3, "des2", "2X16A", "feed2")
+        const [md3, md4] = board.modules.createNewModulesArray({modulesAmount: 2})
+        md3.addSwitches(swArr3)
+        md4.addSwitches(swArr4)
+        board.createCompartment({name: 'comp2', moduleObjList: [md3, md4]})
+        expect(board.freeWidth).toBe(board.dimensions.width - 175 * 2)
+
+        expect(board.compartments.amount).toBe(2)
+        expect(board.compObjList.length).toBe(2)
+        expect(board.modules.amount).toBe(4)
+        expect(board.switches.amount).toBe(12)
+
+        board.clearBoard()
+
+        expect(board.compartments.amount).toBe(0)
+        expect(board.modules.amount).toBe(0)
+        expect(board.switches.amount).toBe(0)
+        expect(board.compObjList).toEqual([])
+        expect(board.freeWidth).toBe(board.dimensions.width)
     })
 })

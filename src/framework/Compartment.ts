@@ -30,7 +30,7 @@ export class Compartment {
         this.id = id
         this.name = name ? name : `compartment${this.id.substring(1)}`
         this.feed = feed ? feed : ""
-        this._dimensions = dimensions ? dimensions : defaultCompartmentDimensions
+        this._dimensions = dimensions ? dimensions : {...defaultCompartmentDimensions}
         this.modulesObjList = modulesObjList ? modulesObjList : []
         
         // setting myCompartment property of each module added to this compartment
