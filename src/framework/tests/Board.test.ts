@@ -113,10 +113,6 @@ describe("Board", () => {
 
     it('Should clear the board and all its compartments and modules', () => {
         const board = new Board()
-        console.log(`defaultSwitchDimensions: ${JSON.stringify(defaultSwitchDimensions)} \n
-        defaultModuleDimensions: ${JSON.stringify(defaultModuleDimensions)} \n
-        defaultCompartmentDimensions: ${JSON.stringify(defaultCompartmentDimensions)} \n
-        defaultBoardDimensions: ${JSON.stringify(defaultBoardDimensions)}`)
         expect(board.freeWidth).toBe(board.dimensions.width)
         expect(board.dimensions.width).toBe(defaultBoardDimensions.width)
         expect(board.dimensions.width).toBe(175 * 3)
