@@ -21,7 +21,8 @@ export class Board {
     public modules: ModulesMap
     /** A map containning all the switches on the board and some extra fucntions */
     public switches: SwitchesMap
-    public freeWidth
+    /** Free width of the board */
+    public freeWidth 
 
     /**
      * Constructor to creat an empty board
@@ -120,6 +121,19 @@ export class Board {
     /** Returs the minimum depth that can be set on the board */
     minimumDepthToSet(): number {
         return this.compObjList.reduce((maxDepth, cm) => Math.max(maxDepth, cm.dimensions.depth), 0)
+    }
+
+    deleteSwitch(switchId: string): void {
+        // removing switch from the switches map
+        const switchToRemove = this.switches.removeSwitch(switchId)
+        let parentModule = switchToRemove.myModule
+        
+        if(!parentModule && !this.modules.getParentModuleOfSwitchById(switchId)){
+          throw new Error(`no parent module found for switch: ${switchId}`)
+        }
+      
+        // removing switch from the module and switches map
+        parentModule!.removeSwitch(switchId)
     }
 
     deleteCompartmentAndModules = (compartmentId: string): void => {

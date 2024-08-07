@@ -11,7 +11,6 @@ export class Module {
      * in a certain order that will be changed depending on user interactions  */
     switchesObjList: Array<Switch> = []
     _dimensions: Dimensions
-    switchesAmount: number = 0
     occupiedWidth: number = 0
     freeWidth: number
     /**Compartment object which conatins this Switch*/
@@ -89,16 +88,18 @@ export class Module {
         }
     }
 
-    /**
-     * @returns a copy of the dimensions object of the module 
-     */
+    /**  a copy of the dimensions object of the module */
     get dimensions(): Dimensions{
         return {...this._dimensions}
     }
 
-    /**
-     *  @returns this function return a colne/copy of this current module
-     */
+
+    /** number of switches in this module */
+    get switchesAmount(): number {
+        return this.switchesObjList.length
+    }
+
+    /** this function return a colne/copy of this current module */
     clone(): Module {
         const params = {
             id: this.id,
@@ -189,7 +190,6 @@ export class Module {
             this.switchesObjList.splice(index, 0, sw)
         }
         sw.myModule = this
-        this.switchesAmount++
         this.freeWidth -= sw.dimensions.width
         this.occupiedWidth += sw.dimensions.width
         // console.log(`[${this.name}] switch with id ${sw.id} was added to the module`)
@@ -221,7 +221,6 @@ export class Module {
         const sw = this.removeSwitchAtIndex(index)
         sw!.myModule = undefined
         this.freeWidth += sw!.dimensions.width
-        this.switchesAmount--
         return sw
     }
 
@@ -239,7 +238,6 @@ export class Module {
         sw.myModule = undefined
         this.occupiedWidth -= sw.dimensions.width
         this.freeWidth += sw.dimensions.width
-        this.switchesAmount--
         return sw
     }
 

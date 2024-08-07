@@ -146,4 +146,24 @@ describe("Board", () => {
         expect(board.compObjList).toEqual([])
         expect(board.freeWidth).toBe(board.dimensions.width)
     })
+
+
+    it('Should delete a switch from the board', () => {
+        const board = new Board()
+        const swArr = board.switches.createNewSwitchesArray(2, "des", "1X16A", "feed")
+        const [module1] = board.modules.createNewModulesArray({modulesAmount: 1})
+        module1.addSwitches(swArr)
+        board.createCompartment({name: 'comp1', moduleObjList: [module1]})
+
+        expect(board.switches.amount).toBe(2)
+
+        const swToDelete = swArr[0]
+        console.log(`switch to be deleted ${swToDelete.id}`)
+        board.deleteSwitch(swToDelete.id)
+
+        expect(board.switches.amount).toBe(1)
+        expect(module1.switchesAmount).toBe(1)
+        expect(module1.switchesObjList[0].id).toBe('s2')
+
+    })
 })

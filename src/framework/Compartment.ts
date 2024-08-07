@@ -9,7 +9,6 @@ export class Compartment {
         in a certain order that will be changed depending on user interactions */ 
     modulesObjList: Array<Module>
     _dimensions: Dimensions
-    modulesAmount: number
     occupiedHeight: number = 0
     freeHeight: number
 
@@ -40,7 +39,6 @@ export class Compartment {
             this.occupiedHeight += md.dimensions.height
         })
         this.freeHeight = this._dimensions.height - this.occupiedHeight
-        this.modulesAmount = this.modulesObjList.length
     }
 
     /**
@@ -60,6 +58,11 @@ export class Compartment {
 
     get dimensions(): Dimensions{
         return {...this._dimensions}
+    }
+
+    /** number of modules in the compartment */
+    get modulesAmount(): number{
+        return this.modulesObjList.length
     }
 
     /** @returns returns a colne/copy of this current compartment */
@@ -144,7 +147,6 @@ export class Compartment {
             this.modulesObjList.splice(index, 0, md)
         }
         md.myCompartment = this
-        this.modulesAmount++
         this.freeHeight -= md.dimensions.height
         this.occupiedHeight += md.dimensions.height
         return true
@@ -164,7 +166,6 @@ export class Compartment {
         md.myCompartment = undefined
         this.freeHeight += md.dimensions.height
         this.occupiedHeight -= md.dimensions.height
-        this.modulesAmount--
         return md
     }
 
@@ -180,7 +181,6 @@ export class Compartment {
         md.myCompartment = undefined
         this.freeHeight += md.dimensions.height
         this.occupiedHeight -= md.dimensions.height
-        this.modulesAmount--
         
         return md
     }
