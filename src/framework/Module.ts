@@ -192,7 +192,6 @@ export class Module {
         sw.myModule = this
         this.freeWidth -= sw.dimensions.width
         this.occupiedWidth += sw.dimensions.width
-        // console.log(`[${this.name}] switch with id ${sw.id} was added to the module`)
     }
 
     /**
