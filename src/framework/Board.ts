@@ -123,6 +123,117 @@ export class Board {
         return this.compObjList.reduce((maxDepth, cm) => Math.max(maxDepth, cm.dimensions.depth), 0)
     }
 
+    /**  this function adds all given switches to one module
+    * @returns "true" if it's succesful, and "false" if the switches coud not have been added
+    */
+    addSwitchesToOneModule(switchesToAdd: Array<Switch>): boolean {
+        // checking if all switches can be added to one module
+        const module = this.modules.canOneModuleFitSwitches(switchesToAdd)
+        if(!module) return false
+
+        console.log(`[${this.name}] Going to add all ${switchesToAdd.length} switches to one module ${module.name} `)
+        module.addSwitches(switchesToAdd)
+
+        return true
+    }
+
+    /**  this function adds all given switches to several different modules
+    * @returns "true" if it's succesful, and "false" if the switches coud not have been added
+    */
+    addSwitchesToSeveralModules(switchesToAdd: Array<Switch>): boolean {
+
+        //checking if can fit switches in several modules
+        let amountOfSwitchesThatCanFit = this.modules.canSomeModulesFitSwitches(switchesToAdd)
+        if(amountOfSwitchesThatCanFit < switchesToAdd.length) return false
+
+        this.modules.addSwitchesToSeveralModules(switchesToAdd)
+        return true
+    }
+
+    /**
+     * Create and add new models to existing compartments in order to fit in all given switches
+     * If there isn't enough space on existing compartments will not add any modules and will return false
+     * Designed to be used when addSwitchesToSeveralModules failed and there is no room in existing modules for the switches 
+     * @param switchesToAdd Array of switch objects to add
+     * @returns true if sucsessful, false if not.
+     */
+    addModuleAndAddSwitches(switchesToAdd: Switch[]): boolean {
+
+        let totalSwitchesToAdd: number = switchesToAdd.length
+        let switchesInExistingModules: number = 0
+        let swWidth: number = switchesToAdd[0].dimensions.width
+        let swHeight: number = switchesToAdd[0].dimensions.height
+        
+        const modulesToSwitches = this.modules.getModuleFreeSlotsMap(switchesToAdd)
+        const compartmentFreeSlots = this.compartments.getCompartmentsFreeSlotsMap(undefined, switchesToAdd[0].dimensions.height)
+        const compartmentToModules: { [key: string]: number } = {};
+        const compartmentToSwitches: { [key: string]: number } = {}
+
+        // take into account the switches that can be added into existing modules
+        modulesToSwitches.forEach(swAmount => {
+            totalSwitchesToAdd -= swAmount
+            switchesInExistingModules += swAmount
+        })
+
+        for(const [cmId, mdAmount] of compartmentFreeSlots.entries()){
+
+            const cmObj = this.compartments.get(cmId)
+            let cmWidth = cmObj.dimensions.width
+            let swPerModuleInCm = Math.floor(cmWidth / swWidth)
+            // calculating amount of switches that will fit the compartment
+            let switchesInCm = swPerModuleInCm * mdAmount
+
+            // in case the available space in the compartment can't hold all the desired switches
+            if(switchesInCm < totalSwitchesToAdd) {
+                console.log(`Compartment ${cmId} can't fit all remainning switches ${totalSwitchesToAdd}, he can fit ${switchesInCm} switches in ${mdAmount} modules`)           
+                // this compartment will have to add all the possible modules he can, and all the switches he can
+                compartmentToModules[cmId] = mdAmount
+                compartmentToSwitches[cmId] = switchesInCm
+                totalSwitchesToAdd -= switchesInCm
+                continue
+            }
+
+            // in case the available space in the compartment can hold all the desired switches
+            let amountOfNewModulesNeeded = Math.ceil(totalSwitchesToAdd / swPerModuleInCm)
+            compartmentToModules[cmId] = amountOfNewModulesNeeded
+            compartmentToSwitches[cmId] = totalSwitchesToAdd
+            console.log(`Compartment ${cmId} can fit all remainning switches ${totalSwitchesToAdd}, he can fit ${switchesInCm} switches in ${mdAmount} modules. \n
+            and will need to add ${amountOfNewModulesNeeded} modules`)
+            totalSwitchesToAdd = 0
+            break
+        }
+
+        if (totalSwitchesToAdd > 0) {
+            console.log(`There isn't enough space in existing compartments to add ${totalSwitchesToAdd} switches, even with adding modules`)
+            return false
+        }
+
+        // Adds the switches first to existing modules
+        const swichesForExistingModules = switchesToAdd.slice(0, switchesInExistingModules)
+        const switchesForNewModules = switchesToAdd.slice(switchesInExistingModules)
+        if(switchesInExistingModules){
+            console.log(`Adding ${switchesInExistingModules} switches to existing modules`)
+            this.modules.addSwitchesToSeveralModules(swichesForExistingModules)
+        }
+
+        // Adding the required Modules
+        for(const [cmId, mdAmount] of Object.entries(compartmentToModules)){
+                const cm = this.compartments.get(cmId)
+                const mdParams = {
+                modulesAmount: mdAmount, 
+                feed: cm.feed, 
+                dimensions: {...cm.dimensions, height: swHeight}
+            }
+            console.log(`Adding ${mdAmount} modules to compartment ${cmId}`)
+            const newModules = this.modules.createNewModulesArray(mdParams)
+            newModules.forEach(md => cm.addModule(md))
+        }
+
+        this.modules.addSwitchesToSeveralModules(switchesForNewModules)
+        
+        return true
+    }
+
     /**Deletes a single switch from the board.
     * @param switchId - the id of the switch to be deleted
     */

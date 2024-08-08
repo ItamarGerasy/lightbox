@@ -215,6 +215,29 @@ describe("Board", () => {
             })
         })
 
+        it('Should delete module with switches', () => {
+            const board = new Board()
+            const swArr1 = board.switches.createNewSwitchesArray(3, "des1", "1X16A", "feed1")
+            const swArr2 = board.switches.createNewSwitchesArray(3, "des2", "2X16A", "feed2")
+            const [md1, md2] = board.modules.createNewModulesArray({modulesAmount: 2})
+            md1.addSwitches(swArr1)
+            md2.addSwitches(swArr2)
+            board.createCompartment({name: 'comp1', moduleObjList: [md1, md2]})
+            const compartment = board.compartments.get('c1')
+            
+            const originalAmountModules = board.modules.amount
+            const originalAmountSwitches = board.switches.amount
+            const originalAmountCompartments = board.compartments.amount
+            
+            board.deleteModuleWithSwitches(md1.id)
+            
+            expect(md1.myCompartment).toBeUndefined()
+            expect(board.modules.amount).toBe(originalAmountModules - 1)
+            expect(board.switches.amount).toBe(originalAmountSwitches - swArr1.length)
+            expect(board.compartments.amount).toBe(originalAmountCompartments)
+            expect(compartment.modulesObjList.length).toBe(1)
+        })
+
         it('Should clone the switches', () => {
             expect(cloneBoard.switches.amount).toBe(board.switches.amount)
 
@@ -229,28 +252,50 @@ describe("Board", () => {
         })
     })
 
-
     
-    it('Should delete module with switches', () => {
-        const board = new Board()
-        const swArr1 = board.switches.createNewSwitchesArray(3, "des1", "1X16A", "feed1")
-        const swArr2 = board.switches.createNewSwitchesArray(3, "des2", "2X16A", "feed2")
-        const [md1, md2] = board.modules.createNewModulesArray({modulesAmount: 2})
-        md1.addSwitches(swArr1)
-        md2.addSwitches(swArr2)
-        board.createCompartment({name: 'comp1', moduleObjList: [md1, md2]})
-        const compartment = board.compartments.get('c1')
+    describe('addSwitchesToOneModule', () => {
+        it('Should add Switches to one module', () => {
+            const board = new Board()
+            
+            const swArr1 = board.switches.createNewSwitchesArray(2, "", "5X16A", "")
+            const swArr2 = board.switches.createNewSwitchesArray(2, "", "5X16A", "")
+            const swArr3 = board.switches.createNewSwitchesArray(1, "", "5X16A", "")
+            const newSwArr = board.switches.createNewSwitchesArray(5, "", "1X16A", "")
 
-        const originalAmountModules = board.modules.amount
-        const originalAmountSwitches = board.switches.amount
-        const originalAmountCompartments = board.compartments.amount
+            const md1 = board.modules.createNewModule({switchesObjList: swArr1})
+            const md2 = board.modules.createNewModule({switchesObjList: swArr2})
+            const md3 = board.modules.createNewModule({switchesObjList: swArr3})
 
-        board.deleteModuleWithSwitches(md1.id)
+            expect(md1.isFull()).toBeTruthy()
+            expect(md2.isFull()).toBeTruthy()
+            expect(md3.isFull()).toBeFalsy()
 
-        expect(md1.myCompartment).toBeUndefined()
-        expect(board.modules.amount).toBe(originalAmountModules - 1)
-        expect(board.switches.amount).toBe(originalAmountSwitches - swArr1.length)
-        expect(board.compartments.amount).toBe(originalAmountCompartments)
-        expect(compartment.modulesObjList.length).toBe(1)
+            let succes = board.addSwitchesToOneModule(newSwArr)
+
+            expect(succes).toBeTruthy()
+            expect(md3.isFull()).toBeTruthy()
+            expect(md3.switchesObjList).toEqual([...swArr3, ...newSwArr])
+
+        })
+    
+        it('Should not add switches to one module', () => {
+            const board = new Board()
+
+            const swArr = board.switches.createNewSwitchesArray(3, "des", "1X16A", "feed")
+            const newSwArr = board.switches.createNewSwitchesArray(8, "des", "1X16A", "feed")
+
+            const md1 = board.modules.createNewModule({switchesObjList: swArr})
+
+            expect(md1.switchesAmount).toBe(3)
+
+            let succes = board.addSwitchesToOneModule(newSwArr)
+
+            expect(md1.switchesAmount).toBe(3)
+            expect(succes).toBeFalsy()
+        })
     })
+
+    // TODO: add tests for addSwitchesToSeveralModules
+    // TODO: add tests for addModuleAndAddSwitches 
+    
 })
