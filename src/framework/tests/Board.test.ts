@@ -182,14 +182,23 @@ describe("Board", () => {
         expect(cloneBoard.compartments.amount).toBe(board.compartments.amount)
         expect(cloneBoard.modules.amount).toBe(board.modules.amount)
         expect(cloneBoard.switches.amount).toBe(board.switches.amount)
+
         cloneBoard.switches.forEach((cloneSwitch, id) => {
             const originalSwitch = board.switches.get(id)
             expect(originalSwitch).not.toBeNull()
             expect(cloneSwitch).not.toBe(originalSwitch)
             expect(cloneSwitch.myModule).not.toBe(originalSwitch!.myModule)
             expect(cloneSwitch.myModule).toEqual(originalSwitch!.myModule)
-            expect(cloneSwitch!.myModule!.myCompartment).not.toBe(originalSwitch!.myModule!.myCompartment)
-            expect(cloneSwitch!.myModule!.myCompartment).toEqual(originalSwitch!.myModule!.myCompartment)
         })
+
+        cloneBoard.modules.forEach((cloneModule, id) => {
+            const originalSwitch = board.modules.get(id)
+            expect(originalSwitch).not.toBeNull()
+            expect(cloneModule).not.toBe(originalSwitch)
+            expect(cloneModule.myCompartment).not.toBe(originalSwitch!.myCompartment)
+            expect(cloneModule.myCompartment).toEqual(originalSwitch!.myCompartment)
+        })
+
+        expect(cloneBoard.compObjList).toEqual(board.compObjList)
     })
 })
