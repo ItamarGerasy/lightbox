@@ -168,7 +168,8 @@ describe("Board", () => {
     })
 
 
-    it('Should clone a board', () => {
+    describe('Board.Clone()', () => {
+
         const board = new Board()
 
         const swArr1 = board.switches.createNewSwitchesArray(3, "des1", "1X16A", "feed1")
@@ -179,26 +180,52 @@ describe("Board", () => {
         board.createCompartment({name: 'comp1', moduleObjList: [md1, md2]})
 
         const cloneBoard = board.clone()
-        expect(cloneBoard.compartments.amount).toBe(board.compartments.amount)
-        expect(cloneBoard.modules.amount).toBe(board.modules.amount)
-        expect(cloneBoard.switches.amount).toBe(board.switches.amount)
 
-        cloneBoard.switches.forEach((cloneSwitch, id) => {
-            const originalSwitch = board.switches.get(id)
-            expect(originalSwitch).not.toBeNull()
-            expect(cloneSwitch).not.toBe(originalSwitch)
-            expect(cloneSwitch.myModule).not.toBe(originalSwitch!.myModule)
-            expect(cloneSwitch.myModule).toEqual(originalSwitch!.myModule)
+        it('Should clone board properties', () => {
+            expect(cloneBoard.dimensions).not.toBe(board.dimensions)
+            expect(cloneBoard.dimensions.width).toBe(board.dimensions.width)
+            expect(cloneBoard.dimensions.height).toBe(board.dimensions.height)
+            expect(cloneBoard.dimensions.depth).toBe(board.dimensions.depth)
+            expect(cloneBoard.name).toBe(board.name)
         })
 
-        cloneBoard.modules.forEach((cloneModule, id) => {
-            const originalSwitch = board.modules.get(id)
-            expect(originalSwitch).not.toBeNull()
-            expect(cloneModule).not.toBe(originalSwitch)
-            expect(cloneModule.myCompartment).not.toBe(originalSwitch!.myCompartment)
-            expect(cloneModule.myCompartment).toEqual(originalSwitch!.myCompartment)
+        it('Should clone the compartments', () => {
+            expect(cloneBoard.compartments.amount).toBe(board.compartments.amount)
+            expect(cloneBoard.compObjList).toEqual(board.compObjList)
+
+            cloneBoard.compartments.forEach(cloneCm => {
+                const originalCm = board.compartments.get(cloneCm.id)
+                expect(originalCm).not.toBeNull()
+                expect(cloneCm).not.toBe(originalCm)
+                expect(cloneCm).toEqual(originalCm)
+            })
         })
 
-        expect(cloneBoard.compObjList).toEqual(board.compObjList)
+
+        it('Should clone the modules', () => {
+            expect(cloneBoard.modules.amount).toBe(board.modules.amount)
+
+            cloneBoard.modules.forEach((cloneModule, id) => {
+                const originalModule = board.modules.get(id)
+                expect(originalModule).not.toBeNull()
+                expect(cloneModule).not.toBe(originalModule)
+                expect(cloneModule).toEqual(originalModule)
+                expect(cloneModule.myCompartment).not.toBe(originalModule.myCompartment)
+                expect(cloneModule.myCompartment).toEqual(originalModule.myCompartment)
+            })
+        })
+
+        it('Should clone the switches', () => {
+            expect(cloneBoard.switches.amount).toBe(board.switches.amount)
+
+            cloneBoard.switches.forEach((cloneSwitch, id) => {
+                const originalSwitch = board.switches.get(id)
+                expect(originalSwitch).not.toBeNull()
+                expect(cloneSwitch).not.toBe(originalSwitch)
+                expect(cloneSwitch).toEqual(originalSwitch)
+                expect(cloneSwitch.myModule).not.toBe(originalSwitch!.myModule)
+                expect(cloneSwitch.myModule).toEqual(originalSwitch!.myModule)
+            })
+        })
     })
 })
