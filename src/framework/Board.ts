@@ -166,7 +166,7 @@ export class Board {
         
         const modulesToSwitches = this.modules.getModuleFreeSlotsMap(switchesToAdd)
         const compartmentFreeSlots = this.compartments.getCompartmentsFreeSlotsMap(undefined, switchesToAdd[0].dimensions.height)
-        const compartmentToModules: { [key: string]: number } = {};
+        const compartmentToModules: { [key: string]: number } = {}
         const compartmentToSwitches: { [key: string]: number } = {}
 
         // take into account the switches that can be added into existing modules
