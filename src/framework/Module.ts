@@ -205,7 +205,6 @@ export class Module {
         }
         for(const swObj of swArr) {
             this.addSwitch(swObj)
-            console.log(`[Module ${this.id}] added switch ${swObj.id} to module`)
         }
     }
 
