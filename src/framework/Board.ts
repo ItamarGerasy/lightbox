@@ -5,7 +5,7 @@ import { SwitchesMap } from "./SwitchesMap"
 import { Module } from "./Module"
 import { ModulesMap } from "./ModulesMap"
 import { Compartment } from "./Compartment"
-import { CompartmentsMap } from "./ComapartmentsMap"
+import { CompartmentsMap } from "./CompartmentsMap"
 import { Dimensions, defaultBoardDimensions, defaultCompartmentDimensions } from "../components/general/generalTypes"
 
 

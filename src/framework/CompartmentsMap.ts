@@ -210,7 +210,8 @@ export class CompartmentsMap {
 
     /** this function creates a colne/copy of the current ModulesMap */ 
     clone(): CompartmentsMap {
-        const compartmentsArr = Object.values(this.compartmentsMap).map(cm => cm.clone() as Compartment)
+        const compartmentsArr: Compartment[] = [] 
+        this.compartmentsMap.forEach(cm => compartmentsArr.push(cm.clone()))
         return new CompartmentsMap(compartmentsArr)
     }
 

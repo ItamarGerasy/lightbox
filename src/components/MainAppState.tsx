@@ -5,7 +5,7 @@ import { SwitchesMap } from '../framework/SwitchesMap'
 import { Module } from '../framework/Module'
 import { ModulesMap } from '../framework/ModulesMap'
 import { Compartment } from "../framework/Compartment"
-import { CompartmentsMap } from '../framework/ComapartmentsMap'
+import { CompartmentsMap } from '../framework/CompartmentsMap'
 import { defaultSwitchDimensions } from './general/generalTypes'
 
 export type GlobalState = {

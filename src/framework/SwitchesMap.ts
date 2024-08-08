@@ -85,7 +85,8 @@ export class SwitchesMap {
 
     /**this function creates a colne/copy of the current SwitchesMap */
     clone(): SwitchesMap {
-        const switchesArr = Object.values(this.switchesMap).map(sw => sw.clone() as Switch)
+        const switchesArr: Switch[] = []
+        this.switchesMap.forEach(sw => switchesArr.push(sw.clone()))
         return new SwitchesMap(switchesArr)
     }
 

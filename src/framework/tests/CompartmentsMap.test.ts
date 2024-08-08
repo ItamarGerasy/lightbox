@@ -1,7 +1,7 @@
 import {Module} from "../Module"
 import { ModulesMap } from "../ModulesMap"
 import { SwitchesMap } from "../SwitchesMap"
-import { CompartmentsMap } from "../ComapartmentsMap"
+import { CompartmentsMap } from "../CompartmentsMap"
 import { defaultCompartmentDimensions } from "../../components/general/generalTypes"
 
 describe("CompartmentsMap", () => {
