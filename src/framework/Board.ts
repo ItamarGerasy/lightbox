@@ -123,6 +123,9 @@ export class Board {
         return this.compObjList.reduce((maxDepth, cm) => Math.max(maxDepth, cm.dimensions.depth), 0)
     }
 
+    /**Deletes a single switch from the board.
+    * @param switchId - the id of the switch to be deleted
+    */
     deleteSwitch(switchId: string): void {
         // removing switch from the switches map
         const switchToRemove = this.switches.removeSwitch(switchId)
@@ -136,6 +139,9 @@ export class Board {
         parentModule!.removeSwitch(switchId)
     }
 
+    /**Deletes a single module and all his switches from the board.
+    * @param moduleId - the id of the module to be deleted
+    */
     deleteModuleWithSwitches(moduleId: string): void {
         // validating module with given id exists
         if(!this.modules.hasModule(moduleId)){
@@ -159,6 +165,9 @@ export class Board {
         }
     }
 
+    /**Deletes a single compartment and all his modules and switches from the board.
+    * @param comaprtmentId - the id of the compartment to be deleted
+    */
     deleteCompartmentAndModules = (compartmentId: string): void => {
         // validating compartment with given id exists
         if(!this.compartments.hasCompartment(compartmentId)){
