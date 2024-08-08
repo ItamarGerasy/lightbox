@@ -30,15 +30,11 @@ export class Compartment {
         this.name = name ? name : `compartment${this.id.substring(1)}`
         this.feed = feed ? feed : ""
         this._dimensions = dimensions ? dimensions : {...defaultCompartmentDimensions}
-        this.modulesObjList = modulesObjList ? modulesObjList : []
+        this.modulesObjList = []
+        this.freeHeight = this._dimensions.height
+
+        if(modulesObjList) modulesObjList.forEach(md => this.addModule(md))
         
-        // setting myCompartment property of each module added to this compartment
-        // and updating the occupied height and free height property 
-        this.modulesObjList.forEach((md) => {
-            md.myCompartment = this
-            this.occupiedHeight += md.dimensions.height
-        })
-        this.freeHeight = this._dimensions.height - this.occupiedHeight
     }
 
     /**
