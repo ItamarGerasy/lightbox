@@ -199,6 +199,7 @@ export class ModulesMap {
 
     /**
      * This function will add the switches to available modules, might add them all to one module if he has the capacity
+     * this function if succesfull will empty swArr.
      * @param {Switch[]} swArr  Array of switch objects 
      * @returns true if operation was seccesful, else false
      */

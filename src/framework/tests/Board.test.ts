@@ -1,4 +1,5 @@
 import { Board } from "../Board";
+import { Switch } from "../Switch"
 import { defaultBoardDimensions, defaultSwitchDimensions, defaultModuleDimensions, defaultCompartmentDimensions } from "../../components/general/generalTypes";
 
 describe("Board", () => {
@@ -295,7 +296,59 @@ describe("Board", () => {
         })
     })
 
-    // TODO: add tests for addSwitchesToSeveralModules
-    // TODO: add tests for addModuleAndAddSwitches 
+    describe('addSwitchesToSeveralModules', () => {
+        it('Should not be able to add switches to several modules', () => {
+            const board = new Board()
+            let swAmount = 8
+            const swArr = board.switches.createNewSwitchesArray(swAmount, "des", "1X16A", "feed")
+            const md1 = board.modules.createNewModule({switchesObjList: swArr})
+            const md2 = board.modules.createNewModule({switchesObjList: swArr})
+
+            let succes = board.addSwitchesToSeveralModules(swArr)
+            expect(succes).toBeFalsy()
+            expect(md1.switchesAmount).toBe(swAmount)
+            expect(md2.switchesAmount).toBe(swAmount)
+        })
+
+        it('Should be able to add switches to one module', () => {
+            const board = new Board()
+            const copySwArr: Switch[] = []
+            const fillingSwArr = board.switches.createNewSwitchesArray(5, "des", "2X16A", "feed")
+            const swArr = board.switches.createNewSwitchesArray(3, "des", "1X16A", "feed")
+
+            swArr.forEach(sw => copySwArr.push(sw))
+
+            const EmptyMd = board.modules.createNewModule({})
+            const fullMd = board.modules.createNewModule({switchesObjList: fillingSwArr})
+            expect(fullMd.isFull).toBeTruthy()
+
+            let succes = board.addSwitchesToSeveralModules(swArr)
+            expect(succes).toBeTruthy()
+            expect(EmptyMd.switchesObjList).toEqual(copySwArr)
+            expect(EmptyMd.switchesAmount).toBe(copySwArr.length)
+        })
+
+        it('Should be able to add switches to several modules', () => {
+            const board = new Board()
+            const swArr9 = board.switches.createNewSwitchesArray(9, "des", "1X16A", "feed")
+            const swArr5 = board.switches.createNewSwitchesArray(5, "des", "1X16A", "feed")
+            const mdArr = board.modules.createNewModulesArray({modulesAmount: 5})
+
+            mdArr.forEach(md =>  md.addSwitches(swArr9))
+            const succes = board.addSwitchesToSeveralModules(swArr5)
+
+            expect(succes).toBeTruthy()
+            mdArr.forEach(md => {
+                expect(md.switchesAmount).toBe(10)
+                expect(md.isFull).toBeTruthy()
+            })
+        })
+    })
+    
+    // cases: 1 cannot do it
+    //        2 can do it to single compartment empty
+    //        3 can do it to single compartment which is full bug have place for some switches
+    //        4 can do it over several compartments which adds one module
+    //        5 can do it over several compartments that need to add modules
     
 })
