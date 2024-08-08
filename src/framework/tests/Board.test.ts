@@ -228,4 +228,29 @@ describe("Board", () => {
             })
         })
     })
+
+
+    
+    it('Should delete module with switches', () => {
+        const board = new Board()
+        const swArr1 = board.switches.createNewSwitchesArray(3, "des1", "1X16A", "feed1")
+        const swArr2 = board.switches.createNewSwitchesArray(3, "des2", "2X16A", "feed2")
+        const [md1, md2] = board.modules.createNewModulesArray({modulesAmount: 2})
+        md1.addSwitches(swArr1)
+        md2.addSwitches(swArr2)
+        board.createCompartment({name: 'comp1', moduleObjList: [md1, md2]})
+        const compartment = board.compartments.get('c1')
+
+        const originalAmountModules = board.modules.amount
+        const originalAmountSwitches = board.switches.amount
+        const originalAmountCompartments = board.compartments.amount
+
+        board.deleteModuleWithSwitches(md1.id)
+
+        expect(md1.myCompartment).toBeUndefined()
+        expect(board.modules.amount).toBe(originalAmountModules - 1)
+        expect(board.switches.amount).toBe(originalAmountSwitches - swArr1.length)
+        expect(board.compartments.amount).toBe(originalAmountCompartments)
+        expect(compartment.modulesObjList.length).toBe(1)
+    })
 })

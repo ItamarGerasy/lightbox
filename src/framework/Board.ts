@@ -136,6 +136,29 @@ export class Board {
         parentModule!.removeSwitch(switchId)
     }
 
+    deleteModuleWithSwitches(moduleId: string): void {
+        // validating module with given id exists
+        if(!this.modules.hasModule(moduleId)){
+          throw new Error(`[deleteModuleWithSwitches()] module with id:${moduleId} doesn't exists`)
+        }
+        const module = this.modules.get(moduleId)
+        const parentCompartment = module!.myCompartment ? module!.myCompartment : this.compartments.getParentCompartmentOfModuleById(moduleId)
+  
+        // removing module from the modules map
+        this.modules.removeModule(moduleId)
+
+        // removing switches from switches map
+        this.switches.removeSwitches(module!.switchesObjList) 
+
+        //removing switches from module
+        module.switchesObjList.forEach(sw => module.removeSwitch(sw.id))
+        
+        if (parentCompartment){
+            // removing module from the compratment modules list
+            parentCompartment!.removeModule(moduleId)
+        }
+    }
+
     deleteCompartmentAndModules = (compartmentId: string): void => {
         // validating compartment with given id exists
         if(!this.compartments.hasCompartment(compartmentId)){
