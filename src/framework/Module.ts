@@ -197,14 +197,16 @@ export class Module {
     /**
      * a method to add several switches to the module, they will be added to the end of the oredered list
      * @param swArr array of switches object to be added
-     * @returns if successfull return true, else false
      */
     addSwitches(swArr: Array<Switch>): void {
         let amountOfSwitchesAbleToAdd = this.canAddSwitches(swArr)
         if (amountOfSwitchesAbleToAdd < swArr.length) {
             throw new Error(`[Module ${this.id}] module.addSwitches - cannot add switches since tried to add ${swArr.length} switches, and can add onlt ${amountOfSwitchesAbleToAdd}`)
         }
-        for(const swObj of swArr) this.addSwitch(swObj)
+        for(const swObj of swArr) {
+            this.addSwitch(swObj)
+            console.log(`[Module ${this.id}] added switch ${swObj.id} to module`)
+        }
     }
 
     /**

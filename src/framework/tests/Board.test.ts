@@ -344,11 +344,45 @@ describe("Board", () => {
             })
         })
     })
-    
-    // cases: 1 cannot do it
-    //        2 can do it to single compartment empty
-    //        3 can do it to single compartment which is full bug have place for some switches
-    //        4 can do it over several compartments which adds one module
-    //        5 can do it over several compartments that need to add modules
-    
+
+
+    describe.only('addModuleAndAddSwitches', () => {
+        it('Cannot do it if there is no space', () => {
+            const board = new Board()
+            const [cm1, cm2 ] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 2})
+            const fillMdArr = board.modules.createNewModulesArray({modulesAmount: 12})
+            const fillSwArr = board.switches.createNewSwitchesArray(9, "des", "1X16A", "feed")
+            expect(fillSwArr.length).toBe(9)
+            fillMdArr.forEach(md => {
+                md.addSwitches(fillSwArr)
+            })
+            
+            cm1.addModules(fillMdArr.splice(0, 6))
+            cm2.addModules(fillMdArr.splice(0, 6))
+
+            const swToAdd = board.switches.createNewSwitchesArray(13, "des", "1X16A", "feed")
+
+            let succes = board.addModuleAndAddSwitches(swToAdd)
+
+            expect(cm1.modulesAmount).toBe(6)
+            expect(cm2.modulesAmount).toBe(6)
+            fillMdArr.forEach(md => {
+                expect(md.switchesAmount).toBe(9)
+            })
+            expect(succes).toBeFalsy()
+
+        })
+
+        it('Can do it to single compartment empty', () => {
+        })
+
+        it('Can do it to single compartment which is full, bug have place for some switches', () => {
+        })
+
+        test('Can do it over several compartments which adds one module', () => {
+        })
+
+        it('Can do it over several compartments that need to add modules', () => {
+        })    
+    })
 })

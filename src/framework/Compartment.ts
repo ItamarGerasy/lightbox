@@ -148,6 +148,18 @@ export class Compartment {
         return true
     }
 
+    /** a method that adds an array of modules to the compartment
+    * @param mdArr Module objects array to add
+    * @returns true successfull, else false
+    */
+    addModules(mdArr: Module[]): boolean{
+        mdArr.forEach(md => {
+            let succes = this.addModule(md)
+            if(!succes) return false
+        })
+        return true
+    }
+
     /** this method removes a module from the compartment and returns it
      * Throws an error if the module doesn't exists on the compartment
      * @param moduleId id of module to remove
