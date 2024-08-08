@@ -170,4 +170,28 @@ export class Board {
             this.deleteCompartmentAndModules(compartmentId)
         })
     }
+
+    /** Creates a clone of the board */
+    clone(): Board {
+        const cloneBoard = new Board(this.name, this.dimensions)
+        const cloneModules: Module[] =[]
+        const cloneSwitches: Switch[] = []
+
+        // this will create a clone of all compartments,these compartments will hold clones of the modules
+        // and the clone modules will have clones of switches
+        cloneBoard.compartments = this.compartments.clone()
+
+        // creating a clone list of ordered compartments
+        this.compObjList.forEach(cm => cloneBoard.compObjList.push(cloneBoard.compartments.get(cm.id)))
+
+        // creating a clone list of switches and modules
+        cloneBoard.compartments.forEach(cm => cloneModules.push(...cm.modulesObjList))
+        cloneModules.forEach(md => cloneSwitches.push(...md.switchesObjList))
+
+        // adding to empty switchesmap and modules map the clones
+        cloneModules.forEach(md => cloneBoard.modules.set(md))
+        cloneBoard.switches.addSwitches(cloneSwitches)
+
+        return cloneBoard
+    }
 }

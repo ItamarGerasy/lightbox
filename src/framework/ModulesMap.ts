@@ -103,13 +103,13 @@ export class ModulesMap {
      * @param {string} id module ID
      * @param {ModuleType} newModule module object 
      */
-    set(id: string, newModule: Module): void {
+    set(newModule: Module): void {
         if (this.hasModule(newModule.id)) {
             console.log(`Modules map already have module with id: ${newModule.id}`)
             return
         }
-        this.lastId = id
-        this.modulesMap.set(id, newModule)
+        this.lastId = newModule.id
+        this.modulesMap.set(newModule.id, newModule)
     }
 
     /**
@@ -237,7 +237,7 @@ export class ModulesMap {
             dimensions: dimensions
         }
         const md = new Module(moduleParams)
-        this.set(md.id, md)
+        this.set(md)
         return md
     }
 

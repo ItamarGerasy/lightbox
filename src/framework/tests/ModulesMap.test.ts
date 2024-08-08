@@ -83,7 +83,7 @@ describe("ModulesMap", () => {
     it("Should set a module", () => {
         const mm = new ModulesMap();
         const md = new Module({id: "m3", name: "module3", feed: ""})
-        mm.set(md.id, md)
+        mm.set(md)
 
         expect(mm.amount).toBe(1)
         expect(mm.lastId).toBe(md.id)

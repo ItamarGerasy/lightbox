@@ -117,7 +117,7 @@ describe("SwtichesMap", () => {
         let swArr = swMap.createNewSwitchesArray(3, description, prefix, feed)
         let [s1, s2, s3] = swArr
 
-        swMap.set('s1', s1)
+        swMap.set(s1)
 
         expect(swMap.amount).toBe(3)
         expect(swMap.lastId).toBe('s3')

@@ -74,13 +74,13 @@ export class SwitchesMap {
     }
 
     /** set a new switch in the map */
-    set(id: string, newSwitch: Switch): void {
+    set(newSwitch: Switch): void {
         if (this.switchesMap.has(newSwitch.id)) {
             console.log(`Switches map already have switch with id: ${newSwitch.id}`)
             return
         }
-        this.lastId = id
-        this.switchesMap.set(id, newSwitch)
+        this.lastId = newSwitch.id
+        this.switchesMap.set(newSwitch.id, newSwitch)
     }
 
     /**this function creates a colne/copy of the current SwitchesMap */
@@ -90,7 +90,7 @@ export class SwitchesMap {
     }
 
     addSwitches(swithesArr: Array<Switch>): void {
-        swithesArr.forEach((sw) => this.set(sw.id, sw))
+        swithesArr.forEach((sw) => this.set(sw))
     }
 
     /**function to generate new index based on all exsisting indexes for example
@@ -125,7 +125,7 @@ export class SwitchesMap {
             dimensions: dimensions 
         }
         const sw = new Switch(switchParams)
-        this.set(sw.id, sw)
+        this.set(sw)
         return sw
     }
 
