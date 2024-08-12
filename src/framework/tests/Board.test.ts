@@ -350,6 +350,7 @@ describe("Board", () => {
         it('Cannot do it if there is no space', () => {
             const board = new Board()
             const [cm1, cm2 ] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 2})
+
             const fillMdArr = board.modules.createNewModulesArray({modulesAmount: 12})
             const fillSwArr = board.switches.createNewSwitchesArray(9, "des", "1X16A", "feed")
             expect(fillSwArr.length).toBe(9)
@@ -374,6 +375,17 @@ describe("Board", () => {
         })
 
         it('Can do it to single compartment empty', () => {
+            const board = new Board()
+            const [cm1] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 1})
+
+            const swToAdd = board.switches.createNewSwitchesArray(60, "des", "1X16A", "feed")
+            let succes = board.addModuleAndAddSwitches(swToAdd)
+
+            expect(succes).toBeTruthy()
+            expect(board.switches.amount).toBe(60)
+            expect(board.modules.amount).toBe(6)
+            expect(cm1.modulesAmount).toBe(6)
+            expect(cm1.isFull()).toBeTruthy()
         })
 
         it('Can do it to single compartment which is full, bug have place for some switches', () => {

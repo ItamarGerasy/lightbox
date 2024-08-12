@@ -307,6 +307,42 @@ export class Board {
         this.compObjList = this.compObjList.filter(cm => cm.id !== compartmentId)
     }
 
+    /** Adds compartment to the Board
+     * @param compartment - the compartment object to be added
+     * @param index - the index to add the compartment in the ordered list
+     * @throws Error if the compartment can't be added
+     */
+    addCompartment(compartment: Compartment, index: number): void {
+        if(!this.canAddCompartment(compartment)){
+            throw new Error(`[${this.name}] couldn't add compartment since the board is either full or compartment is bigger then free space on board \n
+                Please make sure to use boardObj.canAddCompartment() and recive the value true before calling addCompartment() \n
+                details: \n
+                board information: \n
+                board dimensions: ${JSON.stringify(this.dimensions)} \n
+                free width: ${this.freeWidth} \n
+                compartment dimensions: ${JSON.stringify(compartment.dimensions)}`)
+        }
+
+        if(!this.compartments.hasCompartment(compartment.id)){
+            this.compartments.addCompartment(compartment)
+        }
+        
+        if(!index || index === 0){
+            this.compObjList.push(compartment)
+        } else {
+            this.compObjList.splice(index, 0, compartment)
+        }
+        this.freeWidth -= compartment.dimensions.width
+    }
+    
+    /** Checks if a compartment can be added to the board
+    * @param compartment - the compartment object to be added
+    */
+    canAddCompartment(compartment: Compartment): boolean {
+        return this.freeWidth >= compartment.dimensions.width && this.dimensions.height >= compartment.dimensions.height 
+        && this.dimensions.depth >= compartment.dimensions.depth
+    }
+
     /** Clears all the compartments on the board */
     clearBoard(): void {
         this.compartments.forEach((compartmentObj, compartmentId) => {
