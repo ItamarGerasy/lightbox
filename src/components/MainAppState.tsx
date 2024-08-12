@@ -1,19 +1,17 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { DropResult } from 'react-beautiful-dnd'
-import { Switch as SwitchObj } from '../framework/Switch'
+import { Switch} from '../framework/Switch'
 import { Board } from '../framework/Board'
 
 export type GlobalStateContextType = {
-  board: Board;
-  setBoard: React.Dispatch<React.SetStateAction<Board>>;
+  board: Board
+  setBoard: React.Dispatch<React.SetStateAction<Board>>
   actions: {
     crud: {
       deleteSwitch: (switchId: string) => void
       deleteModuleWithSwitches: (moduleId: string) => void
       deleteCompartmentAndModules: (comratmentId: string) => void
-      addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>) => boolean
-      addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>) => boolean
-      addModuleAndAddSwitches: (switchesToAdd: Array<SwitchObj>) => boolean
+      addSwitches: (switchesToAdd: Switch[]) => boolean
     },
     dndActions: {
       droppedCompratment: (result: DropResult) => void
@@ -41,13 +39,13 @@ const createDefaultBoard = (): Board => {
 
 export const initialBoard = createDefaultBoard()
 
-const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
+const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined)
 // Define the type for the children prop
 interface GlobalStateProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ children }) => {
-  const [board, setBoard] = useState<Board>(initialBoard);
+  const [board, setBoard] = useState<Board>(initialBoard)
 
   const actions = {
     crud: {
@@ -66,52 +64,20 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         newBoard.deleteCompartmentAndModules(compartmentId)
         setBoard(newBoard)
       },
-      addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>): boolean => {
-        // this function adds all given switches to one module
-        // returns "true" if it's succesful, and false if the switches coud not been add to a single module
+      addSwitches: (switchesToAdd: Switch[]): boolean => {
         const newBoard = board.clone()
-        let sucsess = newBoard.addSwitchesToOneModule(switchesToAdd)
+        let sucsess = newBoard.addSwitches(switchesToAdd)
 
         if(!sucsess) return false
 
         setBoard(newBoard)
-        return true
-      },
-      addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>): boolean => {
-        const newBoard = board.clone()
-
-        let sucsess = newBoard.addSwitchesToSeveralModules(switchesToAdd)
-
-        if(!sucsess) return false
-
-        setBoard(newBoard)
-        return true
-      },
-      /**
-       * Create and add new models to existing compartments in order to fit in all given switches
-       * If there isn't enough space on existing compartments will not add any modules and will return false
-       * Designed to be used when addSwitchesToSeveralModules failed and there is no room in existing modules for the switches 
-       * @param switchesToAdd Array of switch objects to add
-       * @returns true if sucsessful, false if not.
-       */
-      addModuleAndAddSwitches: (switchesToAdd: SwitchObj[]): boolean => {
-        
-        const newBoard = board.clone()
-
-        let sucsess = newBoard.addModuleAndAddSwitches(switchesToAdd)
-
-        if(!sucsess) return false
-
-        setBoard(newBoard)
-      
         return true
       }
-
     },
     // drag and drop actions
     dndActions: {
       droppedCompratment: (result: DropResult) => {
-        const { destination, source } = result;
+        const { destination, source } = result
         
         const newBoard = board.clone()
         const newCompartmentsOrder = Array.from(newBoard.compObjList)
@@ -124,7 +90,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         setBoard(newBoard)
       },
       droppedModule: (result: DropResult) => {
-        const { destination, source } = result;
+        const { destination, source } = result
         const newBoard = board.clone()
         if(!destination) return
     
@@ -134,7 +100,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         const module = homeCompartment?.removeModuleAtIndex(source.index)
         foreignCompartment?.addModule(module!, destination.index)
   
-        setBoard(newBoard);
+        setBoard(newBoard)
       },
       droppedSwitch: (result: DropResult) => {
         const { destination, source } = result
@@ -148,8 +114,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         const sw = homeModule!.removeSwitchAtIndex(source.index)
         foreignModule!.addSwitch(sw, destination.index)
 
-        setBoard(newBoard);
-      
+        setBoard(newBoard)
       },
     }
   }
@@ -158,29 +123,23 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
     <GlobalStateContext.Provider value={{ board, setBoard, actions }}>
       {children}
     </GlobalStateContext.Provider>
-  );
-};
+  )
+}
 
 export const useGlobalState = (): GlobalStateContextType => {
-  const context = useContext(GlobalStateContext);
+  const context = useContext(GlobalStateContext)
   if (context === undefined) {
-    throw new Error('useGlobalState must be used within a GlobalStateProvider');
+    throw new Error('useGlobalState must be used within a GlobalStateProvider')
   }
-  return context;
-};
+  return context
+}
 
 export const withGlobalState = <P extends object>(
   WrappedComponent: React.ComponentType<P & GlobalStateContextType>
 ) => {
   return (props: P) => {
-    const { board , setBoard, actions} = useGlobalState();
+    const { board , setBoard, actions} = useGlobalState()
 
-    return <WrappedComponent board={board} setBoard={setBoard} actions={actions} {...props} />;
-  };
-};
-
-
-
-
-
-
+    return <WrappedComponent board={board} setBoard={setBoard} actions={actions} {...props} />
+  }
+}

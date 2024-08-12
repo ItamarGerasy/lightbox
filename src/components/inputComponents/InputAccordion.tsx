@@ -84,27 +84,7 @@ function InputAccordion(props: InputAccordionProps) {
     // Create an array of switches with separate copies of the inputCopy object
     const newSwitchesArray = board.switches.createNewSwitchesArray(switchesAmount, input.switchDescription, input.switchSpecs, feedInput)
 
-    // trying to add all switches to one module
-    console.log("trying to add all switches to one module")
-    let sucsess = actions.crud.addSwitchesToOneModule(newSwitchesArray)
-    if (sucsess) {
-      clearAllInput()
-      return
-    }
-    console.log("There isn't enough space in one module")
-
-    // trying to add all switches to several existing modules
-    console.log("trying to add all switches to several existing modules")
-    sucsess = actions.crud.addSwitchesToSeveralModules(newSwitchesArray)
-    if (sucsess) {
-      clearAllInput()
-      return
-    }
-    console.log("There isn't enough space in several existing modules")
-
-    //trying to add new modules to accomedate for switches
-    console.log("trying to add new modules to accomedate for switches")
-    sucsess = actions.crud.addModuleAndAddSwitches(newSwitchesArray)
+    let sucsess = actions.crud.addSwitches(newSwitchesArray)
     if (sucsess) {
       clearAllInput()
       return

@@ -122,6 +122,18 @@ export class Board {
         return this.compObjList.reduce((maxDepth, cm) => Math.max(maxDepth, cm.dimensions.depth), 0)
     }
 
+    /** Adds switches to the board, will try to add them to existing modules if possible, or to create new modules for the switches
+     * but will not create new compartments
+     * @param switchesToAdd array of switches objects to add
+     * @returns true if it's succesful, and false if the switches coud not have been added
+     */
+    addSwitches(switchesToAdd: Switch[]): boolean {
+        if(this.addSwitchesToSeveralModules(switchesToAdd)) return true
+        if(this.addSwitchesToOneModule(switchesToAdd)) return true
+        if(this.addModuleAndAddSwitches(switchesToAdd)) return true
+        return false
+    }
+
     /**  this function adds all given switches to one module
     * @returns "true" if it's succesful, and "false" if the switches coud not have been added
     */
@@ -345,7 +357,7 @@ export class Board {
     /** removes a compartment from the board at a given index at the ordered list, and returns it */
     removeComaprtmentAtIndex(index: number): Compartment {
         if(index >= this.compObjList.length) throw new Error(`[removeComaprtmentAtIndex()] index out of bounds`)
-            
+
         this.freeWidth += this.compObjList[index].dimensions.width
         return this.compObjList.splice(index, 1)[0]
     }
