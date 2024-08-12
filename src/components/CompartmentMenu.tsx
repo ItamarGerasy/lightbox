@@ -1,12 +1,12 @@
 // CompartmentMenu.tsx
-import { Compartment as CompartmentType } from "../framework/Compartment";
+import { Compartment as CompartmentType } from "../framework/Compartment"
 import { useBoard } from "../hooks/BoardHook";
-import React, { LegacyRef } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Popper from '@mui/material/Popper';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import InfoIcon from '@mui/icons-material/Info';
-import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles';
+import React, { LegacyRef } from 'react'
+import Popper from '@mui/material/Popper'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
+import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 type CompartmentMenuProps = {
     compartment: CompartmentType,
@@ -39,10 +39,10 @@ export const CompartmentMenu: React.FC<CompartmentMenuProps> = ({compartment}) =
     return (
         <ColumnFlexBox  ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
             <FlexBox onClick={handleClick}>
-                <InfoIcon sx={mediumIcon}/>
+                <InfoOutlinedIcon sx={mediumIcon}/>
             </FlexBox>
             <FlexBox onClick={handleDelete}>
-                <DeleteIcon sx={mediumIcon} />
+                <DeleteOutlineOutlinedIcon sx={mediumIcon} />
             </FlexBox>
             <Popper id={id} open={open} anchorEl={infoAnchorEl} placement="right">  
                 <ClickAwayListener onClickAway={handleClose}>

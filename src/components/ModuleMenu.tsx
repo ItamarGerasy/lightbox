@@ -1,14 +1,14 @@
 // ModuleMenu.tsx
 import React, { LegacyRef } from 'react'
-import { DraggableProvided } from 'react-beautiful-dnd';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Popper from '@mui/material/Popper';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
-import InfoIcon from '@mui/icons-material/Info'
+import { DraggableProvided } from 'react-beautiful-dnd'
+import Popper from '@mui/material/Popper'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles'
-import { Module as ModuleType } from '../framework/Module';
-import { useBoard } from '../hooks/BoardHook';
+import { Module as ModuleType } from '../framework/Module'
+import { useBoard } from '../hooks/BoardHook'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import DragHandleOutlinedIcon from '@mui/icons-material/DragHandleOutlined'
 
 type ModuleMenuProps = {
     provided: DraggableProvided;
@@ -40,15 +40,15 @@ export const ModuleMenu: React.FC<ModuleMenuProps> = ({module, provided}) => {
     const handleModuleAndSwitchesDelete = () =>  actions.crud.deleteModuleWithSwitches(module.id)
 
     return (
-        <ColumnFlexBox style={{backgroundColor: 'lightblue'}} ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
+        <ColumnFlexBox style={{backgroundColor: 'lightblue', margin: '0px'}} ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
             <FlexBox {...provided.dragHandleProps}>
-                <DragHandleIcon sx={mediumIcon} />
+                <DragHandleOutlinedIcon sx={mediumIcon} />
             </FlexBox>
             <FlexBox onClick={handleClick}>
-                <InfoIcon sx={mediumIcon}/>
+                <InfoOutlinedIcon sx={mediumIcon}/>
             </FlexBox>
             <FlexBox onClick={handleModuleAndSwitchesDelete}>
-                <DeleteIcon sx={mediumIcon} />
+                <DeleteOutlineOutlinedIcon sx={mediumIcon} />
             </FlexBox>
             <Popper id={id} open={open} anchorEl={infoAnchorEl} placement="right">  
                 <ClickAwayListener onClickAway={handleClose}>
