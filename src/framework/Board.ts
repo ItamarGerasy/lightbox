@@ -343,6 +343,11 @@ export class Board {
         && this.dimensions.depth >= compartment.dimensions.depth
     }
 
+    /** removes a compartment from the board at a given index at the ordered list, and returns it */
+    removeComaprtmentAtIndex(index: number): Compartment {
+        return this.compObjList.splice(index, 1)[0]
+    }
+
     /** Clears all the compartments on the board */
     clearBoard(): void {
         this.compartments.forEach((compartmentObj, compartmentId) => {
