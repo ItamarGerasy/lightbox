@@ -11,7 +11,7 @@ import Button from "@mui/material/Button"
 import { SelectChangeEvent } from "@mui/material/Select"
 import { InputTextFields } from "./InputTextFields"
 import { SelectWrapper } from "./SelectWrapper"
-import { useGlobalState, withGlobalState } from "../MainAppState"
+import { useBoard, withBoard } from "../../hooks/BoardHook"
 import { InfoDialog } from "../general/InfoDialog"
 
 type InputAccordionProps = {
@@ -19,7 +19,7 @@ type InputAccordionProps = {
 };
 
 function InputAccordion(props: InputAccordionProps) {
-  const { actions, board } = useGlobalState()
+  const { actions, board } = useBoard()
   const [inputError, setInputError] = useState<string>("")
   const [selectedFeed, setSelectedFeed] = useState<string>("")
   const [feedInput, setFeedInput] = useState<string>("")
@@ -130,4 +130,4 @@ function InputAccordion(props: InputAccordionProps) {
   );
 }
 
-export default withGlobalState(InputAccordion)
+export default withBoard(InputAccordion)

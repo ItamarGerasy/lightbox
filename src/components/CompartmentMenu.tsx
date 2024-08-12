@@ -1,6 +1,6 @@
 // CompartmentMenu.tsx
 import { Compartment as CompartmentType } from "../framework/Compartment";
-import { useGlobalState } from "./MainAppState";
+import { useBoard } from "../hooks/BoardHook";
 import React, { LegacyRef } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Popper from '@mui/material/Popper';
@@ -13,7 +13,7 @@ type CompartmentMenuProps = {
 };
 
 export const CompartmentMenu: React.FC<CompartmentMenuProps> = ({compartment}) => {
-    const {actions} = useGlobalState();
+    const {actions} = useBoard();
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null);
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);

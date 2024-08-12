@@ -2,8 +2,9 @@ import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { DropResult } from 'react-beautiful-dnd'
 import { Switch} from '../framework/Switch'
 import { Board } from '../framework/Board'
+import { createDefaultBoard } from '../framework/helpers'
 
-export type GlobalStateContextType = {
+export type BoardContextType = {
   board: Board
   setBoard: React.Dispatch<React.SetStateAction<Board>>
   actions: {
@@ -21,30 +22,14 @@ export type GlobalStateContextType = {
   }
 }
 
-/** Return a default board, have 4 switches of sizes 1,2,3,4. has 2 Modules each containes 2 switches and 2 comaprtments one of which is empty */
-const createDefaultBoard = (): Board => {
-  const initialBoard = new Board("Board")
-  const sw1 = initialBoard.switches.createNewSwitch('lighting', '1X16A', "PC", 'switch1')
-  const sw2 = initialBoard.switches.createNewSwitch('aircon', '2X16A', "PC", 'switch1')
-  const sw3 = initialBoard.switches.createNewSwitch('aircon', '3X16A', "PC", 'switch1')
-  const sw4 = initialBoard.switches.createNewSwitch('aircon', '4X16A', "PC", 'switch1')
-  const [md1, md2] = initialBoard.modules.createNewModulesArray({modulesAmount: 2})
-  md1.addSwitches([sw1, sw2])
-  md2.addSwitches([sw3, sw4])
-  initialBoard.createCompartment({name: 'compartment1', moduleObjList: [md1, md2]})
-  initialBoard.createCompartment({name: 'compartment2', moduleObjList: []})
+const initialBoard = createDefaultBoard()
 
-  return initialBoard
-}
-
-export const initialBoard = createDefaultBoard()
-
-const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined)
+const BoardContext = createContext<BoardContextType | undefined>(undefined)
 // Define the type for the children prop
-interface GlobalStateProviderProps {
+interface BoardProviderProps {
   children: ReactNode
 }
-export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ children }) => {
+export const BoardContextProvider: React.FC<BoardProviderProps> = ({ children }) => {
   const [board, setBoard] = useState<Board>(initialBoard)
 
   const actions = {
@@ -120,25 +105,25 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
   }
   
   return (
-    <GlobalStateContext.Provider value={{ board, setBoard, actions }}>
+    <BoardContext.Provider value={{ board, setBoard, actions }}>
       {children}
-    </GlobalStateContext.Provider>
+    </BoardContext.Provider>
   )
 }
 
-export const useGlobalState = (): GlobalStateContextType => {
-  const context = useContext(GlobalStateContext)
+export const useBoard = (): BoardContextType => {
+  const context = useContext(BoardContext)
   if (context === undefined) {
-    throw new Error('useGlobalState must be used within a GlobalStateProvider')
+    throw new Error('useBoard must be used within a BoardProvider')
   }
   return context
 }
 
-export const withGlobalState = <P extends object>(
-  WrappedComponent: React.ComponentType<P & GlobalStateContextType>
+export const withBoard = <P extends object>(
+  WrappedComponent: React.ComponentType<P & BoardContextType>
 ) => {
   return (props: P) => {
-    const { board , setBoard, actions} = useGlobalState()
+    const { board , setBoard, actions} = useBoard()
 
     return <WrappedComponent board={board} setBoard={setBoard} actions={actions} {...props} />
   }

@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import { RefObject, LegacyRef } from 'react';
 import { Switch as SwitchType } from '../../framework/Switch'
-import { useGlobalState } from '../MainAppState';
+import { useBoard } from '../../hooks/BoardHook';
 import { FlexBox, InfoWindowStyle, smallIcon } from '../general/GeneralStyles.styles';
 
 type SwitchMenuProps = {
@@ -23,7 +23,7 @@ type SwitchMenuProps = {
 }
 
 export const SwitchMenu = (props: SwitchMenuProps) => {
-    const {actions} = useGlobalState()
+    const {actions} = useBoard()
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);
     const id = open ? 'switch-info-popper' : undefined;

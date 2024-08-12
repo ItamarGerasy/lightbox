@@ -2,7 +2,7 @@
 import InputForm from './inputComponents/InputForm';
 import BoxView from './BoxView';
 import { MainAppStyle, MainContainerStyle } from './MainApp.styles';
-import { GlobalStateProvider } from './MainAppState';
+import { BoardContextProvider } from '../hooks/BoardHook';
 
 const MainApp = () => {
 
@@ -10,10 +10,10 @@ const MainApp = () => {
         <MainContainerStyle>
             <h1>Welcome to the lightbox project</h1>
             <MainAppStyle>
-                <GlobalStateProvider>
+                <BoardContextProvider>
                     <InputForm />
                     <BoxView />
-                </GlobalStateProvider>
+                </BoardContextProvider>
             </MainAppStyle>
         </MainContainerStyle>
     );

@@ -8,7 +8,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import InfoIcon from '@mui/icons-material/Info'
 import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles'
 import { Module as ModuleType } from '../framework/Module';
-import { useGlobalState } from './MainAppState';
+import { useBoard } from '../hooks/BoardHook';
 
 type ModuleMenuProps = {
     provided: DraggableProvided;
@@ -16,7 +16,7 @@ type ModuleMenuProps = {
 };
   
 export const ModuleMenu: React.FC<ModuleMenuProps> = ({module, provided}) => {
-    const {actions} = useGlobalState();
+    const {actions} = useBoard();
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null);
     const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(infoAnchorEl);

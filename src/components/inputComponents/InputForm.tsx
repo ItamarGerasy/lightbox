@@ -2,7 +2,7 @@
 import InputAccordion from "./InputAccordion";
 import { useState } from "react";
 import { FeedInput } from "./FeedInput";
-import { withGlobalState } from "../MainAppState";
+import { withBoard } from "../../hooks/BoardHook";
 import { ColumnFlexBox } from "../general/GeneralStyles.styles";
 
 const InputForm = () => {
@@ -35,4 +35,4 @@ const InputForm = () => {
 };
 
 
-export default withGlobalState(InputForm)
+export default withBoard(InputForm)

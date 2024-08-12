@@ -3,7 +3,7 @@ import React from 'react'
 import { Switch as SwitchType } from '../../framework/Switch'
 import { Draggable } from "react-beautiful-dnd";
 import { SwitchStyle, SwitchWrapper } from './Switch.styles'
-import { withGlobalState } from '../MainAppState';
+import { withBoard } from '../../hooks/BoardHook';
 import { SwitchMenu } from './SwitchMenu'
 
 type SwitchProps = {
@@ -70,4 +70,4 @@ export const Switch = (props: SwitchProps) => {
     )
 }
 
-export default withGlobalState(Switch)
+export default withBoard(Switch)

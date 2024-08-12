@@ -1,7 +1,7 @@
 // Module.tsx
 import { ModuleStyle } from "./Module.styles";
 import { Module as ModuleType } from "../framework/Module";
-import { withGlobalState } from "./MainAppState";
+import { withBoard } from "../hooks/BoardHook";
 import Switch from "./Switches/Switch";
 import React, { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd';
@@ -82,4 +82,4 @@ const Module: React.FC<ModuleProps> = ({module, index}) => {
   );    
 
 }
-export default withGlobalState(Module)
+export default withBoard(Module)

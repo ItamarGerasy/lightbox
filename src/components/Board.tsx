@@ -3,11 +3,11 @@ import { BoardStyle } from './Board.styles'
 import { Compartment } from './Compartment'
 import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
-import { useGlobalState } from './MainAppState'
+import { useBoard } from '../hooks/BoardHook'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
 const Board: React.FC = () => {
-  const { board, actions } = useGlobalState()
+  const { board, actions } = useBoard()
 
   const generateCompartmentsFromIndexList = (): React.ReactNode => {
     return board.compObjList.map((compartment, index) => (
