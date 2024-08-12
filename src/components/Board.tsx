@@ -1,11 +1,20 @@
 // Board.tsx
-import { BoardStyle } from './Board.styles'
+import { BoardStyle, Compartments, BoardH } from './Board.styles'
 import { Compartment } from './Compartment'
 import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useBoard } from '../hooks/BoardHook'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
+/**
+ * A functional component representing the Board.
+ * 
+ * It uses the useBoard hook to get the board state and actions.
+ * It renders a DragDropContext with a StrictModeDroppable component.
+ * The Droppable component contains a BoardHeader and a list of Compartments.
+ * 
+ * @return {JSX.Element} The JSX element representing the Board.
+ */
 const Board: React.FC = () => {
   const { board, actions } = useBoard()
 
@@ -18,27 +27,25 @@ const Board: React.FC = () => {
   const onDragEnd:OnDragEndResponder = (result) => {
     const { destination, source, type } = result;
 
-    if (!destination) {
-      return;
-    }
+    if (!destination) return
 
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
-      return;
+      return
     }
 
     // drop logic for type 'compartment'
     if (type === 'compartment'){
       actions.dndActions.droppedCompratment(result)
-      return;
+      return
     }
 
     // drop logic for type 'module'
     if (type === 'module'){
       actions.dndActions.droppedModule(result);
-      return;
+      return
     }
 
     // drop logic for type 'switch'
@@ -47,21 +54,32 @@ const Board: React.FC = () => {
     }
   }
 
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <StrictModeDroppable droppableId="board" type='compartment' direction="horizontal">
-        {(provided) => (
-            <BoardStyle 
-            ref={provided.innerRef} 
-            {...provided.droppableProps}
-            >
-              {generateCompartmentsFromIndexList()}
-              {provided.placeholder}
-            </BoardStyle>
-        )}
-      </StrictModeDroppable>
-    </DragDropContext>
-  );
-};
+  const BoardHeader = ({dimensions, name}:{dimensions: {width: number, height: number, depth: number}, name: string}) => {
+    return (
+      <BoardH>
+        Name: {name}, Dimensions: Width: {dimensions.width}, Height: {dimensions.height}, Depth: {dimensions.depth}
+      </BoardH>
+    )
+  }
 
-export default Board;
+  return (
+      <DragDropContext onDragEnd={onDragEnd}>
+        <StrictModeDroppable droppableId="board" type='compartment' direction="horizontal">
+          {(provided) => (
+              <BoardStyle 
+              ref={provided.innerRef} 
+              {...provided.droppableProps}
+              >
+                <BoardHeader dimensions={board.dimensions} name={board.name} />
+                <Compartments>
+                  {generateCompartmentsFromIndexList()}
+                  {provided.placeholder}
+                </Compartments>
+              </BoardStyle>
+          )}
+        </StrictModeDroppable>
+      </DragDropContext>
+  )
+}
+
+export default Board
