@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 
 export const BoardStyle = styled.div({
   border: '8px solid black',
-  padding: '8px',
+  padding: '3px',
   flexDirection: 'row',
   alignItems: 'flex-start',
   position: 'relative',
