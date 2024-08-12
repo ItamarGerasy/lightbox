@@ -27,7 +27,7 @@ export const BoardH = styled.div({
   height: '8%',
   backgroundColor: 'white',
   alignSelf: 'flex-start',
-  flexDirection: 'column',
+  flexDirection: 'row',
   alignItems: 'center',
 })
 

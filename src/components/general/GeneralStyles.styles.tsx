@@ -10,7 +10,18 @@ export const FlexBox = styled.div({
     display: 'flex',
     flex: 1,
     height: '100%',
-    width: '100%'
+    width: '100%',
+    zIndex: 'inherit'
+})
+
+/**Inherit from FlexBox */
+export const ISFlexBox = styled.div({
+    display: 'flex',
+    flex: 1,
+    height: '10px',
+    width: 'inherit',
+    zIndex: 'inherit',
+    alignItems: 'center',
 })
 
 export const ColumnFlexBox = styled.div({

@@ -5,6 +5,8 @@ import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useBoard } from '../hooks/BoardHook'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
+import {BoardMenu} from './BoardMenu'
+import CollapseMenu from './general/CollapseMenu'
 
 const Board: React.FC = () => {
   const { board, actions } = useBoard()
@@ -48,6 +50,7 @@ const Board: React.FC = () => {
   const BoardHeader = ({dimensions, name}:{dimensions: {width: number, height: number, depth: number}, name: string}) => {
     return (
       <BoardH>
+        <CollapseMenu Menu={BoardMenu} menuProps={{}} orientation="horizontal" fontSize="small" />
         Name: {name}, Dimensions: Width: {dimensions.width}, Height: {dimensions.height}, Depth: {dimensions.depth}
       </BoardH>
     )
