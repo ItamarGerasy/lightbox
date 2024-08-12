@@ -53,96 +53,37 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
     crud: {
       deleteSwitch: (switchId: string) => {
         const newBoard = board.clone()
-      
-        // validating switch id exists
-        if ( !(newBoard.switches.hasSwitch(switchId))){
-            throw new Error(`[deleteSwitch()] switch ID ${switchId} doesn't exist`);
-        }
-        // removing switch from the switches map
-        const switchToRemove = newBoard.switches.removeSwitch(switchId)
-        let parentModule = switchToRemove!.myModule
-
-        if(!parentModule && !newBoard.modules.getParentModuleOfSwitchById(switchId)){
-          throw new Error(`no parent module found for switch: ${switchId}`)
-        }
-      
-        // removing switch from the module and switches map
-        parentModule!.removeSwitch(switchId)
+        newBoard.deleteSwitch(switchId)
         setBoard(newBoard)
       },
       deleteModuleWithSwitches: (moduleId: string) => {
-        // validating module with given id exists
-        if(!board.modules.hasModule(moduleId)){
-          throw new Error(`[deleteModuleWithSwitches()] module with id:${moduleId} doesn't exists`)
-        }
         const newBoard = board.clone()
-        const module = newBoard.modules.get(moduleId)
-        const parentCompartment = module!.myCompartment ? module!.myCompartment : newBoard.compartments.getParentCompartmentOfModuleById(moduleId)
-  
-        // removing module from the modules map
-        newBoard.modules.removeModule(moduleId)
-
-        // removing switches from switches map
-        newBoard.switches.removeSwitches(module!.switchesObjList) 
-        
-        if (parentCompartment){
-            // removing module from the compratment modules list
-            console.log(`removing module ${moduleId} from compartment ${parentCompartment.id}`)
-            parentCompartment!.removeModule(moduleId)
-        }
-  
+        newBoard.deleteModuleWithSwitches(moduleId)
         setBoard(newBoard)
       },
       deleteCompartmentAndModules: (compartmentId: string) => {
-        // validating compartment with given id exists
-        if(!board.compartments.hasCompartment(compartmentId)){
-          throw new Error(`[deleteCompartmentAndModules()] comaprtment with id:${compartmentId} doesn't exists`)
-        }
         const newBoard = board.clone()
-        let switchesToDelete: Array<SwitchObj> = []
-        const compartment = newBoard.compartments.get(compartmentId)
-        // removing all modules from the compartment
-        const modulesToDelete = compartment.removeAllModules()
-
-        // collecting all switches objects on the compartment modules
-        modulesToDelete.forEach(mdObj => switchesToDelete.concat(mdObj.switchesObjList))
-
-        // removing switches from the map
-        newBoard.switches.removeSwitches(switchesToDelete)
-
-        //removing modules from the map
-        newBoard.modules.removeModules(modulesToDelete)
-
-        //removing compartment from the map
-        newBoard.compartments.removeCompartment(compartmentId)
-
-        // removing for the compartments list that renders the compartments on the
-        newBoard.compObjList = newBoard.compObjList.filter(cm => cm.id !== compartmentId)
-        
+        newBoard.deleteCompartmentAndModules(compartmentId)
         setBoard(newBoard)
       },
       addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>): boolean => {
         // this function adds all given switches to one module
         // returns "true" if it's succesful, and false if the switches coud not been add to a single module
         const newBoard = board.clone()
+        let sucsess = newBoard.addSwitchesToOneModule(switchesToAdd)
 
-        // checking if all switches can be added to one module
-        const module = newBoard.modules.canOneModuleFitSwitches(switchesToAdd)
-        if(!module) return false
+        if(!sucsess) return false
 
-        console.log(`Going to add all ${switchesToAdd.length} switches to one module ${module.name} `)
-        module.addSwitches(switchesToAdd)
         setBoard(newBoard)
         return true
       },
       addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>): boolean => {
         const newBoard = board.clone()
 
-        //checking if can fit switches in several modules
-        let amountOfSwitchesThatCanFit = newBoard.modules.canSomeModulesFitSwitches(switchesToAdd)
-        if(amountOfSwitchesThatCanFit < switchesToAdd.length) return false
+        let sucsess = newBoard.addSwitchesToSeveralModules(switchesToAdd)
 
-        newBoard.modules.addSwitchesToSeveralModules(switchesToAdd)
+        if(!sucsess) return false
+
         setBoard(newBoard)
         return true
       },
@@ -157,77 +98,9 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         
         const newBoard = board.clone()
 
-        let totalSwitchesToAdd = switchesToAdd.length
-        let switchesInExistingModules = 0
-        let swWidth = switchesToAdd[0].dimensions.width
-        let swHeight = switchesToAdd[0].dimensions.height
-        
-        const modulesToSwitches = newBoard.modules.getModuleFreeSlotsMap(switchesToAdd)
-        const compartmentFreeSlots = newBoard.compartments.getCompartmentsFreeSlotsMap(undefined, switchesToAdd[0].dimensions.height)
-        const compartmentToModules: { [key: string]: number } = {};
-        const compartmentToSwitches: { [key: string]: number } = {}
+        let sucsess = newBoard.addModuleAndAddSwitches(switchesToAdd)
 
-        // take into account the switches that can be added into existing modules
-        modulesToSwitches.forEach(swAmount => {
-          totalSwitchesToAdd -= swAmount
-          switchesInExistingModules += swAmount
-        })
-
-        for(const [cmId, mdAmount] of compartmentFreeSlots.entries()){
-
-          const cmObj = newBoard.compartments.get(cmId)
-          let cmWidth = cmObj.dimensions.width
-          let swPerModuleInCm = Math.floor(cmWidth / swWidth)
-          // calculating amount of switches that will fit the compartment
-          let switchesInCm = swPerModuleInCm * mdAmount
-
-          // in case the available space in the compartment can't hold all the desired switches
-          if(switchesInCm < totalSwitchesToAdd) {
-            console.log(`Compartment ${cmId} can't fit all remainning switches ${totalSwitchesToAdd}, he can fit ${switchesInCm} switches in ${mdAmount} modules`)           
-            // this compartment will have to add all the possible modules he can, and all the switches he can
-            compartmentToModules[cmId] = mdAmount
-            compartmentToSwitches[cmId] = switchesInCm
-            totalSwitchesToAdd -= switchesInCm
-            continue
-          }
-
-          // in case the available space in the compartment can hold all the desired switches
-          let amountOfNewModulesNeeded = Math.ceil(totalSwitchesToAdd / swPerModuleInCm)
-          compartmentToModules[cmId] = amountOfNewModulesNeeded
-          compartmentToSwitches[cmId] = totalSwitchesToAdd
-          console.log(`Compartment ${cmId} can fit all remainning switches ${totalSwitchesToAdd}, he can fit ${switchesInCm} switches in ${mdAmount} modules. \n
-            and will need to add ${amountOfNewModulesNeeded} modules`)
-          totalSwitchesToAdd = 0
-          break
-        }
-
-        if (totalSwitchesToAdd > 0) {
-          console.log(`There isn't enough space in existing compartments to add ${totalSwitchesToAdd} switches, even with adding modules`)
-          return false
-        }
-
-        // Adds the switches first to existing modules
-        const swichesForExistingModules = switchesToAdd.slice(0, switchesInExistingModules)
-        const switchesForNewModules = switchesToAdd.slice(switchesInExistingModules)
-        if(switchesInExistingModules){
-          console.log(`Adding ${switchesInExistingModules} switches to existing modules`)
-          newBoard.modules.addSwitchesToSeveralModules(swichesForExistingModules)
-        }
-
-        // Adding the required Modules
-        for(const [cmId, mdAmount] of Object.entries(compartmentToModules)){
-          const cm = newBoard.compartments.get(cmId)
-          const mdParams = {
-            modulesAmount: mdAmount, 
-            feed: cm.feed, 
-            dimensions: {...cm.dimensions, height: swHeight}
-          }
-          console.log(`Adding ${mdAmount} modules to compartment ${cmId}`)
-          const newModules = newBoard.modules.createNewModulesArray(mdParams)
-          newModules.forEach(md => cm.addModule(md))
-        }
-
-        newBoard.modules.addSwitchesToSeveralModules(switchesForNewModules)
+        if(!sucsess) return false
 
         setBoard(newBoard)
       
