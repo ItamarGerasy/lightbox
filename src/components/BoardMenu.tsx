@@ -8,14 +8,15 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import CleaningServicesOutlinedIcon from '@mui/icons-material/CleaningServicesOutlined'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import { Tooltip } from 'react-tooltip'
+import { AddCompartmentMenu } from './AddCompartmentMenu'
 
-type CompartmentMenuProps = {
-}
 
-export const BoardMenu: React.FC<CompartmentMenuProps> = ({}) => {
-    const {actions, board, setBoard} = useBoard()
+export const BoardMenu: React.FC = () => {
+    const { board, setBoard} = useBoard()
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null)
-    const [infoAnchorEl, setInfoAnchorEl] = React.useState<null | HTMLElement>(null)
+    const [ isAddCompOpen, setAddCompOpen] = React.useState(false)
+
+    const openAddCompartmentMenu = () =>  setAddCompOpen(true)
 
     const clearBoard = (event: React.MouseEvent<HTMLElement>) => {
         const newBoard = board.clone()
@@ -34,7 +35,8 @@ export const BoardMenu: React.FC<CompartmentMenuProps> = ({}) => {
                 <AddCircleOutlineOutlinedIcon sx={mediumIcon}/>
             </ISFlexBox>
 
-            <ISFlexBox data-tooltip-id="add-comp" data-tooltip-content="Add Compartment" data-tooltip-place="bottom-start">
+            <ISFlexBox data-tooltip-id="add-comp" data-tooltip-content="Add Compartment" data-tooltip-place="bottom-start"
+                onClick={openAddCompartmentMenu}>
                 <AddBoxOutlinedIcon sx={mediumIcon}/>
             </ISFlexBox>
 
@@ -46,6 +48,9 @@ export const BoardMenu: React.FC<CompartmentMenuProps> = ({}) => {
                 onClick={clearBoard}>
                 <CleaningServicesOutlinedIcon sx={mediumIcon}/>
             </ISFlexBox>
+
+        <AddCompartmentMenu isOpen={isAddCompOpen} setIsOpen={setAddCompOpen}/> 
+           
         </WhiteFlexBox>
     )
 }
