@@ -6,15 +6,6 @@ import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useBoard } from '../hooks/BoardHook'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
-/**
- * A functional component representing the Board.
- * 
- * It uses the useBoard hook to get the board state and actions.
- * It renders a DragDropContext with a StrictModeDroppable component.
- * The Droppable component contains a BoardHeader and a list of Compartments.
- * 
- * @return {JSX.Element} The JSX element representing the Board.
- */
 const Board: React.FC = () => {
   const { board, actions } = useBoard()
 
