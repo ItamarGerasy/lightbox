@@ -9,14 +9,24 @@ import CleaningServicesOutlinedIcon from '@mui/icons-material/CleaningServicesOu
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import { Tooltip } from 'react-tooltip'
 import { AddCompartmentMenu } from './AddCompartmentMenu'
+import { InfoDialog } from "./general/InfoDialog"
 
 
 export const BoardMenu: React.FC = () => {
     const { board, setBoard} = useBoard()
+    const [isInfoDialogOpen, setInfoDialogOpen] = React.useState(false)
+    const [infoDetails, setInfoDetails] = React.useState({title: '', message: ''})
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null)
     const [ isAddCompOpen, setAddCompOpen] = React.useState(false)
 
-    const openAddCompartmentMenu = () =>  setAddCompOpen(true)
+    const openAddCompartmentMenu = () =>  {
+        if(board.freeWidth === 0) {
+            setInfoDetails({title: 'Error', message: 'Sorry the board is full, cannot add another compartment'})
+            setInfoDialogOpen(true)
+            return
+        }
+        setAddCompOpen(true)
+    }
 
     const clearBoard = (event: React.MouseEvent<HTMLElement>) => {
         const newBoard = board.clone()
@@ -49,8 +59,8 @@ export const BoardMenu: React.FC = () => {
                 <CleaningServicesOutlinedIcon sx={mediumIcon}/>
             </ISFlexBox>
 
-        <AddCompartmentMenu isOpen={isAddCompOpen} setIsOpen={setAddCompOpen}/> 
-           
+            <AddCompartmentMenu isOpen={isAddCompOpen} setIsOpen={setAddCompOpen}/> 
+            <InfoDialog deatils={infoDetails} open={isInfoDialogOpen} closeDialog={() => setInfoDialogOpen(false)}/>
         </WhiteFlexBox>
     )
 }

@@ -5,7 +5,7 @@ import React from 'react';
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { useBoard } from '../hooks/BoardHook'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
-import {BoardMenu} from './BoardMenu'
+import { BoardMenu } from './BoardMenu'
 import CollapseMenu from './general/CollapseMenu'
 
 const Board: React.FC = () => {

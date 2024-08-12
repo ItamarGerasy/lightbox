@@ -372,6 +372,7 @@ export class Board {
     /** Creates a clone of the board */
     clone(): Board {
         const cloneBoard = new Board(this.name, this.dimensions)
+        cloneBoard.freeWidth = this.freeWidth
         const cloneModules: Module[] =[]
         const cloneSwitches: Switch[] = []
 
