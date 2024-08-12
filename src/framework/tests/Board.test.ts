@@ -347,7 +347,7 @@ describe("Board", () => {
     })
 
 
-    describe.only('addModuleAndAddSwitches', () => {
+    describe('addModuleAndAddSwitches', () => {
         it('Cannot do it if there is no space', () => {
             const board = new Board()
             const [cm1, cm2 ] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 2})
@@ -413,7 +413,7 @@ describe("Board", () => {
             })
         })
 
-        test('Can do it over several compartments which adds one module', () => {
+        test('Can do it only in one compartments which adds one module', () => {
             const board = new Board()
             const [cm1, cm2, cm3] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 3})
             const fullSwArr = board.switches.createNewSwitchesArray(9, "des", "1X16A", "feed") 
@@ -451,7 +451,31 @@ describe("Board", () => {
 
         })
 
-        it('Can do it over several compartments that need to add modules', () => {
+        test('Can do it over several compartments that need to add modules', () => {
+            const board = new Board()
+            const [cm1, cm2, cm3] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 3})
+            const fullSwArr = board.switches.createNewSwitchesArray(10, "des", "1X16A", "feed") 
+            const almostFullMdArr = board.modules.createNewModulesArray({modulesAmount: 5})
+
+            almostFullMdArr.forEach(md =>  md.addSwitches(fullSwArr))
+            cm1.addModules(almostFullMdArr)
+            cm2.addModules(almostFullMdArr)
+            cm3.addModules(almostFullMdArr)
+
+            const swToAdd = board.switches.createNewSwitchesArray(15, "des", "2X16A", "feed")
+            let succes = board.addModuleAndAddSwitches(swToAdd)
+
+            expect(succes).toBeTruthy()
+            expect(cm1.modulesAmount).toBe(almostFullMdArr.length+1)
+            expect(cm2.modulesAmount).toBe(almostFullMdArr.length+1)
+            expect(cm3.modulesAmount).toBe(almostFullMdArr.length+1)
+            expect(cm1.modulesObjList[cm1.modulesAmount-1].switchesAmount).toBe(5)
+            expect(cm2.modulesObjList[cm1.modulesAmount-1].switchesAmount).toBe(5)
+            expect(cm3.modulesObjList[cm1.modulesAmount-1].switchesAmount).toBe(5)
+            expect(cm1.modulesObjList[cm1.modulesAmount-1].isFull()).toBeTruthy()
+            expect(cm2.modulesObjList[cm1.modulesAmount-1].isFull()).toBeTruthy()
+            expect(cm3.modulesObjList[cm1.modulesAmount-1].isFull()).toBeTruthy()
+
         })    
     })
 })
