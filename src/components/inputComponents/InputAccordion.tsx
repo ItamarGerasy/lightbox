@@ -19,7 +19,7 @@ type InputAccordionProps = {
 };
 
 function InputAccordion(props: InputAccordionProps) {
-  const { actions, globalState } = useGlobalState()
+  const { actions, board } = useGlobalState()
   const [inputError, setInputError] = useState<string>("")
   const [selectedFeed, setSelectedFeed] = useState<string>("")
   const [feedInput, setFeedInput] = useState<string>("")
@@ -82,7 +82,7 @@ function InputAccordion(props: InputAccordionProps) {
     const switchesAmount = parseInt(input.switchAmount ?? '1', 10)
 
     // Create an array of switches with separate copies of the inputCopy object
-    const newSwitchesArray = globalState.switches.createNewSwitchesArray(switchesAmount, input.switchDescription, input.switchSpecs, feedInput)
+    const newSwitchesArray = board.switches.createNewSwitchesArray(switchesAmount, input.switchDescription, input.switchSpecs, feedInput)
 
     // trying to add all switches to one module
     console.log("trying to add all switches to one module")
@@ -110,7 +110,7 @@ function InputAccordion(props: InputAccordionProps) {
       return
     }
 
-    globalState.switches.removeSwitches(newSwitchesArray)
+    board.switches.removeSwitches(newSwitchesArray)
     
     setDialogDetails({title: "hello", 
       message: `There isn't enough space on the board to add ${input.switchAmount} switches, nor there is space to add enough modules to accomedate them. \n try adding new compartments and than add the switches `})

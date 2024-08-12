@@ -102,8 +102,7 @@ export class Board {
         }
 
         const cm = this.compartments.createNewComaprtment({name, feed, moduleObjList, dimensions})
-        this.compObjList.push(cm)
-        this.freeWidth -= cm.dimensions.width
+        this.addCompartment(cm)
 
         return true
     }
@@ -312,7 +311,7 @@ export class Board {
      * @param index - the index to add the compartment in the ordered list
      * @throws Error if the compartment can't be added
      */
-    addCompartment(compartment: Compartment, index: number): void {
+    addCompartment(compartment: Compartment, index?: number): void {
         if(!this.canAddCompartment(compartment)){
             throw new Error(`[${this.name}] couldn't add compartment since the board is either full or compartment is bigger then free space on board \n
                 Please make sure to use boardObj.canAddCompartment() and recive the value true before calling addCompartment() \n
@@ -327,7 +326,7 @@ export class Board {
             this.compartments.addCompartment(compartment)
         }
         
-        if(!index || index === 0){
+        if(!index){
             this.compObjList.push(compartment)
         } else {
             this.compObjList.splice(index, 0, compartment)
@@ -345,6 +344,9 @@ export class Board {
 
     /** removes a compartment from the board at a given index at the ordered list, and returns it */
     removeComaprtmentAtIndex(index: number): Compartment {
+        if(index >= this.compObjList.length) throw new Error(`[removeComaprtmentAtIndex()] index out of bounds`)
+            
+        this.freeWidth += this.compObjList[index].dimensions.width
         return this.compObjList.splice(index, 1)[0]
     }
 

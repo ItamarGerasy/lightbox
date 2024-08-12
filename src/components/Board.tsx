@@ -7,10 +7,10 @@ import { useGlobalState } from './MainAppState'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
 const Board: React.FC = () => {
-  const { globalState, actions } = useGlobalState()
+  const { board, actions } = useGlobalState()
 
   const generateCompartmentsFromIndexList = (): React.ReactNode => {
-    return globalState.compartmentsOrder.map((compartment, index) => (
+    return board.compObjList.map((compartment, index) => (
       <Compartment key={compartment.id} compartment={compartment} index={index} />
     ));
   }

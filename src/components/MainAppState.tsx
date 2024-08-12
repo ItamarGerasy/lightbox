@@ -1,30 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { DropResult } from 'react-beautiful-dnd'
 import { Switch as SwitchObj } from '../framework/Switch'
-import { SwitchesMap } from '../framework/SwitchesMap'
-import { Module } from '../framework/Module'
-import { ModulesMap } from '../framework/ModulesMap'
-import { Compartment } from "../framework/Compartment"
-import { CompartmentsMap } from '../framework/CompartmentsMap'
-import { defaultSwitchDimensions } from './general/generalTypes'
-
-export type GlobalState = {
-  boardWidth: number,
-  boardHeight: number,
-  boardDepth: number,
-  compartmentsOrder: Compartment[],
-  compartments: CompartmentsMap,
-  modules: ModulesMap,
-  switches: SwitchesMap
-}
+import { Board } from '../framework/Board'
 
 export type GlobalStateContextType = {
-  globalState: GlobalState;
-  setGlobalState: React.Dispatch<React.SetStateAction<GlobalState>>;
+  board: Board;
+  setBoard: React.Dispatch<React.SetStateAction<Board>>;
   actions: {
-    misc:{
-      getCloneGlobalState: () => GlobalState
-    },
     crud: {
       deleteSwitch: (switchId: string) => void
       deleteModuleWithSwitches: (moduleId: string) => void
@@ -41,78 +23,84 @@ export type GlobalStateContextType = {
   }
 }
 
+/** Return a default board, have 4 switches of sizes 1,2,3,4. has 2 Modules each containes 2 switches and 2 comaprtments one of which is empty */
+const createDefaultBoard = (): Board => {
+  const initialBoard = new Board("Board")
+  const sw1 = initialBoard.switches.createNewSwitch('lighting', '1X16A', "PC", 'switch1')
+  const sw2 = initialBoard.switches.createNewSwitch('aircon', '2X16A', "PC", 'switch1')
+  const sw3 = initialBoard.switches.createNewSwitch('aircon', '3X16A', "PC", 'switch1')
+  const sw4 = initialBoard.switches.createNewSwitch('aircon', '4X16A', "PC", 'switch1')
+  const [md1, md2] = initialBoard.modules.createNewModulesArray({modulesAmount: 2})
+  md1.addSwitches([sw1, sw2])
+  md2.addSwitches([sw3, sw4])
+  initialBoard.createCompartment({name: 'compartment1', moduleObjList: [md1, md2]})
+  initialBoard.createCompartment({name: 'compartment2', moduleObjList: []})
+
+  return initialBoard
+}
+
+export const initialBoard = createDefaultBoard()
+
 const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
 // Define the type for the children prop
 interface GlobalStateProviderProps {
   children: ReactNode;
 }
 export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ children }) => {
-  const [globalState, setGlobalState] = useState<GlobalState>(initialAppGlobalState);
+  const [board, setBoard] = useState<Board>(initialBoard);
 
   const actions = {
-    misc: {
-      getCloneGlobalState: () => {
-        return {
-          boardWidth: globalState.boardWidth,
-          boardHeight: globalState.boardHeight,
-          boardDepth: globalState.boardDepth,
-          compartmentsOrder: globalState.compartmentsOrder.map(cm => cm.clone()),
-          compartments: globalState.compartments.clone(),
-          modules: globalState.modules.clone(),
-          switches: globalState.switches.clone()
-        } as GlobalState}
-    },
     crud: {
       deleteSwitch: (switchId: string) => {
-        const newGlobalState = {...globalState}
+        const newBoard = board.clone()
       
         // validating switch id exists
-        if ( !(newGlobalState.switches.hasSwitch(switchId))){
+        if ( !(newBoard.switches.hasSwitch(switchId))){
             throw new Error(`[deleteSwitch()] switch ID ${switchId} doesn't exist`);
         }
         // removing switch from the switches map
-        const switchToRemove = newGlobalState.switches.removeSwitch(switchId)
+        const switchToRemove = newBoard.switches.removeSwitch(switchId)
         let parentModule = switchToRemove!.myModule
 
-        if(!parentModule && !newGlobalState.modules.getParentModuleOfSwitchById(switchId)){
+        if(!parentModule && !newBoard.modules.getParentModuleOfSwitchById(switchId)){
           throw new Error(`no parent module found for switch: ${switchId}`)
         }
       
         // removing switch from the module and switches map
         parentModule!.removeSwitch(switchId)
-        setGlobalState(newGlobalState)
+        setBoard(newBoard)
       },
       deleteModuleWithSwitches: (moduleId: string) => {
         // validating module with given id exists
-        if(!globalState.modules.hasModule(moduleId)){
+        if(!board.modules.hasModule(moduleId)){
           throw new Error(`[deleteModuleWithSwitches()] module with id:${moduleId} doesn't exists`)
         }
-        const module = globalState.modules.get(moduleId)
-        const parentCompartment = module!.myCompartment ? module!.myCompartment : globalState.compartments.getParentCompartmentOfModuleById(moduleId)
-        const newGlobalState = {...globalState}
+        const newBoard = board.clone()
+        const module = newBoard.modules.get(moduleId)
+        const parentCompartment = module!.myCompartment ? module!.myCompartment : newBoard.compartments.getParentCompartmentOfModuleById(moduleId)
   
         // removing module from the modules map
-        newGlobalState.modules.removeModule(moduleId)
+        newBoard.modules.removeModule(moduleId)
 
         // removing switches from switches map
-        newGlobalState.switches.removeSwitches(module!.switchesObjList) 
+        newBoard.switches.removeSwitches(module!.switchesObjList) 
         
         if (parentCompartment){
             // removing module from the compratment modules list
+            console.log(`removing module ${moduleId} from compartment ${parentCompartment.id}`)
             parentCompartment!.removeModule(moduleId)
         }
   
- 
-        setGlobalState(newGlobalState)
+        setBoard(newBoard)
       },
       deleteCompartmentAndModules: (compartmentId: string) => {
         // validating compartment with given id exists
-        if(!globalState.compartments.hasCompartment(compartmentId)){
+        if(!board.compartments.hasCompartment(compartmentId)){
           throw new Error(`[deleteCompartmentAndModules()] comaprtment with id:${compartmentId} doesn't exists`)
         }
-        const newGlobalState = {...globalState}
+        const newBoard = board.clone()
         let switchesToDelete: Array<SwitchObj> = []
-        const compartment = newGlobalState.compartments.get(compartmentId)
+        const compartment = newBoard.compartments.get(compartmentId)
         // removing all modules from the compartment
         const modulesToDelete = compartment.removeAllModules()
 
@@ -120,42 +108,42 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         modulesToDelete.forEach(mdObj => switchesToDelete.concat(mdObj.switchesObjList))
 
         // removing switches from the map
-        newGlobalState.switches.removeSwitches(switchesToDelete)
+        newBoard.switches.removeSwitches(switchesToDelete)
 
         //removing modules from the map
-        newGlobalState.modules.removeModules(modulesToDelete)
+        newBoard.modules.removeModules(modulesToDelete)
 
         //removing compartment from the map
-        newGlobalState.compartments.removeCompartment(compartmentId)
+        newBoard.compartments.removeCompartment(compartmentId)
 
         // removing for the compartments list that renders the compartments on the
-        newGlobalState.compartmentsOrder = newGlobalState.compartmentsOrder.filter(cm => cm.id !== compartmentId)
+        newBoard.compObjList = newBoard.compObjList.filter(cm => cm.id !== compartmentId)
         
-        setGlobalState(newGlobalState)
+        setBoard(newBoard)
       },
       addSwitchesToOneModule: (switchesToAdd: Array<SwitchObj>): boolean => {
         // this function adds all given switches to one module
         // returns "true" if it's succesful, and false if the switches coud not been add to a single module
-        const newGlobalState = {...globalState}
+        const newBoard = board.clone()
 
         // checking if all switches can be added to one module
-        const module = newGlobalState.modules.canOneModuleFitSwitches(switchesToAdd)
+        const module = newBoard.modules.canOneModuleFitSwitches(switchesToAdd)
         if(!module) return false
 
         console.log(`Going to add all ${switchesToAdd.length} switches to one module ${module.name} `)
         module.addSwitches(switchesToAdd)
-        setGlobalState(newGlobalState)
+        setBoard(newBoard)
         return true
       },
       addSwitchesToSeveralModules: (switchesToAdd: Array<SwitchObj>): boolean => {
-        const newGlobalState = {...globalState}
+        const newBoard = board.clone()
 
         //checking if can fit switches in several modules
-        let amountOfSwitchesThatCanFit = newGlobalState.modules.canSomeModulesFitSwitches(switchesToAdd)
+        let amountOfSwitchesThatCanFit = newBoard.modules.canSomeModulesFitSwitches(switchesToAdd)
         if(amountOfSwitchesThatCanFit < switchesToAdd.length) return false
 
-        newGlobalState.modules.addSwitchesToSeveralModules(switchesToAdd)
-        setGlobalState(newGlobalState)
+        newBoard.modules.addSwitchesToSeveralModules(switchesToAdd)
+        setBoard(newBoard)
         return true
       },
       /**
@@ -167,15 +155,15 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
        */
       addModuleAndAddSwitches: (switchesToAdd: SwitchObj[]): boolean => {
         
-        const newGlobalState = {...globalState}
+        const newBoard = board.clone()
 
         let totalSwitchesToAdd = switchesToAdd.length
         let switchesInExistingModules = 0
         let swWidth = switchesToAdd[0].dimensions.width
         let swHeight = switchesToAdd[0].dimensions.height
         
-        const modulesToSwitches = newGlobalState.modules.getModuleFreeSlotsMap(switchesToAdd)
-        const compartmentFreeSlots = newGlobalState.compartments.getCompartmentsFreeSlotsMap(undefined, switchesToAdd[0].dimensions.height)
+        const modulesToSwitches = newBoard.modules.getModuleFreeSlotsMap(switchesToAdd)
+        const compartmentFreeSlots = newBoard.compartments.getCompartmentsFreeSlotsMap(undefined, switchesToAdd[0].dimensions.height)
         const compartmentToModules: { [key: string]: number } = {};
         const compartmentToSwitches: { [key: string]: number } = {}
 
@@ -187,7 +175,7 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
 
         for(const [cmId, mdAmount] of compartmentFreeSlots.entries()){
 
-          const cmObj = newGlobalState.compartments.get(cmId)
+          const cmObj = newBoard.compartments.get(cmId)
           let cmWidth = cmObj.dimensions.width
           let swPerModuleInCm = Math.floor(cmWidth / swWidth)
           // calculating amount of switches that will fit the compartment
@@ -223,25 +211,25 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
         const switchesForNewModules = switchesToAdd.slice(switchesInExistingModules)
         if(switchesInExistingModules){
           console.log(`Adding ${switchesInExistingModules} switches to existing modules`)
-          newGlobalState.modules.addSwitchesToSeveralModules(swichesForExistingModules)
+          newBoard.modules.addSwitchesToSeveralModules(swichesForExistingModules)
         }
 
         // Adding the required Modules
         for(const [cmId, mdAmount] of Object.entries(compartmentToModules)){
-          const cm = newGlobalState.compartments.get(cmId)
+          const cm = newBoard.compartments.get(cmId)
           const mdParams = {
             modulesAmount: mdAmount, 
             feed: cm.feed, 
             dimensions: {...cm.dimensions, height: swHeight}
           }
           console.log(`Adding ${mdAmount} modules to compartment ${cmId}`)
-          const newModules = newGlobalState.modules.createNewModulesArray(mdParams)
+          const newModules = newBoard.modules.createNewModulesArray(mdParams)
           newModules.forEach(md => cm.addModule(md))
         }
 
-        newGlobalState.modules.addSwitchesToSeveralModules(switchesForNewModules)
+        newBoard.modules.addSwitchesToSeveralModules(switchesForNewModules)
 
-        setGlobalState(newGlobalState)
+        setBoard(newBoard)
       
         return true
       }
@@ -251,53 +239,50 @@ export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ childr
     dndActions: {
       droppedCompratment: (result: DropResult) => {
         const { destination, source } = result;
-  
-        const newCompartmentsOrder = Array.from(globalState.compartmentsOrder);
-        const [compartment] = newCompartmentsOrder.splice(source.index, 1);
+        
+        const newBoard = board.clone()
+        const newCompartmentsOrder = Array.from(newBoard.compObjList)
+        const [compartment] = newCompartmentsOrder.splice(source.index, 1)
         // @ts-ignore destination might be null, we verified it before
-        newCompartmentsOrder.splice(destination.index, 0, compartment);
+        newCompartmentsOrder.splice(destination.index, 0, compartment)
+        newBoard.compObjList = newCompartmentsOrder
   
         // Update the global state with the new order
-        setGlobalState((prevState) => ({
-          ...prevState,
-          compartmentsOrder: newCompartmentsOrder,
-        }));  
+        setBoard(newBoard)
       },
       droppedModule: (result: DropResult) => {
         const { destination, source } = result;
-        const newState = {...globalState}
-        if(!destination){
-          return;
-        }
+        const newBoard = board.clone()
+        if(!destination) return
     
-        const homeCompartment = newState.compartments.get(source.droppableId)
-        const foreignCompartment = newState.compartments.get(destination.droppableId)
+        const homeCompartment = newBoard.compartments.get(source.droppableId)
+        const foreignCompartment = newBoard.compartments.get(destination.droppableId)
 
         const module = homeCompartment?.removeModuleAtIndex(source.index)
         foreignCompartment?.addModule(module!, destination.index)
   
-        setGlobalState(newState);
+        setBoard(newBoard);
       },
       droppedSwitch: (result: DropResult) => {
-        const { destination, source } = result;
+        const { destination, source } = result
     
         if(!destination) return
 
-        const newGlobalState = {...globalState}
-        const homeModule = newGlobalState.modules.get(source.droppableId)
-        const foreignModule = newGlobalState.modules.get(destination.droppableId)
+        const newBoard = board.clone()
+        const homeModule = newBoard.modules.get(source.droppableId)
+        const foreignModule = newBoard.modules.get(destination.droppableId)
 
         const sw = homeModule!.removeSwitchAtIndex(source.index)
         foreignModule!.addSwitch(sw, destination.index)
 
-        setGlobalState(newGlobalState);
+        setBoard(newBoard);
       
       },
     }
   }
   
   return (
-    <GlobalStateContext.Provider value={{ globalState, setGlobalState, actions }}>
+    <GlobalStateContext.Provider value={{ board, setBoard, actions }}>
       {children}
     </GlobalStateContext.Provider>
   );
@@ -315,43 +300,14 @@ export const withGlobalState = <P extends object>(
   WrappedComponent: React.ComponentType<P & GlobalStateContextType>
 ) => {
   return (props: P) => {
-    const { globalState , setGlobalState, actions} = useGlobalState();
+    const { board , setBoard, actions} = useGlobalState();
 
-    return <WrappedComponent globalState={globalState} setGlobalState={setGlobalState} actions={actions} {...props} />;
+    return <WrappedComponent board={board} setBoard={setBoard} actions={actions} {...props} />;
   };
 };
 
-const s1 = new SwitchObj(
-  {id:'s1', name:'switch1', description:'lighting', prefix:'1X16A', feed:"PC",  dimensions:defaultSwitchDimensions})
-const s2 = new SwitchObj(
-  {id:'s2', name:'switch2', description:'aircon', prefix:'2X16A',  feed:"PC", dimensions:{...defaultSwitchDimensions, width: 17.5 * 2}})
-const s3 = new SwitchObj(
-  {id:'s3', name:'switch3', description:'aircon', prefix:'3X16A',  feed:"PC", dimensions:{...defaultSwitchDimensions, width: 17.5 * 3}})
-const s4 = new SwitchObj(
-  {id:'s4', name:'switch4', description:'aircon', prefix:'4X16A',  feed:"PC", dimensions: {...defaultSwitchDimensions, width: 17.5 * 4}})
-const switchesArr = [s1, s2, s3, s4]  
-const m1 = new Module(
-  { id: 'm1', name: 'module1', feed: 'PC', switchesObjList: [s1, s2]})
-const m2 = new Module(
-  {id: 'm2', name: 'module2', feed: 'PC', switchesObjList: [s3, s4]})
-const modulesArr = [m1, m2]  
-
-const c1 = new Compartment(
-  {id: 'c1', name: 'compartment1', feed: 'PC', modulesObjList: [m1, m2]}
-)
-const c2 = new Compartment(
-  {id: 'c2', name: 'compartment2', feed: 'PC', modulesObjList: []} 
-)
-const compsArray = [c1, c2]
 
 
-export const initialAppGlobalState:GlobalState = {
-  boardWidth: 200,
-  boardHeight: 200,
-  boardDepth: 50,
-  compartmentsOrder: [c1, c2],
-  compartments: new CompartmentsMap(compsArray),
-  modules: new ModulesMap(modulesArr),
-  switches: new SwitchesMap(switchesArr)
-}
+
+
 
