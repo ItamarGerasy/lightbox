@@ -1,17 +1,14 @@
 // Compartment.tsx
 import { CompartmentStyle, ModulesList } from './Compartmen.styles'
 import Module from './Module'
-import React, { useState } from 'react'
+import React from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { Compartment as CompartmentType } from '../framework/Compartment'
 import { Module as ModuleType } from '../framework/Module'
 import { ColumnFlexBox, FlexBox, Title } from './general/GeneralStyles.styles'
-import Collapse from '@mui/material/Collapse'
 import { CompartmentMenu } from './CompartmentMenu'
-import IconButton from '@mui/material/IconButton'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import ClickAwayListener from '@mui/material/ClickAwayListener'
+import CollapseMenu from './general/CollapseMenu'
 
 type InnerModulesListProps = {
   modulesOrderedList: Array<ModuleType>
@@ -28,16 +25,11 @@ const InnerModulesList: React.FC<InnerModulesListProps> = ( { modulesOrderedList
 }
 
 interface CompartmentProps {
-  compartment: CompartmentType;
-  index: number;
+  compartment: CompartmentType
+  index: number
 }
 
 export const Compartment: React.FC<CompartmentProps> = ({ compartment, index }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleOpen = () => {
-    setIsOpen((isOpen => !isOpen))
-  }
 
   return (
     // dnd Draggable
@@ -51,14 +43,8 @@ export const Compartment: React.FC<CompartmentProps> = ({ compartment, index }) 
           isDragging={snapshot.isDragging}
         >
           <FlexBox style={{height: "10%", flex: 0}}>
-            <ClickAwayListener onClickAway={() => setIsOpen(false)}>  
-                  <IconButton aria-label="options" onClick={toggleOpen} hidden={isOpen} sx={{width: "10px"}}>
-                    <MoreVertIcon fontSize='small'/>
-                  </IconButton>
-            </ClickAwayListener>
-            <Collapse orientation="horizontal" in={isOpen}>
-              <CompartmentMenu compartment={compartment} />
-            </Collapse>
+            <CollapseMenu Menu={CompartmentMenu} menuProps={{ compartment: compartment }} 
+            orientation="horizontal" fontSize="small" />
 
             {/* dragged component handle, which is the title of the compratment   */}
             <Title {...provided.dragHandleProps}>
@@ -82,8 +68,5 @@ export const Compartment: React.FC<CompartmentProps> = ({ compartment, index }) 
         </CompartmentStyle>
     )}
     </Draggable>
-  );
-};
-
-
-
+  )
+}
