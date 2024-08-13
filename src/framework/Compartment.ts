@@ -80,8 +80,7 @@ export class Compartment {
      */
     getModuleIndexById(moduleId: string): number{
         let index =  this.modulesObjList.findIndex((md) => md.id === moduleId)
-        if(index !== -1) return index
-        console.warn(`[Compartment ${this.id}] Couldn't find module with id: ${moduleId} on compartment: ${this.name}`)       
+        if(index !== -1) return index   
         return -1
     }
     
