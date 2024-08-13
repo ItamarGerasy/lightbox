@@ -23,7 +23,7 @@ export const BoardMenu: React.FC = () => {
 
     const openAddCompartmentMenu = () =>  {
         if(board.freeWidth === 0) {
-            setInfoDetails({title: 'Error', message: 'Sorry the board is full, cannot add another compartment'})
+            setInfoDetails({title: 'Free Space Error', message: 'Sorry the board is full, cannot add another compartment'})
             setInfoDialogOpen(true)
             return
         }
@@ -31,8 +31,8 @@ export const BoardMenu: React.FC = () => {
     }
     
     const openAddSwitchMenu = () =>  {
-        if(board.freeWidth === 0) {
-            setInfoDetails({title: 'Error', message: 'Sorry There is no space to add switches, consider adding another compartment'})
+        if(board.isCompletelyFull()) {
+            setInfoDetails({title: 'Free Space Error', message: 'Sorry There is no space to add switches, consider adding another compartment'})
             setInfoDialogOpen(true)
             return
         }

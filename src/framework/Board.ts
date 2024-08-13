@@ -395,4 +395,24 @@ export class Board {
 
         return cloneBoard
     }
+
+    /** Returns True if the board, compartments, and modules are all full and no switches can be added in any way */
+    isCompletelyFull(): boolean {
+        let isFull = true
+        this.compObjList.forEach(cm => {
+            if(!cm.isFull()) {
+                console.log(`cm ${cm.name} is not full`)
+                isFull = false
+            }
+
+            cm.modulesObjList.forEach(md => {
+                if(!md.isFull()) {
+                    console.log(`md ${md.name} is not full`)
+                    isFull = false
+                }
+            })
+        })
+
+        return isFull
+    }
 }

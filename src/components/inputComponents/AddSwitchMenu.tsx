@@ -101,7 +101,10 @@ export const AddSwitchMenu: React.FC<SwitchMenuProps> = ({isOpen, setIsOpen}) =>
         
                 <InputTextFields handleInputChange={handleInputChange} inputValues={input}/>
                 <Typography color={"red"}>{inputError}</Typography>
-                <InfoDialog deatils={dialogDetails} open={isDialogOpen} closeDialog={() => setIsDialogOpen(false)} />
+                <InfoDialog deatils={dialogDetails} open={isDialogOpen} closeDialog={() => {
+                    setIsDialogOpen(false)
+                    setDialogDetails({title: "", message: ""})
+                    }} />
                 
             </DialogContent>
             <DialogActions>
