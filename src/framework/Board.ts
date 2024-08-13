@@ -53,7 +53,12 @@ export class Board {
             if(width < this._dimensions.width && width < this.minimumWidthToSet()){
                 throw new Error(`[${this.name}] Setting the width to ${width} is not possible because the minimum width to set the board is ${this.minimumWidthToSet()}`)
             }
+            let widthDiff = Math.abs(width - this._dimensions.width)
+            if(width < this._dimensions.width) {
+                widthDiff = -widthDiff
+            }
             this._dimensions.width = width
+            this.freeWidth += widthDiff
         }
 
         if(height){

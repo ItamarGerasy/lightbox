@@ -1,4 +1,4 @@
-// AddCompartmentMenu.tsx
+// EditBoardPropsForm.tsx
 // Author: Itamar Gerasy
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -8,25 +8,23 @@ import TextField from '@mui/material/TextField'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
 import { useBoard } from '../../hooks/BoardHook'
-import { defaultCompartmentDimensions } from '../general/generalTypes'
 import { useState } from 'react'
 
-type CompartmentMenuProps = {
+type EditBoardPropsFormProps = {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setIsOpen}) => {
+export const EditBoardPropsForm: React.FC<EditBoardPropsFormProps> = ({isOpen, setIsOpen}) => {
     const { board, setBoard } = useBoard()
     const closeDialog = () => setIsOpen(false)
     const [input, setInput] = useState({
-        name: "Cool Compartment",
-        feed: "Thor god of thunder",
-        width: defaultCompartmentDimensions.width,
-        height: defaultCompartmentDimensions.height,
-        depth: defaultCompartmentDimensions.depth
+        name: board.name,
+        width: board.dimensions.width,
+        height: board.dimensions.height,
+        depth: board.dimensions.depth
     })
-
+    
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
         setInput((prevInput) => ({
             ...prevInput,
@@ -35,17 +33,17 @@ export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setI
     }
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        
         event.preventDefault()
         const formData = new FormData(event.currentTarget)
         const formJson = Object.fromEntries((formData as any).entries())
-        let {name, feed, width, height, depth} = formJson
-        width = parseInt(width)
-        height = parseInt(height)
-        depth = parseInt(depth)
+        const {name, width, height, depth} = formJson
 
         const newBoard = board.clone()
-        let succsess = newBoard.createCompartment({name: name, feed: feed, dimensions: {width: width, height: height, depth: depth}})
-        if(!succsess) throw new Error("Could not create compartment for some reason")
+
+        newBoard.name = name
+        newBoard.dimensions = {width: width, height: height, depth: depth}
+        
         setBoard(newBoard)
     
         closeDialog()
@@ -67,8 +65,8 @@ export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setI
             {"Enter Compartment Size"}
             </DialogTitle>
             <DialogContentText>
-                Compartment Height and Depth cannot be bigger then Board height and depth, and width cannot be bigger then
-                board free width. <br/> Don't worry the form won't let you fill illegal values.
+                Note: you cannot shrink the board dimension in a way that doesn't fit the existing compartments modules and switches. <br/>
+                minimum values that can be set: width: {board.minimumWidthToSet()}, height: {board.minimumHeightToSet()}, depth: {board.minimumDepthToSet()}
             </DialogContentText>
             <DialogContent>
                
@@ -81,15 +79,7 @@ export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setI
                     variant="filled" 
                     onChange={handleInputChange}
                     inputProps={{ value: input.name }}/>
-                <TextField
-                    required
-                    margin="dense"
-                    id="feed" name="feed" label="Feed"
-                    type="text"
-                    fullWidth
-                    variant="filled" 
-                    onChange={handleInputChange}
-                    inputProps={{ value: input.feed }}/>
+
                 <TextField
                     required
                     margin="dense"
@@ -98,7 +88,7 @@ export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setI
                     fullWidth
                     variant="filled" 
                     onChange={handleInputChange}
-                    inputProps={{ min: 1, max: board.freeWidth, value: input.width }}/>
+                    inputProps={{ min: board.minimumWidthToSet(), value: input.width }}/>
                 <TextField
                     required
                     margin="dense"
@@ -107,7 +97,7 @@ export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setI
                     fullWidth
                     variant="filled" 
                     onChange={handleInputChange}
-                    inputProps={{ min: 1, max: board.dimensions.height, value: input.height }}/>
+                    inputProps={{ min: board.minimumHeightToSet(), value: input.height }}/>
                 <TextField
                     required
                     margin="normal"
@@ -116,13 +106,13 @@ export const AddCompartmentMenu: React.FC<CompartmentMenuProps> = ({isOpen, setI
                     fullWidth
                     variant="filled" 
                     onChange={handleInputChange}
-                    inputProps={{ min: 1, max: board.dimensions.depth, value: input.depth }}
+                    inputProps={{ min: board.minimumDepthToSet(), value: input.depth }}
                     />
-                    
+                
             </DialogContent>
             <DialogActions>
                 <Button onClick={closeDialog}>Cancel</Button>
-                <Button type="submit"> Add </Button>
+                <Button type="submit"> Confirm </Button>
             </DialogActions>
         </Dialog>)
 }

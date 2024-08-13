@@ -11,6 +11,7 @@ import { Tooltip } from 'react-tooltip'
 import { AddCompartmentMenu } from '../inputComponents/AddCompartmentMenu'
 import { AddSwitchMenu } from "../inputComponents/AddSwitchMenu"
 import { InfoDialog } from "../general/InfoDialog"
+import { EditBoardPropsForm } from "../inputComponents/EditBoardPropsForm"
 
 
 export const BoardMenu: React.FC = () => {
@@ -20,6 +21,7 @@ export const BoardMenu: React.FC = () => {
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null)
     const [ isAddCompOpen, setAddCompOpen] = React.useState(false)
     const [ isAddSwitchOpen, setAddSwitchOpen] = React.useState(false)
+    const [ isEditMenuOpen, setEditMenuOpen] = React.useState(false)
 
     const openAddCompartmentMenu = () =>  {
         if(board.freeWidth === 0) {
@@ -62,7 +64,8 @@ export const BoardMenu: React.FC = () => {
                 <AddBoxOutlinedIcon sx={mediumIcon}/>
             </ISFlexBox>
 
-            <ISFlexBox data-tooltip-id="edit" data-tooltip-content="Edit Board Size" data-tooltip-place="bottom-start">
+            <ISFlexBox data-tooltip-id="edit" data-tooltip-content="Edit Board" data-tooltip-place="bottom-start"
+                onClick={() => setEditMenuOpen(true)}>
                 <ModeEditOutlinedIcon sx={mediumIcon} />
             </ISFlexBox>
 
@@ -73,6 +76,7 @@ export const BoardMenu: React.FC = () => {
 
             <AddCompartmentMenu isOpen={isAddCompOpen} setIsOpen={setAddCompOpen}/> 
             <AddSwitchMenu isOpen={isAddSwitchOpen} setIsOpen={setAddSwitchOpen}/> 
+            <EditBoardPropsForm isOpen={isEditMenuOpen} setIsOpen={setEditMenuOpen}/>
             <InfoDialog deatils={infoDetails} open={isInfoDialogOpen} closeDialog={() => setInfoDialogOpen(false)}/>
         </WhiteFlexBox>
     )
