@@ -56,6 +56,23 @@ describe("SwtichesMap", () => {
         expect(s1.size + s2.size + s3.size).toBe(3)
     })
 
+    test("Should gnerate the 11th index correctly", () => {
+        const swMap = new SwitchesMap()
+        let description = "some description"
+        let prefix = "1X16A"
+        let feed = " some feed"
+        
+        let swArr = swMap.createNewSwitchesArray(10, description, prefix, feed)
+        
+        expect(swMap.amount).toBe(10)
+        expect(swMap.generateIndex()).toBe("s11")
+        
+        swArr = swMap.createNewSwitchesArray(90, description, prefix, feed)
+        
+        expect(swMap.amount).toBe(100)
+        expect(swMap.generateIndex()).toBe("s101")
+    })
+
     test("Should create several switches array and add all switches to the map", () => {
         const swMap = new SwitchesMap()
 

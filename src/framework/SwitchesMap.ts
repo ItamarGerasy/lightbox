@@ -97,11 +97,17 @@ export class SwitchesMap {
     /**function to generate new index based on all exsisting indexes for example
      * if the latest switch added has the index of "s123" the function will return 124 */
     generateIndex(): string {
-        if(!this.lastId){
-            return "s1"
-        }
-        let newHigestIndex = Number(this.lastId.substring(1)) + 1
-        return `s${newHigestIndex}`
+        let maxIdNumber = 0;
+
+        this.switchesMap.forEach((_, id) => {
+            const idNumber = parseInt(id.substring(1), 10)
+            if (idNumber > maxIdNumber) {
+                maxIdNumber = idNumber
+            }
+        })
+
+        let newHighestId = `s${maxIdNumber + 1}`
+        return newHighestId;
     }
 
     /** Creates an array of switch objects with same parameters to all switches */

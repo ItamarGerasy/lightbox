@@ -159,11 +159,17 @@ export class CompartmentsMap {
      * if the latest compartment added has the index of "c123" the function will return c124  
      * @returns new unused compartment index*/
     generateIndex(): string {
-        if(!this.lastId){
-            return "c1"
-        }
-        let newHigestIndex = Number(this.lastId.substring(1)) + 1
-        return `c${newHigestIndex}`
+        let maxIdNumber = 0;
+
+        this.compartmentsMap.forEach((_, id) => {
+            const idNumber = parseInt(id.substring(1), 10)
+            if (idNumber > maxIdNumber) {
+                maxIdNumber = idNumber
+            }
+        })
+
+        let newHighestId = `c${maxIdNumber + 1}`
+        return newHighestId;
     }
 
     /**

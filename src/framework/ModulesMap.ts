@@ -118,11 +118,17 @@ export class ModulesMap {
      * @returns {string} new index to assign to new module
      */
     generateIndex(): string {
-        if(!this.lastId){
-            return "m1"
-        }
-        let newHigestIndex = Number(this.lastId.substring(1)) + 1
-        return `m${newHigestIndex}`
+        let maxIdNumber = 0;
+
+        this.modulesMap.forEach((_, id) => {
+            const idNumber = parseInt(id.substring(1), 10)
+            if (idNumber > maxIdNumber) {
+                maxIdNumber = idNumber
+            }
+        })
+
+        let newHighestId = `m${maxIdNumber + 1}`
+        return newHighestId;
     }
 
     /**
