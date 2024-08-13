@@ -76,27 +76,34 @@ export const BoardContextProvider: React.FC<BoardProviderProps> = ({ children })
       },
       droppedModule: (result: DropResult) => {
         const { destination, source } = result
-        const newBoard = board.clone()
         if(!destination) return
-    
+        
+        const newBoard = board.clone() 
+
         const homeCompartment = newBoard.compartments.get(source.droppableId)
         const foreignCompartment = newBoard.compartments.get(destination.droppableId)
+        
+        let module = homeCompartment.modulesObjList[source.index]
+        if(source.droppableId !== destination.droppableId && !foreignCompartment.canAddModule(module)) return
 
-        const module = homeCompartment?.removeModuleAtIndex(source.index)
+        module = homeCompartment?.removeModuleAtIndex(source.index)
         foreignCompartment?.addModule(module!, destination.index)
   
         setBoard(newBoard)
       },
       droppedSwitch: (result: DropResult) => {
         const { destination, source } = result
-    
+
         if(!destination) return
 
-        const newBoard = board.clone()
+        let newBoard = board.clone()
         const homeModule = newBoard.modules.get(source.droppableId)
         const foreignModule = newBoard.modules.get(destination.droppableId)
+        let sw = homeModule.switchesObjList[source.index]
 
-        const sw = homeModule!.removeSwitchAtIndex(source.index)
+        if(source.droppableId !== destination.droppableId && !foreignModule.canAddSwitch(sw)) return
+
+        sw = homeModule!.removeSwitchAtIndex(source.index)
         foreignModule!.addSwitch(sw, destination.index)
 
         setBoard(newBoard)
