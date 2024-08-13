@@ -8,7 +8,8 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import CleaningServicesOutlinedIcon from '@mui/icons-material/CleaningServicesOutlined'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import { Tooltip } from 'react-tooltip'
-import { AddCompartmentMenu } from './AddCompartmentMenu'
+import { AddCompartmentMenu } from './inputComponents/AddCompartmentMenu'
+import { AddSwitchMenu } from "./inputComponents/AddSwitchMenu"
 import { InfoDialog } from "./general/InfoDialog"
 
 
@@ -18,6 +19,7 @@ export const BoardMenu: React.FC = () => {
     const [infoDetails, setInfoDetails] = React.useState({title: '', message: ''})
     const InfoAnchorRef = React.useRef<HTMLDivElement>(null)
     const [ isAddCompOpen, setAddCompOpen] = React.useState(false)
+    const [ isAddSwitchOpen, setAddSwitchOpen] = React.useState(false)
 
     const openAddCompartmentMenu = () =>  {
         if(board.freeWidth === 0) {
@@ -26,6 +28,15 @@ export const BoardMenu: React.FC = () => {
             return
         }
         setAddCompOpen(true)
+    }
+    
+    const openAddSwitchMenu = () =>  {
+        if(board.freeWidth === 0) {
+            setInfoDetails({title: 'Error', message: 'Sorry There is no space to add switches, consider adding another compartment'})
+            setInfoDialogOpen(true)
+            return
+        }
+        setAddSwitchOpen(true)
     }
 
     const clearBoard = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,7 +52,8 @@ export const BoardMenu: React.FC = () => {
             <Tooltip id="edit" style={{zIndex: 30000}}/>
             <Tooltip id="clear" style={{zIndex: 30000}}/>
 
-            <ISFlexBox  data-tooltip-id="add-switch" data-tooltip-content="Add Switch" data-tooltip-place="bottom-start">
+            <ISFlexBox  data-tooltip-id="add-switch" data-tooltip-content="Add Switch" data-tooltip-place="bottom-start"
+                onClick={openAddSwitchMenu}>
                 <AddCircleOutlineOutlinedIcon sx={mediumIcon}/>
             </ISFlexBox>
 
@@ -60,6 +72,7 @@ export const BoardMenu: React.FC = () => {
             </ISFlexBox>
 
             <AddCompartmentMenu isOpen={isAddCompOpen} setIsOpen={setAddCompOpen}/> 
+            <AddSwitchMenu isOpen={isAddSwitchOpen} setIsOpen={setAddSwitchOpen}/> 
             <InfoDialog deatils={infoDetails} open={isInfoDialogOpen} closeDialog={() => setInfoDialogOpen(false)}/>
         </WhiteFlexBox>
     )

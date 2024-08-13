@@ -40,7 +40,7 @@ export const ModuleMenu: React.FC<ModuleMenuProps> = ({module, provided}) => {
     const handleModuleAndSwitchesDelete = () =>  actions.crud.deleteModuleWithSwitches(module.id)
 
     return (
-        <ColumnFlexBox style={{backgroundColor: 'lightblue', margin: '0px'}} ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
+        <ColumnFlexBox style={{backgroundColor: 'white', margin: '0px'}} ref={InfoAnchorRef as LegacyRef<HTMLDivElement> | undefined }>
             <FlexBox {...provided.dragHandleProps}>
                 <DragHandleOutlinedIcon sx={mediumIcon} />
             </FlexBox>

@@ -29,6 +29,31 @@ describe("Board", () => {
         expect(board.freeWidth).toBe(board.dimensions.width - cm.dimensions.width)
     })
 
+    test("Should create switches array with all parameters", () => {
+        const board = new Board()
+        const [cm1] = board.compartments.createNewComaprtmentsArray({compartmentsAmount: 1})
+
+        const fullSwArr = board.switches.createNewSwitchesArray(9, "des", "1X16A", "feed") 
+        console.log(JSON.stringify(fullSwArr.map(sw => sw.id)))
+        expect(fullSwArr.length).toBe(9)
+        expect(board.switches.amount).toBe(9)
+        
+        const mdArr = board.modules.createNewModulesArray({modulesAmount: 6})
+        expect(mdArr.length).toBe(6)
+        expect(board.modules.amount).toBe(6)
+        
+        mdArr.forEach(md => { 
+            md.addSwitches(fullSwArr)
+            expect(md.switchesAmount).toBe(9)
+        })
+        cm1.addModules(mdArr)
+        expect(cm1.modulesAmount).toBe(6)
+        
+        const swToAdd = board.switches.createNewSwitchesArray(6, "des", "1X16A", "feed")
+        console.log(JSON.stringify(swToAdd.map(sw => sw.id)))
+        expect(swToAdd.length).toBe(6)
+        expect(board.switches.amount).toBe(15)
+    })
 
     it('Should add 3 compartments to the board', () => {
         const board = new Board()

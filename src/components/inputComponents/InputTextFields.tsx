@@ -1,14 +1,16 @@
-import TextField from "@mui/material/TextField";
-import { ColumnFlexBox } from "../general/GeneralStyles.styles";
+import TextField from "@mui/material/TextField"
+import { ColumnFlexBox } from "../general/GeneralStyles.styles"
 
 type InputTextFieldsProps = {
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
   inputValues: {
-    switchSpecs: string,
-    switchAmount: string,
-    switchDescription: string
+    specs: string,
+    amount: number,
+    description: string,
+    feed: string,
+    name: string
   }
 }
 
@@ -19,31 +21,48 @@ export const InputTextFields = ({ handleInputChange, inputValues }: InputTextFie
         style={{paddingBottom: '5px', paddingTop: '5px'}}
         required
         size="small"
-        id="switchSpecs"
-        label="Switch Prefix"
-        helperText="Examples: 3X16A, 1X10A"
+        id="name" name="name"
+        label="Switches Names"
         onChange={handleInputChange}
-        value={inputValues.switchSpecs}
-      />
-      <br />
+        value={inputValues.name}
+      /><br />
       <TextField
         style={{paddingBottom: '5px', paddingTop: '5px'}}
         required
         size="small"
-        id="switchAmount"
-        label="Switch Amount"
+        id="specs" name="specs"
+        label="Switches Specs"
+        helperText="Examples: 3X16A, 1X10A"
+        onChange={handleInputChange}
+        value={inputValues.specs}
+      /><br />
+      <TextField
+        style={{paddingBottom: '5px', paddingTop: '5px'}}
+        required
+        size="small"
+        id="amount" name="amount"
+        label="Amount"
         type="number"
         onChange={handleInputChange}
-        value={inputValues.switchAmount}
-      />
-      <br />
+        value={inputValues.amount}
+        inputProps={{ min: 1 }}
+      /><br />
       <TextField
         style={{paddingBottom: '5px', paddingTop: '5px'}}
         size="small"
-        id="switchDescription"
-        label="Switch Description"
+        id="description" name="description"
+        label="Description"
+        multiline
         onChange={handleInputChange}
-        value={inputValues.switchDescription}
+        value={inputValues.description}
+      /><br />
+      <TextField
+        style={{paddingBottom: '5px', paddingTop: '5px'}}
+        size="small"
+        id="feed" name="feed"
+        label="Feed"
+        onChange={handleInputChange}
+        value={inputValues.feed}
       />
     </ColumnFlexBox>
   );

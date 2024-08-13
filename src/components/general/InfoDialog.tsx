@@ -12,7 +12,7 @@ export const InfoDialog = ({deatils, open, closeDialog}:
         closeDialog: () => void
     }) => {
     return (
-        <Dialog open={open}>
+        <Dialog open={open} style={{zIndex: 50000}}>
             <DialogTitle>{deatils.title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>

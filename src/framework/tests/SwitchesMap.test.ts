@@ -56,6 +56,26 @@ describe("SwtichesMap", () => {
         expect(s1.size + s2.size + s3.size).toBe(3)
     })
 
+    test("Should create several switches array and add all switches to the map", () => {
+        const swMap = new SwitchesMap()
+
+        let amount = 3
+        let description = `The best switch in the world`
+        let specs = `3X16A`
+        let feed = `Thor god of thunder`
+        let name = `switchero`
+
+        const swArr1 = swMap.createNewSwitchesArray(amount, description, specs, feed, name)
+        const swArr2 = swMap.createNewSwitchesArray(amount, description, specs, feed, name)
+        const swArr3 = swMap.createNewSwitchesArray(amount, description, specs, feed, name)
+
+        expect(swArr1.length).toBe(amount)
+        expect(swArr2.length).toBe(amount)
+        expect(swArr3.length).toBe(amount)
+        expect(swMap.amount).toBe(amount * 3)
+    })
+    
+
     it("Should have switch", () => {
         const swMap = new SwitchesMap()
         let description = "some description"
