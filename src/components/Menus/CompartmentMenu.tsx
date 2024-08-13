@@ -1,10 +1,10 @@
 // CompartmentMenu.tsx
-import { Compartment as CompartmentType } from "../framework/Compartment"
-import { useBoard } from "../hooks/BoardHook";
+import { Compartment as CompartmentType } from "../../framework/Compartment"
+import { useBoard } from "../../hooks/BoardHook";
 import React, { LegacyRef } from 'react'
 import Popper from '@mui/material/Popper'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
-import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from './general/GeneralStyles.styles'
+import { FlexBox, ColumnFlexBox, InfoWindowStyle, mediumIcon } from '../general/GeneralStyles.styles'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 

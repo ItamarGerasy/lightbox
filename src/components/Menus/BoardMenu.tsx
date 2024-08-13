@@ -1,16 +1,16 @@
 // BoardMenu.tsx
-import { useBoard } from "../hooks/BoardHook"
+import { useBoard } from "../../hooks/BoardHook"
 import React, { LegacyRef } from 'react'
-import { mediumIcon, ISFlexBox } from './general/GeneralStyles.styles'
+import { mediumIcon, ISFlexBox } from '../general/GeneralStyles.styles'
 import { WhiteFlexBox } from './BoardMenu.styles'
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import CleaningServicesOutlinedIcon from '@mui/icons-material/CleaningServicesOutlined'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import { Tooltip } from 'react-tooltip'
-import { AddCompartmentMenu } from './inputComponents/AddCompartmentMenu'
-import { AddSwitchMenu } from "./inputComponents/AddSwitchMenu"
-import { InfoDialog } from "./general/InfoDialog"
+import { AddCompartmentMenu } from '../inputComponents/AddCompartmentMenu'
+import { AddSwitchMenu } from "../inputComponents/AddSwitchMenu"
+import { InfoDialog } from "../general/InfoDialog"
 
 
 export const BoardMenu: React.FC = () => {

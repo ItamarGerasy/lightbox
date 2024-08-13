@@ -7,7 +7,7 @@ import { StrictModeDroppable } from './general/StrictModeDroppable'
 import { Compartment as CompartmentType } from '../framework/Compartment'
 import { Module as ModuleType } from '../framework/Module'
 import { ColumnFlexBox, FlexBox, Title } from './general/GeneralStyles.styles'
-import { CompartmentMenu } from './CompartmentMenu'
+import { CompartmentMenu } from './Menus/CompartmentMenu'
 import CollapseMenu from './general/CollapseMenu'
 
 type InnerModulesListProps = {

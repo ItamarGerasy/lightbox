@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from "./general/StrictModeDroppable";
 import { SwitchesList } from "./Module.styles";
-import { ModuleMenu } from './ModuleMenu'
+import { ModuleMenu } from './Menus/ModuleMenu'
 import { FlexBox } from "./general/GeneralStyles.styles";
 import Collapse from '@mui/material/Collapse';
 import { Switch as SwitchType } from '../framework/Switch';
