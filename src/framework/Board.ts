@@ -128,8 +128,8 @@ export class Board {
      * @returns true if it's succesful, and false if the switches coud not have been added
      */
     addSwitches(switchesToAdd: Switch[]): boolean {
-        if(this.addSwitchesToSeveralModules(switchesToAdd)) return true
         if(this.addSwitchesToOneModule(switchesToAdd)) return true
+        if(this.addSwitchesToSeveralModules(switchesToAdd)) return true
         if(this.addModuleAndAddSwitches(switchesToAdd)) return true
         return false
     }
@@ -386,6 +386,8 @@ export class Board {
         // creating a clone list of switches and modules
         cloneBoard.compartments.forEach(cm => cloneModules.push(...cm.modulesObjList))
         cloneModules.forEach(md => cloneSwitches.push(...md.switchesObjList))
+        // creating clones of switches which are not assigned to any module
+        this.switches.forEach(sw => {if(!sw.myModule) cloneSwitches.push(sw)})
 
         // adding to empty switchesmap and modules map the clones
         cloneModules.forEach(md => cloneBoard.modules.set(md))
