@@ -103,10 +103,8 @@ export const BoardContextProvider: React.FC<BoardProviderProps> = ({ children })
 
         if(source.droppableId !== destination.droppableId && !foreignModule.canAddSwitch(sw)) return
 
-        console.log(`going to remove ${sw.name} from module ${source.droppableId} into ${destination.droppableId} at index ${destination.index}`)
         sw = homeModule!.removeSwitchAtIndex(source.index)
         foreignModule!.addSwitch(sw, destination.index)
-        console.log(`switch index after transition: ${foreignModule.getSwitchIndexById(sw.id)}`)
 
         setBoard(newBoard)
       },
