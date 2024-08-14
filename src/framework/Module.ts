@@ -184,7 +184,7 @@ export class Module {
             switch information: \n
             switch dimensions: ${JSON.stringify(sw.dimensions)}`)
         }
-        if(!index || index === 0){
+        if(index == undefined){
             this.switchesObjList.push(sw)
         } else {
             this.switchesObjList.splice(index, 0, sw)

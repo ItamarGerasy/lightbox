@@ -7,7 +7,7 @@ const MainApp = () => {
 
     return (
         <MainContainerStyle>
-            <h1>Welcome to the lightbox project</h1>
+            <h1 style={{textAlign: "center"}}>Welcome to the lightbox project</h1>
             <MainAppStyle>
                 <BoardContextProvider>
                     <BoxView />

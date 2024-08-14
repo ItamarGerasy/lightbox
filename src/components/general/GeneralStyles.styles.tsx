@@ -14,6 +14,15 @@ export const FlexBox = styled.div({
     zIndex: 'inherit'
 })
 
+export const FlexBoxSpaceBetween = styled.div({
+    display: 'flex',
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    zIndex: 'inherit',
+    justifyContent: "space-between"
+})
+
 /**Inherit from FlexBox */
 export const ISFlexBox = styled.div({
     display: 'flex',
